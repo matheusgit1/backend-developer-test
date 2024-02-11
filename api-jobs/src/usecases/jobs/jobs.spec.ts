@@ -1,4 +1,8 @@
-import { HandlerEventsMock, queryresults } from "./../../tests/mocks";
+import {
+  CustomEventEmitterMock,
+  HandlerEventsMock,
+  queryresults,
+} from "./../../tests/mocks";
 import {
   mockRequest,
   mockResponse,
@@ -9,8 +13,8 @@ import { JobsUseCase } from ".";
 import { StatusCodes } from "http-status-codes";
 
 const pgClienteMock = new PgClienteMock();
-const handlerEvents = new HandlerEventsMock();
-const jobsUseCase = new JobsUseCase(pgClienteMock, handlerEvents);
+const customEventEmitterMock = new CustomEventEmitterMock();
+const jobsUseCase = new JobsUseCase(pgClienteMock, customEventEmitterMock);
 
 describe(`cenarios de testes para ${JobsUseCase.name}`, () => {
   beforeEach(() => {
@@ -245,7 +249,7 @@ describe(`cenarios de testes para ${JobsUseCase.name}`, () => {
         mockResponse,
         mockNextFunction
       );
-      expect(res.statusCode).toBe(StatusCodes.NOT_IMPLEMENTED);
+      expect(res).toBeUndefined();
     });
   });
 

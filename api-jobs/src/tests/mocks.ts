@@ -1,8 +1,9 @@
 import * as pg from "pg";
 import { PgClienteRepository } from "../infrastructure/database/pg.repository";
 import { NextFunction, Request, Response } from "express";
-import { HandlerEventClass } from "src/infrastructure/services/dto/handler-event.dtos";
+import { HandlerEventClass } from "../infrastructure/services/dto/handler-event.dtos";
 import axios, { AxiosInstance } from "axios";
+import { CustomEventEmitterClass } from "../infrastructure/events/dtos/emiter-events.dtos";
 
 export const mockRequest = {
   header: {},
@@ -65,5 +66,11 @@ export class HandlerEventsMock implements HandlerEventClass {
   client: AxiosInstance = jest.mocked(axios);
   publishEvent = jest.fn(
     async (_topic: string, _version: 1, _payload: any): Promise<void> => {}
+  );
+}
+
+export class CustomEventEmitterMock implements CustomEventEmitterClass {
+  publishJob = jest.fn(
+    (topic: string, version: number, payload: any): void => {}
   );
 }

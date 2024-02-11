@@ -2,12 +2,12 @@ import { PoolClient } from "pg";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { NextFunction, Request, Response } from "express";
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
-import { HandlerEventClass } from "../../infrastructure/services/dto/handler-event.dtos";
+import { CustomEventEmitterClass } from "../../infrastructure/events/dtos/emiter-events.dtos";
 
 export class JobsUseCase {
   constructor(
     private readonly pgCliente: PgClienteRepository,
-    private readonly handlerEvents: HandlerEventClass
+    private readonly eventEmitter: CustomEventEmitterClass
   ) {}
 
   public async createJob(
@@ -72,8 +72,8 @@ export class JobsUseCase {
     let connection: PoolClient | undefined = undefined;
     try {
       //TODO - logica deve ser enviada para um lambda que ira validar se o job está apta a ser publicado
-
-      return _res.status(StatusCodes.NOT_IMPLEMENTED);
+      this.eventEmitter.publishJob("publish_job", 1, { jobId: 1 });
+      return _res.status(StatusCodes.NOT_IMPLEMENTED).send();
       // .send({ ...rows[0], status: "published" });
     } catch (err) {
       if (connection) await this.pgCliente.rolbackTransaction(connection);

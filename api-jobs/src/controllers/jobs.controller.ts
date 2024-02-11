@@ -2,10 +2,15 @@ import { Router } from "express";
 import { PgCliente } from "../infrastructure/database/client/database.repository";
 import { JobsUseCase } from "../usecases/jobs";
 import { HandlerEvents } from "../infrastructure/services/handle-eventos.service";
+import { CustomEventEmitter } from "../infrastructure/events/emiter.events";
+import { EventEmitter } from "stream";
 
 const routes = Router();
 
-const usecase = new JobsUseCase(new PgCliente(), new HandlerEvents());
+const usecase = new JobsUseCase(
+  new PgCliente(),
+  new CustomEventEmitter(new EventEmitter(), new HandlerEvents())
+);
 
 routes.post(
   "/",
