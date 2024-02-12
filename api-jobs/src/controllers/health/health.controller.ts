@@ -24,6 +24,4 @@ const routesAdapteds = new HealthRoutesAdapted([
   },
 ]);
 
-const routes = routesAdapteds.routes;
-
-export { routes };
+export const { routes } = routesAdapteds;

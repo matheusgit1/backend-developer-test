@@ -31,6 +31,4 @@ const routesAdapteds = new CompaniesRoutesAdapted([
   },
 ]);
 
-const routes = routesAdapteds.routes;
-
-export { routes };
+export const { routes } = routesAdapteds;

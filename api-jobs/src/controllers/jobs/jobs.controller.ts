@@ -56,6 +56,4 @@ const routesAdapteds = new JobsRoutesAdapted([
   },
 ]);
 
-const routes = routesAdapteds.routes;
-
-export { routes };
+export const { routes } = routesAdapteds;
