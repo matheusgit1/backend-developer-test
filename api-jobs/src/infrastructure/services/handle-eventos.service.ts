@@ -1,15 +1,16 @@
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import { HandlerEventClass } from "./dto/handler-event.dtos";
+import { configs } from "../../configs/envs/environments.config";
 
 export class HandlerEvents implements HandlerEventClass {
   public readonly client: AxiosInstance;
   constructor() {
     this.client = axios.create({
-      baseURL: process.env.URL_HANDLER_EVENTS,
+      baseURL: configs.URL_HANDLER_EVENTS,
       timeout: 30 * 1000, // 30 seconds,
       headers: {
-        "x-api-key": process.env.HANDLER_EVENTS_X_API_KEY,
+        "x-api-key": configs.HANDLER_EVENTS_X_API_KEY,
       },
     });
   }

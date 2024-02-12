@@ -1,12 +1,13 @@
 import * as pg from "pg";
 import { PgClienteRepository } from "../pg.repository";
+import { configs } from "../../../configs/envs/environments.config";
 
 export class PgCliente implements PgClienteRepository {
   private pool: pg.Pool;
 
   constructor() {
     this.pool = new pg.Pool({
-      connectionString: `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+      connectionString: `postgres://${configs.DB_USER}:${configs.DB_PASSWORD}@${configs.DB_HOST}:${configs.DB_PORT}/${configs.DB_NAME}`,
     });
   }
 

@@ -1,29 +1,8 @@
 import * as pg from "pg";
 import { PgClienteRepository } from "../infrastructure/database/pg.repository";
-import { NextFunction, Request, Response } from "express";
 import { HandlerEventClass } from "../infrastructure/services/dto/handler-event.dtos";
 import axios, { AxiosInstance } from "axios";
 import { CustomEventEmitterClass } from "../infrastructure/events/dtos/emiter-events.dtos";
-
-export const mockRequest = {
-  header: {},
-  body: {},
-  headers: {},
-} as Request;
-
-export const mockResponse = {
-  send: (value: any) => value,
-  json: (value: any) => value,
-  status: (status: number) => {
-    return {
-      statusCode: status,
-      json: (values: any) => values,
-      send: (values: any) => values,
-    };
-  },
-} as Response;
-
-export const mockNextFunction = jest.fn() as NextFunction;
 
 export const queryresults = {
   rowCount: 1,
