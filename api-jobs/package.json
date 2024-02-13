@@ -7,7 +7,7 @@
     "start:dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
     "test:coverage": "jest --coverage",
     "test": "jest",
-    "autocannon:sever": "ts-node-dev --respawn --pretty --transpile-only src/@autocannon/server/target.ts",
+    "autocannon:server": "ts-node-dev --respawn --pretty --transpile-only src/@autocannon/server/target.ts",
     "autocannon:test": "ts-node-dev --transpile-only src/@autocannon/teste.ts"
   },
   "keywords": [
