@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import clusters from "node:cluster";
+import { cpus } from "os";
 import { routes as healthRoutes } from "./controllers/health/health.controller";
 import { routes as companiecontroller } from "./controllers/companies/companies.controller";
 import { routes as jobcontroller } from "./controllers/jobs/jobs.controller";
@@ -13,10 +15,23 @@ if (!configs.PORT) {
 
 const PORT: number = parseInt(configs.PORT as string, 10);
 
-app.use("/health", healthRoutes);
-app.use("/companies", companiecontroller);
-app.use("/job", jobcontroller);
+if (clusters.isPrimary) {
+  console.log(`Primary cluster ${process.pid} is running`);
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+  for (let i = 0; i < cpus().length; i++) {
+    clusters.fork();
+  }
+
+  clusters.on("exit", (worker, code, signal) => {
+    console.log(
+      `Adjacent cluster ${worker.process.pid} stoped.\nReason code: ${code}.\nsignal: ${signal}`
+    );
+  });
+} else {
+  app.use("/health", healthRoutes);
+  app.use("/companies", companiecontroller);
+  app.use("/job", jobcontroller);
+  app.listen(PORT, () => {
+    console.log(`Process ${process.pid} started - Listening on port ${PORT}`);
+  });
+}
