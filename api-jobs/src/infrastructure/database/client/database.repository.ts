@@ -7,6 +7,8 @@ export class PgCliente implements PgClienteRepository {
 
   constructor() {
     this.pool = new pg.Pool({
+      connectionTimeoutMillis: 10 * 1000, //10 segundos
+      max: 50,
       connectionString: `postgres://${configs.DB_USER}:${configs.DB_PASSWORD}@${configs.DB_HOST}:${configs.DB_PORT}/${configs.DB_NAME}`,
     });
   }

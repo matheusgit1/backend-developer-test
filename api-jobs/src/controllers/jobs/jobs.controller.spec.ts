@@ -264,7 +264,7 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
           .set("Content-Type", "application/json")
           .set("Accept", "application/json")
           .set("company_id", crypto.randomUUID().toString());
-        console.log("body", body);
+     
         expect(status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
       });
     });
