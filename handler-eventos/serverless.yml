@@ -1,0 +1,113 @@
+org: mapdev
+service: handler-eventos
+
+frameworkVersion: "3"
+
+plugins:
+  - serverless-offline
+  - serverless-webpack
+  - serverless-deployment-bucket
+
+custom:
+  serverless-offline:
+    httpPort: 3001
+    lambdaPort: 4000
+  serverless-offline-ssm:
+    stages:
+      - offline
+
+  package: ${file(package.json)}
+  webpack:
+    webpackConfig: "webpack.config.js"
+    excludeFiles:
+      - "**/*.spec.ts"
+      - "**/*.ispec.ts"
+  bundle:
+    externals:
+      - axios
+
+package:
+  individually: false
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${opt:region, file(./values.yml):${self:provider.stage}.REGIAO}
+  lambdaHashingVersion: 20201221
+  stage: ${opt:stage,'develop'}
+  timeout: 30
+  tracing:
+    apiGateway: true
+    lambda: true
+  apiGateway:
+    shouldStartNameWithService: true
+    apiKeys:
+      - value: ${file(./values.yml):${self:provider.stage}.API_KEY}
+        description: Api key initial
+
+  environment:
+    AMBIENTE: ${self:provider.stage}
+    SNS_REGIAO: ${file(./values.yml):${self:provider.stage}.SNS_REGIAO}
+    EVENTO_CONFIG_DYNAMODB_REGIAO: ${file(./values.yml):${self:provider.stage}.EVENTO_CONFIG_DYNAMODB_REGIAO}
+    EVENTO_CONFIG_DYNAMODB_NOME_TABELA: ${file(./values.yml):${self:provider.stage}.EVENTO_CONFIG_DYNAMODB_NOME_TABELA}
+  vpc:
+    securityGroupIds:
+      - ${file(./values.yml):${self:provider.stage}.SECURITY_GROUP_API}
+    subnetIds:
+      - ${file(./values.yml):${self:provider.stage}.SUBNET1}
+      - ${file(./values.yml):${self:provider.stage}.SUBNET2}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:Scan
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
+            - sns:Publish
+            - sns:CreateTopic
+            - sns:DeleteTopic
+            - iam:PassRole
+          Resource:
+            - "*"
+
+  deploymentBucket:
+    name: handler-eventos-${self:provider.stage}
+
+  lerTopico:
+    name: handler-eventos-${self:provider.stage}-ler-topico
+    handler: src/index.lerTopico
+    memorySize: 1024
+    events:
+      - http:
+          path: /topico/{topico}/{versao}
+          method: get
+          cors: true
+          private: true
+
+  lerTopicos:
+    name: handler-eventos-${self:provider.stage}-ler-topicos
+    handler: src/index.lerTopicos
+    memorySize: 1024
+    events:
+      - http:
+          path: /topicos
+          method: get
+          cors: true
+          private: true
+
+  publicarSns:
+    name: handler-eventos-${self:provider.stage}-publicar-sns
+    handler: src/index.publicarSns
+    memorySize: 1024
+    events:
+      - http:
+          path: /sns/publicar
+          method: post
+          cors: true
+          private: true

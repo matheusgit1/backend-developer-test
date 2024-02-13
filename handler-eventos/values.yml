@@ -1,0 +1,19 @@
+offline:
+  SNS_REGIAO: "us-east-1"
+  EVENTO_CONFIG_DYNAMODB_REGIAO: "us-east-1"
+  EVENTO_CONFIG_DYNAMODB_NOME_TABELA: "handler_eventos"
+  REGIAO: "us-east-1"
+  SECURITY_GROUP_API: "SECURITY_GROUP_API"
+  SUBNET1: "SUBNET1" #privada
+  SUBNET2: "SUBNET2" #publica
+  API_KEY: "API_KEY"
+
+develop:
+  SNS_REGIAO: "us-east-1"
+  EVENTO_CONFIG_DYNAMODB_REGIAO: "us-east-1"
+  EVENTO_CONFIG_DYNAMODB_NOME_TABELA: "handler_eventos"
+  REGIAO: "us-east-1"
+  SECURITY_GROUP_API: "SECURITY_GROUP_API"
+  SUBNET1: "SUBNET1" #privada
+  SUBNET2: "SUBNET2" #publica
+  API_KEY: "API_KEY"
