@@ -1,0 +1,477 @@
+openapi: 3.0.3
+info:
+  title: plooral/backend-developer-test - OpenAPI 3.0
+  description: |-
+    Esta documentação se refere ao desafio backend e todos os serviços desenvolvidos para contrução do mesmo. aqui consta todos os serviços desenvolvidos para a resolução do desafio
+
+    Informações uteis sobre o desenvolvedor:
+    - [LinkedIn](https://www.linkedin.com/in/matheus-alves-pereira-4b3781222/)
+    - [Github](https://github.com/matheusgit1)
+    - [Gitlab](https://gitlab.com/nugitmatheus)
+
+  contact:
+    email: pereira.matheusalves@gmail.com
+
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: local
+  - url: http://localhost:3000
+    description: dev
+  - url: http://localhost:3000
+    description: qa
+  - url: http://localhost:3000
+    description: production
+
+tags:
+  - name: health
+    description: verifique se o serviço está ok
+
+  - name: companies
+    description: Acesse informações sobre empresas
+
+  - name: jobs
+    description: crie, edite, publique anúncioas de empregos
+
+paths:
+  /health:
+    get:
+      tags:
+        - health
+      summary: Verifique a integridade do serviço
+      description: checking health
+
+      responses:
+        "200":
+          description: serviço de pé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+        "502":
+          description: Serviço fora do ar
+
+  /companies:
+    get:
+      tags:
+        - companies
+      summary: Listagem de empresas
+      description: empresas cadastradas na base
+      responses:
+        "200":
+          description: listagem de empresas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Companies"
+        "502":
+          description: Serviço fora do ar
+
+  /companies/{company_id}:
+    get:
+      tags:
+        - companies
+      summary: Dados de empresas
+      operationId: recupera apenas dados de uma empresa
+      parameters:
+        - in: path
+          name: company_id
+          schema:
+            type: string
+          required: true
+          description: id da emrpesa que se deseja os dados
+
+      description: dados de empresa por id
+      responses:
+        "200":
+          description: Dados de empresa por Id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyId"
+
+        "500":
+          description: Erro interno de servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid input syntax for type uuid: "95ba0f82-cad0-400f-95d9-7b4735d8b69"'
+
+        "502":
+          description: Serviço fora do ar
+
+  /job:
+    post:
+      tags:
+        - jobs
+      summary: Crie um anuncio em emprego
+      parameters:
+        - in: header
+          name: company_id
+          schema:
+            type: string
+          required: true
+          description: id da emrpesa de cadastro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                location:
+                  type: string
+                notes:
+                  type: string
+              required:
+                - title
+                - description
+                - location
+                - notes
+
+      description: anuncio criado como rascunho
+      responses:
+        "201":
+          description: rascunho criado
+
+        "500":
+          description: Erro interno de servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid input syntax for type uuid: "95ba0f82-cad0-400f-95d9-7b4735d8b69"'
+
+        "400":
+          description: Requisição feita de forma equivocada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: '\"company_id\" is required'
+
+        "502":
+          description: Serviço fora do ar
+
+  /job/{job_id}:
+    put:
+      tags:
+        - jobs
+      summary: Edite um anuncio em emprego
+      parameters:
+        - in: path
+          name: job_id
+          schema:
+            type: string
+          required: true
+          description: id de emprego criado
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  required: false
+                description:
+                  type: string
+                  required: false
+                location:
+                  type: string
+                  required: false
+                notes:
+                  type: string
+                  required: false
+              
+
+      description: anuncio editado com sucesso
+      responses:
+        "200":
+          description: rascunho criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: ebb8dbd7-376e-4dfa-a769-7f067dbe9544
+                  company_id:
+                    type: string
+                    example: 95ba0f82-cad0-400f-95d9-7b4735d8b69f
+                  title:
+                    type: string
+                    example: junior software developer (udated usecase)
+                  description:
+                    type: string
+                    example: a detailed text about the job
+                  location:
+                    type: string
+                    example: remote
+                  notes:
+                    type: string
+                    example: notes must be a fullfil detailed text about the job
+                  status:
+                    type: string
+                    example: draft
+                  created_at:
+                    type: datetime
+                    example: 2024-02-13T18:54:53.161Z
+                  updated_at:
+                    type: datetime
+                    example: 2024-02-13T19:22:47.247Z
+        
+
+        "500":
+          description: Erro interno de servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid input syntax for type uuid: "95ba0f82-cad0-400f-95d9-7b4735d8b69"'
+        
+        "422":
+          description: Requisição feita com dados errados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: '\"209adc8d-00c5-4b1b-9b14-cae15262579f - job_id dos not exist'
+
+        "422":
+          description: Requisição feita com dados errados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: '\"209adc8d-00c5-4b1b-9b14-cae15262579f - job_id dos not exist'
+
+        "502":
+          description: Serviço fora do ar
+  
+    delete:
+      tags:
+        - jobs
+      summary: Delete um anuncio de emprego
+      parameters:
+        - in: path
+          name: job_id
+          schema:
+            type: string
+          required: true
+          description: id de emprego
+
+      description: deleção de anuncio
+      responses:
+        "202":
+          description: anuncio excluido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: resource was successfully excluded
+        
+        "500":
+          description: Erro interno de servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid input syntax for type uuid: "95ba0f82-cad0-400f-95d9-7b4735d8b69"'
+        
+        "422":
+          description: Requisição feita com dados errados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: '4b0ae1a7-87e2-4711-a4d5-6c981d340c0a - resource not found'
+
+        "422":
+          description: Requisição feita com dados errados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: '\"209adc8d-00c5-4b1b-9b14-cae15262579f - job_id dos not exist'
+
+
+        "502":
+          description: Serviço fora do ar
+
+  /job/{job_id}/archive:
+    put:
+      tags:
+        - jobs
+      summary: Arquiva um ununcio
+      parameters:
+        - in: path
+          name: job_id
+          schema:
+            type: string
+          required: true
+          description: id de emprego
+
+      description: arquiva um anuncio
+      responses:
+        "202":
+          description: anuncio arquivado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: resource was successfully archived
+        
+        "500":
+          description: Erro interno de servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid input syntax for type uuid: "95ba0f82-cad0-400f-95d9-7b4735d8b69"'
+        
+        "422":
+          description: Requisição feita com dados errados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: '4b0ae1a7-87e2-4711-a4d5-6c981d340c0a - resource not found'
+
+        "502":
+          description: Serviço fora do ar
+
+  /job/{job_id}/publish:
+    put:
+      tags:
+        - jobs
+      summary: Publica um ununcio
+      parameters:
+        - in: path
+          name: job_id
+          schema:
+            type: string
+          required: true
+          description: id de emprego
+
+      description: publica um anuncio
+      responses:
+        "201":
+          description: anuncio excluido
+        
+        
+        "500":
+          description: Erro interno de servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'invalid input syntax for type uuid: "95ba0f82-cad0-400f-95d9-7b4735d8b69"'
+        
+        "422":
+          description: Requisição feita com dados errados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: '4b0ae1a7-87e2-4711-a4d5-6c981d340c0a - resource not found'
+
+        "502":
+          description: Serviço fora do ar
+
+
+  
+
+components:
+  schemas:
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+        moment:
+          type: string
+          example: 13/02/2024, 15:07:00
+    Companies:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: 5b5f4ae7-9ffd-4bf5-a0e0-54ae9dc1d319
+          name:
+            type: string
+            example: ABC Corp
+
+    CompanyId:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 95ba0f82-cad0-400f-95d9-7b4735d8b69f
+        name:
+          type: string
+          example: XYZ LLC
+        created_at:
+          type: datetime
+          example: 2024-02-10T17:58:51.759Z
+        updated_at:
+          type: datetime
+          example: 2024-02-10T17:58:51.759Z

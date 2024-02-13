@@ -5,8 +5,8 @@ async function test() {
   const results = await autocannon({
     title: "load test",
     url: "http://localhost:3001",
-    connections: 2,
-    duration: 10,
+    connections: 500,
+    duration: 60,
     pipelining: 15,
     workers: cpus().length,
     requests: [

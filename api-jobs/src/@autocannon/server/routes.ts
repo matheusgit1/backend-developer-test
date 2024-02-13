@@ -15,28 +15,52 @@ import { CustomEventEmitterClass } from "../../infrastructure/events/dtos/emiter
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { PoolClient, QueryResult } from "pg";
 
+const latencia = 2000;
+
 const pgClienteMock: PgClienteRepository = {
   getConnection: async (): Promise<PoolClient> => {
     return "PoolClient" as unknown as PoolClient;
   },
 
-  beginTransaction: async (): Promise<void> => {},
-  commitTransaction: async (): Promise<void> => {},
-  rolbackTransaction: async (): Promise<void> => {},
-  releaseTransaction: async (): Promise<void> => {},
+  beginTransaction: async (): Promise<void> => {
+    return new Promise<void>((_resolve, _reject) => {
+      setTimeout(() => {}, latencia);
+    });
+  },
+  commitTransaction: async (): Promise<void> => {
+    return new Promise<void>((_resolve, _reject) => {
+      setTimeout(() => {}, latencia);
+    });
+  },
+  rolbackTransaction: async (): Promise<void> => {
+    return new Promise<void>((_resolve, _reject) => {
+      setTimeout(() => {}, latencia);
+    });
+  },
+  releaseTransaction: async (): Promise<void> => {
+    return new Promise<void>((_resolve, _reject) => {
+      setTimeout(() => {}, latencia);
+    });
+  },
   executeQuery: async (
     _Connection: PoolClient,
     _query: string,
     _params?: any[]
   ): Promise<QueryResult<any>> => {
+    new Promise<void>((_resolve, _reject) => {
+      setTimeout(() => {}, latencia);
+    });
     return { ...queryresults };
   },
 };
 
 const mockCustomEventEmitter: CustomEventEmitterClass = {
-  publishJob(_topic: string, _version: number, _payload: any) {},
+  publishJob(_topic: string, _version: number, _payload: any) {
+    new Promise<void>((_resolve, _reject) => {
+      setTimeout(() => {}, latencia);
+    });
+  },
 };
-
 
 const companiesusecases: Usecases = [
   {
