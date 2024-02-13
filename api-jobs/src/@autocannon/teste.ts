@@ -6,7 +6,7 @@ async function test() {
     title: "load test",
     url: "http://localhost:3001",
     connections: 2,
-    duration: 60,
+    duration: 10,
     pipelining: 15,
     workers: cpus().length,
     requests: [
@@ -109,12 +109,21 @@ async function test() {
     ],
     [
       "Retries",
+      size(0),
+      size(0),
+      size(0),
+      size(0),
+      size(0),
       size(results.resets),
-      size(results.resets),
-      size(results.resets),
-      size(results.resets),
-      size(results.resets),
-      size(results.resets),
+    ],
+    [
+      "Tempo",
+      size(0),
+      size(0),
+      size(0),
+      size(0),
+      size(0),
+      size(results.duration),
     ],
   ]);
 }

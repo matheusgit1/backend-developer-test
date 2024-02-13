@@ -14,7 +14,6 @@ import { JobsRoutesAdapted } from "../../controllers/jobs/jobs.controller";
 import { CustomEventEmitterClass } from "../../infrastructure/events/dtos/emiter-events.dtos";
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { PoolClient, QueryResult } from "pg";
-// import { PgCliente } from "../../infrastructure/database/client/database.repository";
 
 const pgClienteMock: PgClienteRepository = {
   getConnection: async (): Promise<PoolClient> => {
@@ -38,7 +37,6 @@ const mockCustomEventEmitter: CustomEventEmitterClass = {
   publishJob(_topic: string, _version: number, _payload: any) {},
 };
 
-// const pgCliente = new PgCliente();
 
 const companiesusecases: Usecases = [
   {
