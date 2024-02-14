@@ -1,29 +1,30 @@
 import { PgCliente } from "../cliente/pg.cliente";
 import { AbstrataDatabaseRepository, FinallyStrategy } from "../pg.reposiory";
 
-export abstract class ClasseAbstrataDatabase
+export abstract class AbstractDatabaseConnection
   implements AbstrataDatabaseRepository
 {
+  constructor() {}
   public initialized: boolean;
   public pgCliente: PgCliente;
 
   public async initialize(): Promise<void> {
     try {
       console.log(
-        `[${ClasseAbstrataDatabase.name}.inicar] - adiquirindo coneexão com o banco de dados`
+        `[${AbstractDatabaseConnection.name}.inicar] - adiquirindo coneexão com o banco de dados`
       );
       this.pgCliente = new PgCliente();
       await this.pgCliente.getConnection();
       this.initialized = true;
     } catch (e) {
       console.error(
-        `[${ClasseAbstrataDatabase.name}.inicar] - método processado com erro`,
+        `[${AbstractDatabaseConnection.name}.inicar] - método processado com erro`,
         e
       );
       throw e;
     } finally {
       console.info(
-        `[${ClasseAbstrataDatabase.name}.inicar] - método finalizado`
+        `[${AbstractDatabaseConnection.name}.inicar] - método finalizado`
       );
     }
   }
@@ -45,13 +46,13 @@ export abstract class ClasseAbstrataDatabase
       }
     } catch (e) {
       console.error(
-        `[${ClasseAbstrataDatabase.name}.finalizar] - método processado com erro`,
+        `[${AbstractDatabaseConnection.name}.finalizar] - método processado com erro`,
         e
       );
       throw e;
     } finally {
       console.info(
-        `[${ClasseAbstrataDatabase.name}.finalizar] - método finalizado`
+        `[${AbstractDatabaseConnection.name}.finalizar] - método finalizado`
       );
     }
   }
@@ -67,12 +68,12 @@ export abstract class ClasseAbstrataDatabase
       this.initialized = false;
     } catch (e) {
       console.error(
-        `[${ClasseAbstrataDatabase.name}.fecharConexaoCommitandoTransacao] - método processado com erro`,
+        `[${AbstractDatabaseConnection.name}.fecharConexaoCommitandoTransacao] - método processado com erro`,
         e
       );
     } finally {
       console.info(
-        `[${ClasseAbstrataDatabase.name}.fecharConexaoCommitandoTransacao] - método finalizado`
+        `[${AbstractDatabaseConnection.name}.fecharConexaoCommitandoTransacao] - método finalizado`
       );
     }
   }
@@ -88,21 +89,21 @@ export abstract class ClasseAbstrataDatabase
       this.initialized = false;
     } catch (e) {
       console.error(
-        `[${ClasseAbstrataDatabase.name}.fecharConexaoExecutandoRollback] - método processado com erro`,
+        `[${AbstractDatabaseConnection.name}.fecharConexaoExecutandoRollback] - método processado com erro`,
         e
       );
     } finally {
       console.info(
-        `[${ClasseAbstrataDatabase.name}.fecharConexaoExecutandoRollback] - método finalizado`
+        `[${AbstractDatabaseConnection.name}.fecharConexaoExecutandoRollback] - método finalizado`
       );
     }
   }
 
-  private validateConnection(): void {
-    if (!this.initialized) {
-      throw new Error(
-        'metodo "initilize" deve ser chamado antes da operação ser executada'
-      );
-    }
-  }
+  // private validateConnection(): void {
+  //   if (!this.initialized) {
+  //     throw new Error(
+  //       'metodo "initilize" deve ser chamado antes da operação ser executada'
+  //     );
+  //   }
+  // }
 }
