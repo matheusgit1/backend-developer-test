@@ -4,9 +4,12 @@ import {
 } from "@functions/sqs/dtos/handlers.dto";
 import { ListennerFromSQS } from "./functions/sqs/handler.sqs";
 import { PublishEventHandler } from "./infrastructure/events/publish_job";
+import { PgCliente } from "./infrastructure/database/cliente/pg.cliente";
+
+const pgClient = new PgCliente();
 
 const evenstDictionary: EventHandlerDictionary = {
-  event_publish_job: new PublishEventHandler(),
+  event_publish_job: new PublishEventHandler(pgClient),
 };
 
 const setup = (): ListennerFromSQSDeclarations => {
