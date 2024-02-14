@@ -1,8 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { DynamoProxy } from "../../../infrastructure/proxy/dynamo/dynamo.proxy";
+import * as AWS from "aws-sdk";
 
 const setup = () => {
-  return new DynamoProxy();
+  return new DynamoProxy(new AWS.DynamoDB.DocumentClient());
 };
 
 // const logger = new Logger("handler.publicarEvento");

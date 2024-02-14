@@ -3,11 +3,9 @@ import { DynamoServiceEvents as DynamoProxyService } from "./repository/dynamo.r
 import * as dtos from "./dtos/dynamo.dto";
 
 export class DynamoProxy implements DynamoProxyService {
-  private cliente: AWS.DynamoDB.DocumentClient;
+  // private cliente: AWS.DynamoDB.DocumentClient;
 
-  constructor() {
-    this.cliente = new AWS.DynamoDB.DocumentClient();
-  }
+  constructor(private readonly cliente: AWS.DynamoDB.DocumentClient) {}
 
   async consultarTopicos(): Promise<dtos.TopicoConfig[]> {
     console.log(

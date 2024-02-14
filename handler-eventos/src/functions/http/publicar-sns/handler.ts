@@ -3,9 +3,10 @@ import { SNSProxy } from "../../../infrastructure/proxy/sns/sns.proxy";
 import { DynamoProxy } from "../../../infrastructure/proxy/dynamo/dynamo.proxy";
 import { validarSchema } from "../../../shared/utils/validar-schema.util";
 import { EventBus } from "../../../infrastructure/eventbus/event.service";
+import * as AWS from "aws-sdk";
 
 const setup = () => {
-  const dynamoDbService = new DynamoProxy();
+  const dynamoDbService = new DynamoProxy(new AWS.DynamoDB.DocumentClient());
   const snsProxy = new SNSProxy();
   return new EventBus(snsProxy, dynamoDbService);
 };
