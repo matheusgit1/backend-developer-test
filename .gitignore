@@ -2,6 +2,7 @@
 # package directories
 /**/node_modules
 /**/jspm_packages
+/**/.webpack
 
 # Serverless directories
 /**/.serverless
@@ -15,4 +16,9 @@
 #testes
 /**/coverage
 
+#builds
+/**/.dist
+/**/dist
 #ci
+
+#yarn
