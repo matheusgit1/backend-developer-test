@@ -1,13 +1,12 @@
-import { PgClienteRepository } from "src/infrastructure/database/pg.repository";
 import { BaseUseCase } from "..";
-import { PoolClient } from "pg";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { validateUUID } from "../../utils/utilities";
 
 export class ArchiveJobUseCase implements BaseUseCase {
-  constructor(private readonly pgCliente: PgClienteRepository) {}
+  constructor(private readonly module: JobModuleRepository) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
-    let connection: PoolClient | undefined = undefined;
     try {
       const jobId = req.params["job_id"];
       if (!jobId) {
@@ -18,16 +17,22 @@ export class ArchiveJobUseCase implements BaseUseCase {
           },
         };
       }
-      const sql = `
-        update jobs set status = 'archived'::job_status, updated_at = NOW() where id = $1;
-      `;
-      connection = await this.pgCliente.getConnection();
-      await this.pgCliente.beginTransaction(connection);
+      if (!validateUUID(jobId)) {
+        return {
+          statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
+          body: {
+            error: 'job "UUID" is invalid',
+          },
+        };
+      }
 
-      await this.pgCliente.executeQuery(connection, sql, [jobId]);
+      await this.module.init();
 
-      await this.pgCliente.commitTransaction(connection);
+      await this.module.beggin();
 
+      await this.module.archiveJob(jobId);
+
+      this.module.end("COMMIT");
       return {
         statusCode: StatusCodes.ACCEPTED,
         body: {
@@ -35,7 +40,7 @@ export class ArchiveJobUseCase implements BaseUseCase {
         },
       };
     } catch (err) {
-      if (connection) await this.pgCliente.rolbackTransaction(connection);
+      await this.module.end("ROLLBACK");
 
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -43,8 +48,6 @@ export class ArchiveJobUseCase implements BaseUseCase {
           error: err.message ?? ReasonPhrases.INTERNAL_SERVER_ERROR,
         },
       };
-    } finally {
-      if (connection) await this.pgCliente.releaseTransaction(connection);
     }
   }
 }

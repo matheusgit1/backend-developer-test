@@ -1,15 +1,14 @@
-import { PgClienteRepository } from "src/infrastructure/database/pg.repository";
 import { BaseUseCase } from "..";
-import { PoolClient } from "pg";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { validateUUID } from "../../utils/utilities";
 
 export class CreateJobUseCase implements BaseUseCase {
-  constructor(private readonly pgCliente: PgClienteRepository) {}
+  constructor(private readonly module: JobModuleRepository) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
-    let connection: PoolClient | undefined = undefined;
     try {
-      const companyId = req.headers["company_id"];
+      const companyId = req.headers["company_id"] as string;
       const { title, description, location, notes } = req.body;
       if (!title || !description! || !location || !notes) {
         return {
@@ -19,7 +18,7 @@ export class CreateJobUseCase implements BaseUseCase {
           },
         };
       }
-      if(!companyId){
+      if (!companyId) {
         return {
           statusCode: StatusCodes.BAD_REQUEST,
           body: {
@@ -27,49 +26,38 @@ export class CreateJobUseCase implements BaseUseCase {
           },
         };
       }
+      if (!validateUUID(companyId)) {
+        return {
+          statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
+          body: {
+            error: 'company "UUID" is invalid',
+          },
+        };
+      }
 
-      const sql = `
-        insert into jobs (
-          company_id,
-          title,
-          description,
-          location,
-          notes
-        ) VALUES (
-          $1,
-          $2,
-          $3,
-          $4,
-          $5
-        );
-      `;
+      await this.module.init();
+      await this.module.beggin();
 
-      connection = await this.pgCliente.getConnection();
-      await this.pgCliente.beginTransaction(connection);
-
-      await this.pgCliente.executeQuery(connection, sql, [
-        companyId,
+      await this.module.createJob({
+        companyId: companyId,
         title,
         description,
         location,
         notes,
-      ]);
+      });
 
-      await this.pgCliente.commitTransaction(connection);
-
+      await this.module.end("COMMIT");
       return {
         statusCode: StatusCodes.CREATED,
       };
     } catch (err) {
-      if (connection) await this.pgCliente.rolbackTransaction(connection);
+      await this.module.end("ROLLBACK");
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
           error: err.message ?? ReasonPhrases.INTERNAL_SERVER_ERROR,
         },
       };
-    } finally {
-      if (connection) await this.pgCliente.releaseTransaction(connection);
     }
   }
 }

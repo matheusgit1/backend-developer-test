@@ -1,3 +1,5 @@
+import { CreateJobDto } from "./../../modules/__dtos__/modules.dtos";
+import { JobModuleRepository } from "src/modules/__dtos__/modules.dtos";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { HealthRoutesAdapted } from "../../controllers/health/health.controller";
 import { Usecases } from "../../controllers/shareds";
@@ -18,6 +20,18 @@ import { FinallyStrategy } from "../../modules/base.repository";
 import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 const latencia = 2000;
+
+const jobModuleMock: JobModuleRepository = {
+  connection: "connection" as unknown as any,
+  executeQuery: async (): Promise<QueryResult<any>> => {
+    return { ...queryresults };
+  },
+  init: async (): Promise<void> => {},
+  beggin: async (): Promise<void> => {},
+  end: async (_strategy: FinallyStrategy): Promise<void> => {},
+  createJob: async (_input: CreateJobDto): Promise<void> => {},
+  archiveJob: async (_jobId: string): Promise<void> => {},
+};
 
 const companyModuleMock: CompanyModuleRepository = {
   connection: "connection" as unknown as any,
@@ -115,7 +129,7 @@ const jobsusecases: Usecases = [
   {
     path: "/",
     method: "post",
-    usecase: new CreateJobUseCase(pgClienteMock),
+    usecase: new CreateJobUseCase(jobModuleMock),
   },
   {
     path: "/:job_id/publish",
@@ -135,7 +149,7 @@ const jobsusecases: Usecases = [
   {
     path: "/:job_id/archive",
     method: "put",
-    usecase: new ArchiveJobUseCase(pgClienteMock),
+    usecase: new ArchiveJobUseCase(jobModuleMock),
   },
 ];
 

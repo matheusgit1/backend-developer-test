@@ -36,13 +36,16 @@ export class BaseModule implements BaseModuleRepository {
       case "COMMIT":
         await this.pgCliente.commitTransaction(this.connection);
         await this.pgCliente.releaseTransaction(this.connection);
+
         break;
       case "ROLLBACK":
         await this.pgCliente.rolbackTransaction(this.connection);
         await this.pgCliente.releaseTransaction(this.connection);
+
         break;
       case "END":
         await this.pgCliente.releaseTransaction(this.connection);
+
         break;
       default:
         await this.pgCliente.rolbackTransaction(this.connection);

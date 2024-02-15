@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { BaseUseCase } from "../../usecases";
 import { adaptRoute } from "../adapters";
 import { CreateJobUseCase } from "../../usecases/jobs/CreateJob.usecase";
 import { PgCliente } from "../../infrastructure/database/client/database.repository";
@@ -11,6 +10,10 @@ import { EditJobUseCase } from "../../usecases/jobs/editJob.usecase";
 import { DeleteJobUseCase } from "../../usecases/jobs/deleteJob.usecase";
 import { ArchiveJobUseCase } from "../../usecases/jobs/archiveJob.usecase";
 import { Usecases } from "../shareds";
+import { JobsModule } from "../../modules/jobs/jobs.modules";
+
+const pgCliente = new PgCliente();
+const jobModule = new JobsModule(pgCliente);
 
 export class JobsRoutesAdapted {
   public routes: Router = Router();
@@ -29,7 +32,7 @@ const routesAdapteds = new JobsRoutesAdapted([
   {
     path: "/",
     method: "post",
-    usecase: new CreateJobUseCase(new PgCliente()),
+    usecase: new CreateJobUseCase(jobModule),
   },
   {
     path: "/:job_id/publish",
@@ -52,7 +55,7 @@ const routesAdapteds = new JobsRoutesAdapted([
   {
     path: "/:job_id/archive",
     method: "put",
-    usecase: new ArchiveJobUseCase(new PgCliente()),
+    usecase: new ArchiveJobUseCase(jobModule),
   },
 ]);
 

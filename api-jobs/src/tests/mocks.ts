@@ -3,7 +3,11 @@ import { PgClienteRepository } from "../infrastructure/database/pg.repository";
 import { HandlerEventClass } from "../infrastructure/services/__dtos__/handler-event.dtos";
 import axios, { AxiosInstance } from "axios";
 import { CustomEventEmitterClass } from "../infrastructure/events/__dtos__/emiter-events.dtos";
-import { CompanyModuleRepository } from "../modules/__dtos__/modules.dtos";
+import {
+  CompanyModuleRepository,
+  CreateJobDto,
+  JobModuleRepository,
+} from "../modules/__dtos__/modules.dtos";
 import {
   BaseModuleRepository,
   FinallyStrategy,
@@ -88,4 +92,13 @@ export class CompanyModuleMock
       },
     ];
   });
+}
+
+export class JobModuleMock
+  extends BaseModuleMock
+  implements JobModuleRepository
+{
+  // id: crypto.randomUUID().toString(),
+  createJob = jest.fn(async (_input: CreateJobDto): Promise<void> => {});
+  archiveJob = jest.fn(async (_jobId: string): Promise<void> => {});
 }
