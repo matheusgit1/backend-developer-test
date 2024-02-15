@@ -1,8 +1,8 @@
 import * as pg from "pg";
 import { PgClienteRepository } from "../infrastructure/database/pg.repository";
-import { HandlerEventClass } from "../infrastructure/services/dto/handler-event.dtos";
+import { HandlerEventClass } from "../infrastructure/services/__dtos__/handler-event.dtos";
 import axios, { AxiosInstance } from "axios";
-import { CustomEventEmitterClass } from "../infrastructure/events/dtos/emiter-events.dtos";
+import { CustomEventEmitterClass } from "../infrastructure/events/__dtos__/emiter-events.dtos";
 import { CompanyModuleRepository } from "../modules/__dtos__/modules.dtos";
 import {
   BaseModuleRepository,

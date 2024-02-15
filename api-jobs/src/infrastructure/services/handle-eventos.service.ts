@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { AxiosInstance } from "axios";
-import { HandlerEventClass } from "./dto/handler-event.dtos";
+import { HandlerEventClass } from "./__dtos__/handler-event.dtos";
 import { configs } from "../../configs/envs/environments.config";
 
 export class HandlerEvents implements HandlerEventClass {

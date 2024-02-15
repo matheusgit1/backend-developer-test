@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
-import { HandlerEventClass } from "../services/dto/handler-event.dtos";
-import { CustomEventEmitterClass } from "./dtos/emiter-events.dtos";
+import { HandlerEventClass } from "../services/__dtos__/handler-event.dtos";
+import { CustomEventEmitterClass } from "./__dtos__/emiter-events.dtos";
 
 export class CustomEventEmitter implements CustomEventEmitterClass {
   constructor(

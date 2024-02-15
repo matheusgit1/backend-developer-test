@@ -11,7 +11,7 @@ import { EditJobUseCase } from "../../usecases/jobs/editJob.usecase";
 import { DeleteJobUseCase } from "../../usecases/jobs/deleteJob.usecase";
 import { ArchiveJobUseCase } from "../../usecases/jobs/archiveJob.usecase";
 import { JobsRoutesAdapted } from "../../controllers/jobs/jobs.controller";
-import { CustomEventEmitterClass } from "../../infrastructure/events/dtos/emiter-events.dtos";
+import { CustomEventEmitterClass } from "../../infrastructure/events/__dtos__/emiter-events.dtos";
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { PoolClient, QueryResult } from "pg";
 import { FinallyStrategy } from "../../modules/base.repository";

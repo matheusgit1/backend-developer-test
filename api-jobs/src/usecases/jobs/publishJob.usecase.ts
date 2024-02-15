@@ -3,7 +3,7 @@ import { BaseUseCase } from "..";
 import { PoolClient } from "pg";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-import { CustomEventEmitterClass } from "../../infrastructure/events/dtos/emiter-events.dtos";
+import { CustomEventEmitterClass } from "../../infrastructure/events/__dtos__/emiter-events.dtos";
 
 export class PublishJobUseCase implements BaseUseCase {
   constructor(
