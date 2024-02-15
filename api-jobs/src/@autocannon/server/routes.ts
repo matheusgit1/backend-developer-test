@@ -146,7 +146,7 @@ const jobsusecases: Usecases = [
   {
     path: "/:job_id/publish",
     method: "put",
-    usecase: new PublishJobUseCase(pgClienteMock, mockCustomEventEmitter),
+    usecase: new PublishJobUseCase(jobModuleMock, mockCustomEventEmitter),
   },
   {
     path: "/:job_id",

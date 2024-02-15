@@ -38,7 +38,7 @@ const routesAdapteds = new JobsRoutesAdapted([
     path: "/:job_id/publish",
     method: "put",
     usecase: new PublishJobUseCase(
-      new PgCliente(),
+      jobModule,
       new CustomEventEmitter(new EventEmitter(), new HandlerEvents())
     ),
   },

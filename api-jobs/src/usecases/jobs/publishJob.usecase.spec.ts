@@ -1,10 +1,14 @@
 import { StatusCodes } from "http-status-codes";
-import { CustomEventEmitterMock, PgClienteMock } from "../../tests/mocks";
+import {
+  CustomEventEmitterMock,
+  JobModuleMock,
+  PgClienteMock,
+} from "../../tests/mocks";
 import { PublishJobUseCase } from "./publishJob.usecase";
 
-const pgClienteMock = new PgClienteMock();
 const customEventEmmiter = new CustomEventEmitterMock();
-const usecase = new PublishJobUseCase(pgClienteMock, customEventEmmiter);
+const jobModuleMock = new JobModuleMock();
+const usecase = new PublishJobUseCase(jobModuleMock, customEventEmmiter);
 const companyId = crypto.randomUUID().toString();
 
 describe(`executando testes para ${PublishJobUseCase.name}`, () => {

@@ -4,10 +4,11 @@ import { PoolClient } from "pg";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { CustomEventEmitterClass } from "../../infrastructure/events/__dtos__/emiter-events.dtos";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 export class PublishJobUseCase implements BaseUseCase {
   constructor(
-    private readonly pgCliente: PgClienteRepository,
+    private readonly module: JobModuleRepository,
     private readonly eventEmitter: CustomEventEmitterClass
   ) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
@@ -22,7 +23,7 @@ export class PublishJobUseCase implements BaseUseCase {
         },
       };
     } catch (err) {
-      if (connection) await this.pgCliente.rolbackTransaction(connection);
+      await this.module.end("ROLLBACK");
 
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -31,7 +32,7 @@ export class PublishJobUseCase implements BaseUseCase {
         },
       };
     } finally {
-      if (connection) await this.pgCliente.releaseTransaction(connection);
+      await this.module.end("END");
     }
   }
 }
