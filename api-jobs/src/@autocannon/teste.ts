@@ -5,9 +5,9 @@ async function test() {
   const results = await autocannon({
     title: "load test",
     url: "http://localhost:3001",
-    connections: 500,
-    duration: 60,
-    pipelining: 15,
+    connections: 300,
+    duration: 10,
+    pipelining: 3,
     workers: cpus().length,
     requests: [
       //health
@@ -36,6 +36,7 @@ async function test() {
         }),
         headers: {
           company_id: "474437b9-ffb9-4801-9cef-59efb6af995e",
+          "Content-Type": "application/json",
         },
       },
       {
@@ -99,7 +100,7 @@ async function test() {
       size(results.throughput.total),
     ],
     [
-      "Latency/Sec",
+      "Latency [ms]",
       size(results.latency.average),
       size(results.latency.stddev),
       size(results.latency.min),
