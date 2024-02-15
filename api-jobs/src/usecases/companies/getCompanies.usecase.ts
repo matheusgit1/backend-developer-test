@@ -1,32 +1,25 @@
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { BaseUseCase } from "..";
-import { PoolClient } from "pg";
+import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 export class GetCompaniesUseCase implements BaseUseCase {
-  constructor(private readonly pgCliente: PgClienteRepository) {}
+  constructor(private readonly module: CompanyModuleRepository) {}
 
   public async handler(): Promise<HttpResponse> {
-    let connection: PoolClient | undefined = undefined;
     try {
-      connection = await this.pgCliente.getConnection();
-      await this.pgCliente.beginTransaction(connection);
+      await this.module.init();
 
-      const sql = `
-        select * from companies
-      `;
-
-      const { rows } = await this.pgCliente.executeQuery(connection, sql);
+      const companies = await this.module.getCompanies();
 
       return {
         statusCode: StatusCodes.OK,
-        body: rows.map((row) => ({
-          id: row.id,
-          name: row.name,
+        body: companies.map((company) => ({
+          id: company.id,
+          name: company.name,
         })),
       };
     } catch (err) {
-      if (connection) await this.pgCliente.rolbackTransaction(connection);
+      await this.module.end("ROLLBACK");
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
@@ -34,7 +27,7 @@ export class GetCompaniesUseCase implements BaseUseCase {
         },
       };
     } finally {
-      if (connection) await this.pgCliente.releaseTransaction(connection);
+      await this.module.end("END");
     }
   }
 }

@@ -5,20 +5,20 @@ import request from "supertest";
 import { CompaniesRoutesAdapted } from "./companies.controller";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { GetCompanyByIdUseCase } from "../../usecases/companies/getCompanyById.usecase";
-import { PgClienteMock } from "../../tests/mocks";
+import { CompanyModuleMock } from "../../tests/mocks";
 
-const pgClienteMock = new PgClienteMock();
+const companyModuleMock = new CompanyModuleMock();
 
 const usecases: Usecases = [
   {
     path: "/",
     method: "get",
-    usecase: new GetCompaniesUseCase(pgClienteMock),
+    usecase: new GetCompaniesUseCase(companyModuleMock),
   },
   {
     path: "/:company_id",
     method: "get",
-    usecase: new GetCompanyByIdUseCase(pgClienteMock),
+    usecase: new GetCompanyByIdUseCase(companyModuleMock),
   },
 ];
 
@@ -54,23 +54,15 @@ describe(`testes para ${CompaniesRoutesAdapted.name}`, () => {
 
   describe(`casos de erros`, () => {
     it(`deve executar '/' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-      pgClienteMock.getConnection.mockRejectedValue(new Error("erro mockado"));
+      companyModuleMock.init.mockRejectedValue(new Error("erro mockado"));
       const { body, status } = await request(app).get("/");
 
       expect(body).toBeDefined();
       expect(status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
     });
 
-    it(`deve executar '/' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (query)`, async () => {
-      pgClienteMock.executeQuery.mockRejectedValue(new Error("erro mockado"));
-      const { body, status } = await request(app).get("/");
-
-      expect(body).toBeDefined();
-      expect(status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
-    });
-
-    it(`deve executar '/' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (commit)`, async () => {
-      pgClienteMock.commitTransaction.mockRejectedValue(
+    it(`deve executar '/' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (recuperar empresa)`, async () => {
+      companyModuleMock.getCompanies.mockRejectedValue(
         new Error("erro mockado")
       );
       const { body, status } = await request(app).get("/");
@@ -79,27 +71,12 @@ describe(`testes para ${CompaniesRoutesAdapted.name}`, () => {
       expect(status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
     });
 
-    it(`deve executar '/:company_id' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-      pgClienteMock.getConnection.mockRejectedValue(new Error("erro mockado"));
-      const { body, status } = await request(app).get("/");
-
-      expect(body).toBeDefined();
-      expect(status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
-    });
-
-    it(`deve executar '/:company_id' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (query)`, async () => {
-      pgClienteMock.executeQuery.mockRejectedValue(new Error("erro mockado"));
-      const { body, status } = await request(app).get("/");
-
-      expect(body).toBeDefined();
-      expect(status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
-    });
-
-    it(`deve executar '/:company_id' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (commit)`, async () => {
-      pgClienteMock.commitTransaction.mockRejectedValue(
+    it(`deve executar '/:company_id' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (recuperar empresas)`, async () => {
+      const companyId = crypto.randomUUID().toString();
+      companyModuleMock.getCompanyById.mockRejectedValue(
         new Error("erro mockado")
       );
-      const { body, status } = await request(app).get("/");
+      const { body, status } = await request(app).get(`/${companyId}`);
 
       expect(body).toBeDefined();
       expect(status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);

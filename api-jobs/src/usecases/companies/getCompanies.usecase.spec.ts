@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import { PgClienteMock } from "../../tests/mocks";
+import { CompanyModuleMock } from "../../tests/mocks";
 import { GetCompaniesUseCase } from "./getCompanies.usecase";
 
-const pgClienteMock = new PgClienteMock();
-const usecase = new GetCompaniesUseCase(pgClienteMock);
+const companyModuleMock = new CompanyModuleMock();
+const usecase = new GetCompaniesUseCase(companyModuleMock);
 
 describe(`executando testes para ${GetCompaniesUseCase.name}`, () => {
   beforeEach(() => {
@@ -21,176 +21,57 @@ describe(`executando testes para ${GetCompaniesUseCase.name}`, () => {
       expect(res.body).toBeInstanceOf(Array);
     });
 
-    it(`deve executar ações na base corretamente`, async () => {
-      const spy_pgClienteMock_getConnection = jest.spyOn(
-        pgClienteMock,
-        "getConnection"
-      );
-      const spy_pgClienteMock_beginTransaction = jest.spyOn(
-        pgClienteMock,
-        "beginTransaction"
-      );
+    describe(`casos de erros`, () => {
+      it("se metodo de conexão de base falhar, usecase deve retornar erro", async () => {
+        const message = "erro mockado";
+        companyModuleMock.init.mockRejectedValueOnce(new Error(message));
+        const spy_companyModuleMock_init = jest.spyOn(
+          companyModuleMock,
+          "init"
+        );
+        const spy_companyModuleMock_end = jest.spyOn(companyModuleMock, "end");
 
-      const spy_pgClienteMock_executeQuery = jest.spyOn(
-        pgClienteMock,
-        "executeQuery"
-      );
+        const spy_companyModuleMock_getCompanies = jest.spyOn(
+          companyModuleMock,
+          "getCompanies"
+        );
 
-      const spy_pgClienteMock_rolbackTransaction = jest.spyOn(
-        pgClienteMock,
-        "rolbackTransaction"
-      );
+        const res = await usecase.handler();
 
-      const spy_pgClienteMock_releaseTransaction = jest.spyOn(
-        pgClienteMock,
-        "releaseTransaction"
-      );
+        expect(spy_companyModuleMock_init).toHaveBeenCalledTimes(1);
+        expect(spy_companyModuleMock_end).toHaveBeenCalledTimes(2);
+        expect(spy_companyModuleMock_getCompanies).toHaveBeenCalledTimes(0);
+        expect(spy_companyModuleMock_end).toHaveBeenCalledWith("END");
 
-      await usecase.handler();
+        expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
+        expect(res.body).toHaveProperty("error");
+      });
+      it("deve executar rollback e desconexão de base se getCompanies falhaer", async () => {
+        const message = "erro mockado";
+        companyModuleMock.getCompanies.mockRejectedValueOnce(
+          new Error(message)
+        );
+        const spy_companyModuleMock_init = jest.spyOn(
+          companyModuleMock,
+          "init"
+        );
+        const spy_companyModuleMock_end = jest.spyOn(companyModuleMock, "end");
 
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledWith();
-      expect(spy_pgClienteMock_beginTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_executeQuery).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_rolbackTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClienteMock_releaseTransaction).toHaveBeenCalledTimes(1);
-    });
-  });
+        const spy_companyModuleMock_getCompanies = jest.spyOn(
+          companyModuleMock,
+          "getCompanies"
+        );
 
-  describe(`casos de erros`, () => {
-    it("se metodo de conexão de base falhar, usecase deve retornar erro", async () => {
-      const message = "erro mockado";
-      pgClienteMock.getConnection.mockRejectedValueOnce(new Error(message));
-      const spy_pgClienteMock_getConnection = jest.spyOn(
-        pgClienteMock,
-        "getConnection"
-      );
-      const spy_pgClienteMock_beginTransaction = jest.spyOn(
-        pgClienteMock,
-        "beginTransaction"
-      );
+        const res = await usecase.handler();
 
-      const spy_pgClienteMock_executeQuery = jest.spyOn(
-        pgClienteMock,
-        "executeQuery"
-      );
+        expect(spy_companyModuleMock_init).toHaveBeenCalledTimes(1);
+        expect(spy_companyModuleMock_end).toHaveBeenCalledTimes(2);
+        expect(spy_companyModuleMock_getCompanies).toHaveBeenCalledTimes(1);
+        expect(spy_companyModuleMock_end).toHaveBeenCalledWith("END");
 
-      const spy_pgClienteMock_rolbackTransaction = jest.spyOn(
-        pgClienteMock,
-        "rolbackTransaction"
-      );
-
-      const spy_pgClienteMock_releaseTransaction = jest.spyOn(
-        pgClienteMock,
-        "releaseTransaction"
-      );
-
-      const spy_pgClienteMock_commitTransaction = jest.spyOn(
-        pgClienteMock,
-        "commitTransaction"
-      );
-
-      const res = await usecase.handler();
-
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledWith();
-      expect(spy_pgClienteMock_beginTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClienteMock_executeQuery).toHaveBeenCalledTimes(0);
-      expect(spy_pgClienteMock_rolbackTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClienteMock_releaseTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClienteMock_commitTransaction).toHaveBeenCalledTimes(0);
-      expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("se metodo de iniciar transação na base de dados falhar, usecase deve executar rollback e encerrar conexão", async () => {
-      const message = "erro mockado";
-      pgClienteMock.beginTransaction.mockRejectedValueOnce(new Error(message));
-      const spy_pgClienteMock_getConnection = jest.spyOn(
-        pgClienteMock,
-        "getConnection"
-      );
-      const spy_pgClienteMock_beginTransaction = jest.spyOn(
-        pgClienteMock,
-        "beginTransaction"
-      );
-
-      const spy_pgClienteMock_executeQuery = jest.spyOn(
-        pgClienteMock,
-        "executeQuery"
-      );
-
-      const spy_pgClienteMock_rolbackTransaction = jest.spyOn(
-        pgClienteMock,
-        "rolbackTransaction"
-      );
-
-      const spy_pgClienteMock_releaseTransaction = jest.spyOn(
-        pgClienteMock,
-        "releaseTransaction"
-      );
-
-      const spy_pgClienteMock_commitTransaction = jest.spyOn(
-        pgClienteMock,
-        "commitTransaction"
-      );
-
-      const res = await usecase.handler();
-
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledWith();
-      expect(spy_pgClienteMock_beginTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_executeQuery).toHaveBeenCalledTimes(0);
-      expect(spy_pgClienteMock_rolbackTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_releaseTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_commitTransaction).toHaveBeenCalledTimes(0);
-      expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("se metodo de execução de query falhar, usecase deve executar rollback e encerrar conexão", async () => {
-      const message = "erro mockado";
-      pgClienteMock.executeQuery.mockRejectedValueOnce(new Error(message));
-      const spy_pgClienteMock_getConnection = jest.spyOn(
-        pgClienteMock,
-        "getConnection"
-      );
-      const spy_pgClienteMock_beginTransaction = jest.spyOn(
-        pgClienteMock,
-        "beginTransaction"
-      );
-
-      const spy_pgClienteMock_executeQuery = jest.spyOn(
-        pgClienteMock,
-        "executeQuery"
-      );
-
-      const spy_pgClienteMock_rolbackTransaction = jest.spyOn(
-        pgClienteMock,
-        "rolbackTransaction"
-      );
-
-      const spy_pgClienteMock_releaseTransaction = jest.spyOn(
-        pgClienteMock,
-        "releaseTransaction"
-      );
-
-      const spy_pgClienteMock_commitTransaction = jest.spyOn(
-        pgClienteMock,
-        "commitTransaction"
-      );
-
-      const res = await usecase.handler();
-
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_getConnection).toHaveBeenCalledWith();
-      expect(spy_pgClienteMock_beginTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_executeQuery).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_rolbackTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_releaseTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClienteMock_commitTransaction).toHaveBeenCalledTimes(0);
-      expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-      expect(res.body).toHaveProperty("error");
+        expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
+        expect(res.body).toHaveProperty("error");
+      });
     });
   });
 });

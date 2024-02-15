@@ -1,14 +1,13 @@
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { BaseUseCase } from "..";
-import { PoolClient } from "pg";
+
+import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 export class GetCompanyByIdUseCase implements BaseUseCase {
-  constructor(private readonly pgCliente: PgClienteRepository) {}
+  constructor(private readonly module: CompanyModuleRepository) {}
 
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
-    let connection: PoolClient | undefined = undefined;
     try {
       const companyId = req.params["company_id"];
       if (!companyId) {
@@ -19,26 +18,17 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
           },
         };
       }
-      connection = await this.pgCliente.getConnection();
-      await this.pgCliente.beginTransaction(connection);
-
-      const sql = `
-        select * from companies where id = $1
-      `;
-
-      //TODO - adicionar tratamento para quando o id não existir o recurso
-      const { rows } = await this.pgCliente.executeQuery(connection, sql, [
-        companyId,
-      ]);
+      await this.module.init();
+      const company = await this.module.getCompanyById(companyId);
 
       return {
         statusCode: 200,
         body: {
-          ...rows[0],
+          ...company[0],
         },
       };
     } catch (err) {
-      if (connection) await this.pgCliente.rolbackTransaction(connection);
+      await this.module.end("ROLLBACK");
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
@@ -46,7 +36,7 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
         },
       };
     } finally {
-      if (connection) await this.pgCliente.releaseTransaction(connection);
+      await this.module.end("END");
     }
   }
 }

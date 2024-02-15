@@ -3,6 +3,11 @@ import { PgClienteRepository } from "../infrastructure/database/pg.repository";
 import { HandlerEventClass } from "../infrastructure/services/dto/handler-event.dtos";
 import axios, { AxiosInstance } from "axios";
 import { CustomEventEmitterClass } from "../infrastructure/events/dtos/emiter-events.dtos";
+import { CompanyModuleRepository } from "../modules/__dtos__/modules.dtos";
+import {
+  BaseModuleRepository,
+  FinallyStrategy,
+} from "../modules/base.repository";
 
 export const queryresults = {
   rowCount: 1,
@@ -52,4 +57,35 @@ export class CustomEventEmitterMock implements CustomEventEmitterClass {
   publishJob = jest.fn(
     (topic: string, version: number, payload: any): void => {}
   );
+}
+
+export class BaseModuleMock implements BaseModuleRepository {
+  connection = jest.mocked("connection" as unknown as any);
+  executeQuery = jest.fn(async (): Promise<pg.QueryResult<any>> => {
+    return { ...queryresults };
+  });
+  init = jest.fn(async (): Promise<void> => {});
+  beggin = jest.fn(async (): Promise<void> => {});
+  end = jest.fn(async (_strategy: FinallyStrategy): Promise<void> => {});
+}
+export class CompanyModuleMock
+  extends BaseModuleMock
+  implements CompanyModuleRepository
+{
+  getCompanies = jest.fn(async (): Promise<Array<any>> => {
+    return [
+      {
+        id: crypto.randomUUID().toString(),
+        name: "Company",
+      },
+    ];
+  });
+  getCompanyById = jest.fn(async (): Promise<Array<any>> => {
+    return [
+      {
+        id: crypto.randomUUID().toString(),
+        name: "Company",
+      },
+    ];
+  });
 }

@@ -14,8 +14,36 @@ import { JobsRoutesAdapted } from "../../controllers/jobs/jobs.controller";
 import { CustomEventEmitterClass } from "../../infrastructure/events/dtos/emiter-events.dtos";
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { PoolClient, QueryResult } from "pg";
+import { FinallyStrategy } from "../../modules/base.repository";
+import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 const latencia = 2000;
+
+const companyModuleMock: CompanyModuleRepository = {
+  connection: "connection" as unknown as any,
+  executeQuery: async (): Promise<QueryResult<any>> => {
+    return { ...queryresults };
+  },
+  init: async (): Promise<void> => {},
+  beggin: async (): Promise<void> => {},
+  end: async (_strategy: FinallyStrategy): Promise<void> => {},
+  getCompanies: async (): Promise<Array<any>> => {
+    return [
+      {
+        id: crypto.randomUUID().toString(),
+        name: "Company",
+      },
+    ];
+  },
+  getCompanyById: async (): Promise<Array<any>> => {
+    return [
+      {
+        id: crypto.randomUUID().toString(),
+        name: "Company",
+      },
+    ];
+  },
+};
 
 const pgClienteMock: PgClienteRepository = {
   getConnection: async (): Promise<PoolClient> => {
@@ -66,12 +94,12 @@ const companiesusecases: Usecases = [
   {
     path: "/",
     method: "get",
-    usecase: new GetCompaniesUseCase(pgClienteMock),
+    usecase: new GetCompaniesUseCase(companyModuleMock),
   },
   {
     path: "/:company_id",
     method: "get",
-    usecase: new GetCompanyByIdUseCase(pgClienteMock),
+    usecase: new GetCompanyByIdUseCase(companyModuleMock),
   },
 ];
 
