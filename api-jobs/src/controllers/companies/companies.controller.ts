@@ -4,7 +4,7 @@ import { adaptRoute } from "../adapters";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { GetCompanyByIdUseCase } from "../../usecases/companies/getCompanyById.usecase";
 import { Usecases } from "../shareds";
-import { CompanyModule } from "../../modules/companies/companies";
+import { CompanyModule } from "../../modules/companies/companies.module";
 
 const companyModule = new CompanyModule();
 
