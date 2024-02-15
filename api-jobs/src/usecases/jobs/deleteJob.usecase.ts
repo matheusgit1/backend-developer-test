@@ -1,11 +1,12 @@
-import { PgClienteRepository } from "src/infrastructure/database/pg.repository";
 import { BaseUseCase } from "..";
 import { PoolClient } from "pg";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { validateUUID } from "../../utils/utilities";
 
 export class DeleteJobUseCase implements BaseUseCase {
-  constructor(private readonly pgCliente: PgClienteRepository) {}
+  constructor(private readonly module: JobModuleRepository) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
     let connection: PoolClient | undefined = undefined;
     try {
@@ -20,16 +21,21 @@ export class DeleteJobUseCase implements BaseUseCase {
         };
       }
 
-      const sql = `
-        delete from jobs where id = $1
-      `;
-      connection = await this.pgCliente.getConnection();
-      await this.pgCliente.beginTransaction(connection);
+      if (!validateUUID(jobId)) {
+        return {
+          statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
+          body: {
+            error: 'job "UUID" is invalid',
+          },
+        };
+      }
 
-      const { rowCount } = await this.pgCliente.executeQuery(connection, sql, [
-        jobId,
-      ]);
+      await this.module.init();
+      await this.module.beggin();
 
+      const { rowCount } = await this.module.deleteJob(jobId);
+
+      await this.module.end("COMMIT");
       if (rowCount <= 0) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -38,7 +44,6 @@ export class DeleteJobUseCase implements BaseUseCase {
           },
         };
       }
-      await this.pgCliente.commitTransaction(connection);
 
       return {
         statusCode: StatusCodes.ACCEPTED,
@@ -47,7 +52,7 @@ export class DeleteJobUseCase implements BaseUseCase {
         },
       };
     } catch (err) {
-      if (connection) await this.pgCliente.rolbackTransaction(connection);
+      await this.module.end("ROLLBACK");
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
@@ -55,7 +60,7 @@ export class DeleteJobUseCase implements BaseUseCase {
         },
       };
     } finally {
-      if (connection) await this.pgCliente.releaseTransaction(connection);
+      await this.module.end("END");
     }
   }
 }

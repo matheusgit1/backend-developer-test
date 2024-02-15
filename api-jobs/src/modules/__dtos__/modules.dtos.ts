@@ -1,3 +1,4 @@
+import { QueryResult } from "pg";
 import { BaseModuleRepository } from "../base.repository";
 
 export interface CreateJobDto {
@@ -16,4 +17,5 @@ export declare class CompanyModuleRepository extends BaseModuleRepository {
 export declare class JobModuleRepository extends BaseModuleRepository {
   createJob(input: CreateJobDto): Promise<void>;
   archiveJob(jobId: string): Promise<void>;
+  deleteJob(jobId: string): Promise<QueryResult<any>>;
 }

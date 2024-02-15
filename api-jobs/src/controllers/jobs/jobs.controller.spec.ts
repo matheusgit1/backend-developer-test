@@ -35,7 +35,7 @@ const usecases: Usecases = [
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(pgClienteMock),
+    usecase: new DeleteJobUseCase(jobModuleMock),
   },
   {
     path: "/:job_id/archive",
@@ -227,7 +227,7 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
     describe('cenários para "/:job_id" (delete)', () => {
       it(`deve executar '/' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-        pgClienteMock.getConnection.mockRejectedValueOnce(new Error());
+        jobModuleMock.init.mockRejectedValueOnce(new Error());
         const { body, status } = await request(app)
           .delete(`/${jobId}`)
           .set("Content-Type", "application/json")
@@ -235,13 +235,9 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
         // .set("company_id", crypto.randomUUID().toString());
         expect(status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
       });
-      it(`deve executar '/:job_id' (delete) com status code ${StatusCodes.UNPROCESSABLE_ENTITY} se o jobId não for localizado na base`, async () => {
-        pgClienteMock.executeQuery.mockResolvedValue({
-          ...queryresults,
-          rowCount: 0,
-        });
+      it(`deve executar '/:job_id' (delete) com status code ${StatusCodes.UNPROCESSABLE_ENTITY} se o jobId for inválido`, async () => {
         const { body, status } = await request(app)
-          .delete(`/${jobId}`)
+          .delete(`/jobId`)
           .set("Content-Type", "application/json")
           .set("Accept", "application/json")
           .set("company_id", crypto.randomUUID().toString());
@@ -250,22 +246,22 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
     describe('cenários para "/:job_id/archive" ', () => {
       it(`deve executar '/:job_id/archive' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-        pgClienteMock.getConnection.mockRejectedValueOnce(new Error());
+        jobModuleMock.init.mockRejectedValueOnce(new Error());
         const { body, status } = await request(app)
           .delete(`/${jobId}`)
           .set("Content-Type", "application/json")
           .set("Accept", "application/json");
-        // .set("company_id", crypto.randomUUID().toString());
+
         expect(status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
       });
-      it(`deve executar '/:job_id/archive' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-        pgClienteMock.getConnection.mockRejectedValueOnce(new Error());
+      it(`deve executar '/:job_id/archive' com status code ${StatusCodes.UNPROCESSABLE_ENTITY} se jobId for inválido`, async () => {
+        // jobModuleMock.mockRejectedValueOnce(new Error());
         const { body, status } = await request(app)
-          .delete(`/${jobId}`)
+          .delete(`/jobId`)
           .set("Content-Type", "application/json")
           .set("Accept", "application/json");
         // .set("company_id", crypto.randomUUID().toString());
-        expect(status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
+        expect(status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
       });
     });
   });

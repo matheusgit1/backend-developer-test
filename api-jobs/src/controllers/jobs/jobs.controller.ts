@@ -50,7 +50,7 @@ const routesAdapteds = new JobsRoutesAdapted([
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(new PgCliente()),
+    usecase: new DeleteJobUseCase(jobModule),
   },
   {
     path: "/:job_id/archive",

@@ -1,3 +1,4 @@
+import { QueryResult } from "pg";
 import { CreateJobDto, JobModuleRepository } from "../__dtos__/modules.dtos";
 import { BaseModule } from "../base.module";
 
@@ -39,5 +40,12 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
     `;
 
     await this.executeQuery(sql, [jobId]);
+  }
+  async deleteJob(jobId: string): Promise<QueryResult<any>> {
+    const sql = `
+      delete from jobs where id = $1
+    `;
+
+    return await this.executeQuery(sql, [jobId]);
   }
 }

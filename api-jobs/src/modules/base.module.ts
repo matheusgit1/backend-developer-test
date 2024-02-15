@@ -44,7 +44,9 @@ export class BaseModule implements BaseModuleRepository {
 
         break;
       case "END":
-        await this.pgCliente.releaseTransaction(this.connection);
+        try {
+          await this.pgCliente.releaseTransaction(this.connection);
+        } catch (e) {}
 
         break;
       default:

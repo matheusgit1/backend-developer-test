@@ -31,6 +31,9 @@ const jobModuleMock: JobModuleRepository = {
   end: async (_strategy: FinallyStrategy): Promise<void> => {},
   createJob: async (_input: CreateJobDto): Promise<void> => {},
   archiveJob: async (_jobId: string): Promise<void> => {},
+  deleteJob: async (_jobId: string): Promise<QueryResult<any>> => {
+    return { ...queryresults, rowCount: 1 };
+  },
 };
 
 const companyModuleMock: CompanyModuleRepository = {
@@ -144,7 +147,7 @@ const jobsusecases: Usecases = [
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(pgClienteMock),
+    usecase: new DeleteJobUseCase(jobModuleMock),
   },
   {
     path: "/:job_id/archive",
