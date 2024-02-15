@@ -104,4 +104,15 @@ export class JobModuleMock
   deleteJob = jest.fn(async (_jobId: string): Promise<pg.QueryResult<any>> => {
     return { ...queryresults };
   });
+  getJobById = jest.fn(async (_jobId: string): Promise<pg.QueryResult<any>> => {
+    return { ...queryresults, rowCount: 1 };
+  });
+  updateJob = jest.fn(
+    async (
+      _input: Partial<CreateJobDto>,
+      _jobId: string
+    ): Promise<pg.QueryResult<any>> => {
+      return { ...queryresults, rowCount: 1 };
+    }
+  );
 }

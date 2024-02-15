@@ -1,5 +1,5 @@
 import { CreateJobDto } from "./../../modules/__dtos__/modules.dtos";
-import { JobModuleRepository } from "src/modules/__dtos__/modules.dtos";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { HealthRoutesAdapted } from "../../controllers/health/health.controller";
 import { Usecases } from "../../controllers/shareds";
@@ -32,6 +32,15 @@ const jobModuleMock: JobModuleRepository = {
   createJob: async (_input: CreateJobDto): Promise<void> => {},
   archiveJob: async (_jobId: string): Promise<void> => {},
   deleteJob: async (_jobId: string): Promise<QueryResult<any>> => {
+    return { ...queryresults, rowCount: 1 };
+  },
+  getJobById: async (_jobId: string): Promise<QueryResult<any>> => {
+    return { ...queryresults, rowCount: 1 };
+  },
+  updateJob: async (
+    _input: Partial<CreateJobDto>,
+    _jobId: string
+  ): Promise<QueryResult<any>> => {
     return { ...queryresults, rowCount: 1 };
   },
 };
@@ -142,7 +151,7 @@ const jobsusecases: Usecases = [
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(pgClienteMock),
+    usecase: new EditJobUseCase(jobModuleMock),
   },
   {
     path: "/:job_id",

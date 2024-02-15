@@ -45,7 +45,7 @@ const routesAdapteds = new JobsRoutesAdapted([
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(new PgCliente()),
+    usecase: new EditJobUseCase(jobModule),
   },
   {
     path: "/:job_id",

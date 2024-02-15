@@ -1,14 +1,14 @@
-import { PgClienteRepository } from "src/infrastructure/database/pg.repository";
 import { BaseUseCase } from "..";
-import { PoolClient } from "pg";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { validateUUID } from "../../utils/utilities";
 
 export class EditJobUseCase implements BaseUseCase {
-  constructor(private readonly pgCliente: PgClienteRepository) {}
+  constructor(private readonly module: JobModuleRepository) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
-    let connection: PoolClient | undefined = undefined;
     try {
+      const param = [];
       const jobId = req.params["job_id"];
       if (!jobId) {
         return {
@@ -18,40 +18,30 @@ export class EditJobUseCase implements BaseUseCase {
           },
         };
       }
+      if (!validateUUID(jobId)) {
+        return {
+          statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
+          body: {
+            error: 'job "UUID" is invalid',
+          },
+        };
+      }
 
       const { title, description, location, notes } = req.body;
-
-      let sqlBase = "update jobs set ";
-      let params = [];
-
       if (title) {
-        params.push(title);
-        sqlBase += `title = $${params.length},`;
+        param.push(title);
       }
-
       if (description) {
-        params.push(description);
-        sqlBase += ` description = $${params.length},`;
+        param.push(description);
       }
-
       if (location) {
-        params.push(location);
-        sqlBase += ` location = $${params.length},`;
+        param.push(location);
       }
-
       if (notes) {
-        params.push(notes);
-        sqlBase += ` notes = $${params.length},`;
+        param.push(notes);
       }
 
-      sqlBase += `  updated_at = NOW(),`;
-
-      sqlBase = sqlBase.slice(0, -1);
-
-      params.push(jobId);
-      sqlBase += ` where id = $${params.length}`;
-
-      if (params.length <= 1) {
+      if (param.length === 0) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
           body: {
@@ -61,13 +51,13 @@ export class EditJobUseCase implements BaseUseCase {
         };
       }
 
-      connection = await this.pgCliente.getConnection();
-      await this.pgCliente.beginTransaction(connection);
-      const { rowCount } = await this.pgCliente.executeQuery(
-        connection,
-        "SELECT * FROM jobs WHERE id = $1",
-        [jobId]
-      );
+      await this.module.init();
+      await this.module.beggin();
+
+      const [_, { rows, rowCount }] = await Promise.all([
+        this.module.updateJob({ description, title, notes, location }, jobId),
+        this.module.getJobById(jobId),
+      ]);
 
       if (rowCount < 1) {
         return {
@@ -78,24 +68,14 @@ export class EditJobUseCase implements BaseUseCase {
         };
       }
 
-      const [_, { rows }] = await Promise.all([
-        this.pgCliente.executeQuery(connection, sqlBase, params),
-        this.pgCliente.executeQuery(
-          connection,
-          `select * from jobs where id = $1 `,
-          [jobId]
-        ),
-      ]);
+      await this.module.end("COMMIT");
 
-      await this.pgCliente.commitTransaction(connection);
-
-      // return _res.status().send({ ...rows[0] });
       return {
         statusCode: StatusCodes.OK,
         body: { ...rows[0] },
       };
     } catch (err) {
-      if (connection) await this.pgCliente.rolbackTransaction(connection);
+      await this.module.end("ROLLBACK");
 
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -104,7 +84,7 @@ export class EditJobUseCase implements BaseUseCase {
         },
       };
     } finally {
-      if (connection) await this.pgCliente.releaseTransaction(connection);
+      await this.module.end("END");
     }
   }
 }

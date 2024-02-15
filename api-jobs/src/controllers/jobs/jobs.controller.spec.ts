@@ -30,7 +30,7 @@ const usecases: Usecases = [
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(pgClienteMock),
+    usecase: new EditJobUseCase(jobModuleMock),
   },
   {
     path: "/:job_id",
@@ -189,8 +189,8 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
       });
     });
     describe('cenários para "/:job_id" (edição)', () => {
-      it(`deve executar '/' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (commit)`, async () => {
-        pgClienteMock.commitTransaction.mockRejectedValueOnce(new Error());
+      it(`deve executar '/' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
+        jobModuleMock.init.mockRejectedValueOnce(new Error());
         const { body, status } = await request(app)
           .put(`/${jobId}`)
           .send({
