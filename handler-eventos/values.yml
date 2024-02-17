@@ -15,4 +15,4 @@ develop:
   SECURITY_GROUP_API: "sg-0423c84eaccf60911"
   SUBNET1: "subnet-0756d40cee4962b3c" #privada
   SUBNET2: "subnet-0824e7ebdbb9ee5fd" #publica
-  API_KEY: "API_KEY"
+
