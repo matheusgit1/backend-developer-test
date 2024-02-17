@@ -1,4 +1,8 @@
-import { CreateJobDto } from "./../../modules/__dtos__/modules.dtos";
+import {
+  CreateJobDto,
+  FeedJobs,
+  FeedModuleRepository,
+} from "./../../modules/__dtos__/modules.dtos";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { HealthRoutesAdapted } from "../../controllers/health/health.controller";
@@ -18,8 +22,19 @@ import { PgClienteRepository } from "../../infrastructure/database/pg.repository
 import { PoolClient, QueryResult } from "pg";
 import { FinallyStrategy } from "../../modules/base.repository";
 import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { FeedRoutesAdapted } from "../../controllers/feed/feed.controller";
+import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
+import Cache from "node-cache";
 
 const latencia = 2000;
+
+const cache: Partial<Cache> = {
+  get: (_key: string): any => {},
+  /**@ts-ignore */
+  set: (_key: Cache.Key, _value: string, _ttl: number): boolean => {
+    return true;
+  },
+};
 
 const jobModuleMock: JobModuleRepository = {
   connection: "connection" as unknown as any,
@@ -68,6 +83,21 @@ const companyModuleMock: CompanyModuleRepository = {
         name: "Company",
       },
     ];
+  },
+};
+
+const feedmodule: FeedModuleRepository = {
+  connection: "connection" as unknown as any,
+  executeQuery: async (): Promise<QueryResult<any>> => {
+    return { ...queryresults };
+  },
+  init: async (): Promise<void> => {},
+  beggin: async (): Promise<void> => {},
+  end: async (_strategy: FinallyStrategy): Promise<void> => {},
+  getFeed: async (): Promise<FeedJobs> => {
+    return {
+      feeds: [],
+    };
   },
 };
 
@@ -165,8 +195,17 @@ const jobsusecases: Usecases = [
   },
 ];
 
+const feedusecases: Usecases = [
+  {
+    path: "/",
+    method: "get",
+    usecase: new GetFeedUseCase(feedmodule, cache as any),
+  },
+];
+
 export const { routes: jobroutes } = new JobsRoutesAdapted(jobsusecases);
 export const { routes: helthroutes } = new HealthRoutesAdapted(helthUsecases);
 export const { routes: companyroutes } = new CompaniesRoutesAdapted(
   companiesusecases
 );
+export const { routes: feedRoutes } = new FeedRoutesAdapted(feedusecases);

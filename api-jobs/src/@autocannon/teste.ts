@@ -73,6 +73,10 @@ async function test() {
           company_id: "company_id",
         },
       },
+      {
+        path: `/feed`,
+        method: "GET",
+      },
     ],
   });
   const size = (value: number): number => {

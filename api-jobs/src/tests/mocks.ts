@@ -121,12 +121,10 @@ export class JobModuleMock
 }
 
 export class CacheMock implements Partial<Cache> {
-  get = jest.fn(async (_key: string): Promise<any> => {}) as any;
-  set = jest.fn(
-    async (_key: string, _value: string, _ttl?: number): Promise<boolean> => {
-      return true;
-    }
-  ) as any;
+  get = jest.fn((_key: string): any => {});
+  set = jest.fn((_key: string, _value: string, _ttl?: number): boolean => {
+    return true;
+  });
 }
 
 export class FeedModuleMock
@@ -135,7 +133,19 @@ export class FeedModuleMock
 {
   getFeed = jest.fn(async (): Promise<FeedJobs> => {
     return {
-      feeds: [],
+      feeds: [
+        {
+          company_id: crypto.randomUUID(),
+          id: crypto.randomUUID(),
+          status: "published",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          description: "Description",
+          title: "Title",
+          notes: "Notes",
+          location: "Location",
+        },
+      ],
     };
   });
 }

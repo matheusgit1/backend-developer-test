@@ -23,8 +23,8 @@ export interface JobInFeed {
   location: string;
   notes: string;
   status: AvailableStatusJobs;
-  created_at: Date;
-  updated_at: Date;
+  created_at: Date | string;
+  updated_at: Date | string;
 }
 
 export interface FeedJobs {
