@@ -6,6 +6,7 @@ import { cpus } from "os";
 import { routes as healthRoutes } from "./controllers/health/health.controller";
 import { routes as companiecontroller } from "./controllers/companies/companies.controller";
 import { routes as jobcontroller } from "./controllers/jobs/jobs.controller";
+import { routes as feedcontroller } from "./controllers/feed/feed.controller";
 import { app } from "./configs/app/app.config";
 import { configs } from "./configs/envs/environments.config";
 
@@ -31,6 +32,7 @@ if (clusters.isPrimary) {
   app.use("/health", healthRoutes);
   app.use("/companies", companiecontroller);
   app.use("/job", jobcontroller);
+  app.use("/feed", feedcontroller);
   app.listen(PORT, () => {
     console.log(`Process ${process.pid} started - Listening on port ${PORT}`);
   });
