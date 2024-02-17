@@ -17,16 +17,16 @@ export class FeedModule extends BaseModule implements FeedModuleRepository {
       },
     });
   }
-  async getFeed(): Promise<any> {
-    const bucketName = "global-feeds";
-    const key = "jobs/feed.json";
+  async getFeed(): Promise<FeedJobs> {
+    const bucket = "global-feeds";
+    const path = "jobs/feed.json";
 
-    const downloadJsonBucket = {
-      Bucket: bucketName,
-      Key: key,
-    };
-
-    const jsonInBucket = await this.s3.getObject(downloadJsonBucket).promise();
+    const jsonInBucket = await this.s3
+      .getObject({
+        Bucket: bucket,
+        Key: path,
+      })
+      .promise();
 
     const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
 

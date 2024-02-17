@@ -48,5 +48,5 @@ export declare class JobModuleRepository extends BaseModuleRepository {
 }
 
 export declare class FeedModuleRepository extends BaseModuleRepository {
-  getFeed(): Promise<any>;
+  getFeed(): Promise<FeedJobs>;
 }
