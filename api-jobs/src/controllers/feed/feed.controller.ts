@@ -3,7 +3,9 @@ import { adaptRoute } from "../adapters";
 import { Usecases } from "../shareds";
 import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
 import { FeedModule } from "../../modules/feed/feed.module";
+import Cache from "node-cache";
 
+const cache = new Cache();
 const feedModule = new FeedModule();
 
 export class FeedRoutesAdapted {
@@ -23,7 +25,7 @@ const routesAdapteds = new FeedRoutesAdapted([
   {
     path: "/",
     method: "get",
-    usecase: new GetFeedUseCase(feedModule),
+    usecase: new GetFeedUseCase(feedModule, cache),
   },
 ]);
 

@@ -6,12 +6,15 @@ import { CustomEventEmitterClass } from "../infrastructure/events/__dtos__/emite
 import {
   CompanyModuleRepository,
   CreateJobDto,
+  FeedJobs,
+  FeedModuleRepository,
   JobModuleRepository,
 } from "../modules/__dtos__/modules.dtos";
 import {
   BaseModuleRepository,
   FinallyStrategy,
 } from "../modules/base.repository";
+import Cache from "node-cache";
 
 export const queryresults = {
   rowCount: 1,
@@ -115,4 +118,24 @@ export class JobModuleMock
       return { ...queryresults, rowCount: 1 };
     }
   );
+}
+
+export class CacheMock implements Partial<Cache> {
+  get = jest.fn(async (_key: string): Promise<any> => {}) as any;
+  set = jest.fn(
+    async (_key: string, _value: string, _ttl?: number): Promise<boolean> => {
+      return true;
+    }
+  ) as any;
+}
+
+export class FeedModuleMock
+  extends BaseModuleMock
+  implements FeedModuleRepository
+{
+  getFeed = jest.fn(async (): Promise<FeedJobs> => {
+    return {
+      feeds: [],
+    };
+  });
 }
