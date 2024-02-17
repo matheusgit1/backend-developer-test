@@ -3,10 +3,16 @@ import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { validateUUID } from "../../utils/utilities";
+import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
+import { PoolClient } from "pg";
 
 export class EditJobUseCase implements BaseUseCase {
-  constructor(private readonly module: JobModuleRepository) {}
+  constructor(
+    private readonly pgClient: PgClienteRepository,
+    private readonly module: JobModuleRepository
+  ) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
+    let conn: PoolClient | undefined = undefined;
     try {
       const param = [];
       const jobId = req.params["job_id"];
@@ -51,8 +57,9 @@ export class EditJobUseCase implements BaseUseCase {
         };
       }
 
-      await this.module.init();
-      await this.module.beggin();
+      conn = await this.pgClient.getConnection();
+      await this.pgClient.beginTransaction(conn);
+      this.module.connection = conn;
 
       const [_, { rows, rowCount }] = await Promise.all([
         this.module.updateJob({ description, title, notes, location }, jobId),
@@ -68,14 +75,16 @@ export class EditJobUseCase implements BaseUseCase {
         };
       }
 
-      await this.module.end("COMMIT");
+      await this.pgClient.commitTransaction(conn);
 
       return {
         statusCode: StatusCodes.OK,
         body: { ...rows[0] },
       };
     } catch (err) {
-      await this.module.end("ROLLBACK");
+      if (conn) {
+        await this.pgClient.rolbackTransaction(conn);
+      }
 
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -84,7 +93,9 @@ export class EditJobUseCase implements BaseUseCase {
         },
       };
     } finally {
-      await this.module.end("END");
+      if (conn) {
+        await this.pgClient.releaseTransaction(conn);
+      }
     }
   }
 }

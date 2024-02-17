@@ -1,13 +1,20 @@
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { BaseUseCase } from "..";
 import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { PoolClient } from "pg";
+import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 
 export class GetCompaniesUseCase implements BaseUseCase {
-  constructor(private readonly module: CompanyModuleRepository) {}
+  constructor(
+    private readonly pgClient: PgClienteRepository,
+    private readonly module: CompanyModuleRepository
+  ) {}
 
   public async handler(): Promise<HttpResponse> {
+    let conn: PoolClient | undefined = undefined;
     try {
-      await this.module.init();
+      conn = await this.pgClient.getConnection();
+      this.module.connection = conn;
 
       const companies = await this.module.getCompanies();
 
@@ -19,7 +26,9 @@ export class GetCompaniesUseCase implements BaseUseCase {
         })),
       };
     } catch (err) {
-      await this.module.end("ROLLBACK");
+      if (conn) {
+        await this.pgClient.rolbackTransaction(conn);
+      }
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
@@ -27,7 +36,9 @@ export class GetCompaniesUseCase implements BaseUseCase {
         },
       };
     } finally {
-      await this.module.end("END");
+      if (conn) {
+        await this.pgClient.releaseTransaction(conn);
+      }
     }
   }
 }

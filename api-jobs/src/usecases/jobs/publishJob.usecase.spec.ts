@@ -6,9 +6,14 @@ import {
 } from "../../tests/mocks";
 import { PublishJobUseCase } from "./publishJob.usecase";
 
+const pgClientMock = new PgClienteMock();
 const customEventEmmiter = new CustomEventEmitterMock();
 const jobModuleMock = new JobModuleMock();
-const usecase = new PublishJobUseCase(jobModuleMock, customEventEmmiter);
+const usecase = new PublishJobUseCase(
+  pgClientMock,
+  jobModuleMock,
+  customEventEmmiter
+);
 const companyId = crypto.randomUUID().toString();
 
 describe(`executando testes para ${PublishJobUseCase.name}`, () => {

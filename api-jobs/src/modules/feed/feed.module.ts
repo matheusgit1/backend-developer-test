@@ -7,7 +7,7 @@ import * as AWS from "aws-sdk";
 export class FeedModule extends BaseModule implements FeedModuleRepository {
   s3: AWS.S3;
   constructor() {
-    super(new PgCliente());
+    super(FeedModule.name);
 
     this.s3 = new AWS.S3({
       region: configs.AWS_DEFAULT_REGION,

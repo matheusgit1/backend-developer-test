@@ -5,20 +5,21 @@ import request from "supertest";
 import { CompaniesRoutesAdapted } from "./companies.controller";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { GetCompanyByIdUseCase } from "../../usecases/companies/getCompanyById.usecase";
-import { CompanyModuleMock } from "../../tests/mocks";
+import { CompanyModuleMock, PgClienteMock } from "../../tests/mocks";
 
+const pgClientMock = new PgClienteMock();
 const companyModuleMock = new CompanyModuleMock();
 
 const usecases: Usecases = [
   {
     path: "/",
     method: "get",
-    usecase: new GetCompaniesUseCase(companyModuleMock),
+    usecase: new GetCompaniesUseCase(pgClientMock, companyModuleMock),
   },
   {
     path: "/:company_id",
     method: "get",
-    usecase: new GetCompanyByIdUseCase(companyModuleMock),
+    usecase: new GetCompanyByIdUseCase(pgClientMock, companyModuleMock),
   },
 ];
 
@@ -54,7 +55,7 @@ describe(`testes para ${CompaniesRoutesAdapted.name}`, () => {
 
   describe(`casos de erros`, () => {
     it(`deve executar '/' com ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-      companyModuleMock.init.mockRejectedValue(new Error("erro mockado"));
+      pgClientMock.getConnection.mockRejectedValue(new Error("erro mockado"));
       const { body, status } = await request(app).get("/");
 
       expect(body).toBeDefined();

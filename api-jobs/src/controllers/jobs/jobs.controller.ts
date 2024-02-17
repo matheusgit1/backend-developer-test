@@ -13,7 +13,7 @@ import { Usecases } from "../shareds";
 import { JobsModule } from "../../modules/jobs/jobs.modules";
 
 const pgCliente = new PgCliente();
-const jobModule = new JobsModule(pgCliente);
+const jobModule = new JobsModule();
 
 export class JobsRoutesAdapted {
   public routes: Router = Router();
@@ -32,12 +32,13 @@ const routesAdapteds = new JobsRoutesAdapted([
   {
     path: "/",
     method: "post",
-    usecase: new CreateJobUseCase(jobModule),
+    usecase: new CreateJobUseCase(pgCliente, jobModule),
   },
   {
     path: "/:job_id/publish",
     method: "put",
     usecase: new PublishJobUseCase(
+      pgCliente,
       jobModule,
       new CustomEventEmitter(new EventEmitter(), new HandlerEvents())
     ),
@@ -45,17 +46,17 @@ const routesAdapteds = new JobsRoutesAdapted([
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(jobModule),
+    usecase: new EditJobUseCase(pgCliente, jobModule),
   },
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(jobModule),
+    usecase: new DeleteJobUseCase(pgCliente, jobModule),
   },
   {
     path: "/:job_id/archive",
     method: "put",
-    usecase: new ArchiveJobUseCase(jobModule),
+    usecase: new ArchiveJobUseCase(pgCliente, jobModule),
   },
 ]);
 

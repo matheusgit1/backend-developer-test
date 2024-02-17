@@ -3,6 +3,9 @@ import { CreateJobDto, JobModuleRepository } from "../__dtos__/modules.dtos";
 import { BaseModule } from "../base.module";
 
 export class JobsModule extends BaseModule implements JobModuleRepository {
+  constructor() {
+    super(JobsModule.name);
+  }
   async createJob({
     companyId,
     title,

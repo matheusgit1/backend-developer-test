@@ -1,14 +1,13 @@
-import { PgCliente } from "../../infrastructure/database/client/database.repository";
+import { PoolClient } from "pg";
 import { CompanyModuleRepository } from "../__dtos__/modules.dtos";
 import { BaseModule } from "../base.module";
-import { BaseModuleRepository } from "../base.repository";
 
 export class CompanyModule
   extends BaseModule
   implements CompanyModuleRepository
 {
   constructor() {
-    super(new PgCliente());
+    super(CompanyModule.name);
   }
   async getCompanies(): Promise<Array<any>> {
     const sql = `

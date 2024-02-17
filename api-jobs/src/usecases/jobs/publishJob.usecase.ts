@@ -3,27 +3,69 @@ import { BaseUseCase } from "..";
 import { PoolClient } from "pg";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-import { CustomEventEmitterClass } from "../../infrastructure/events/__dtos__/emiter-events.dtos";
+import { CustomEventEmitterDto } from "../../infrastructure/events/__dtos__/emiter-events.dtos";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { validateUUID } from "../../utils/utilities";
 
 export class PublishJobUseCase implements BaseUseCase {
   constructor(
+    private readonly pgClient: PgClienteRepository,
     private readonly module: JobModuleRepository,
-    private readonly eventEmitter: CustomEventEmitterClass
+    private readonly eventEmitter: CustomEventEmitterDto
   ) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
-    let connection: PoolClient | undefined = undefined;
+    let conn: PoolClient | undefined = undefined;
     try {
-      //TODO - logica deve ser enviada para um lambda que ira validar se o job está apta a ser publicado
-      this.eventEmitter.publishJob("publish_job", 1, { jobId: 1 });
+      const jobId = req.params["job_id"];
+      if (!jobId) {
+        return {
+          statusCode: StatusCodes.BAD_REQUEST,
+          body: {
+            error: '"job_id" is required',
+          },
+        };
+      }
+      if (!validateUUID(jobId)) {
+        return {
+          statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
+          body: {
+            error: 'job "UUID" is invalid',
+          },
+        };
+      }
+      conn = await this.pgClient.getConnection();
+      this.module.connection = conn;
+
+      const { rows, rowCount } = await this.module.getJobById(jobId);
+      if (rowCount === 0) {
+        return {
+          statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
+          body: {
+            error: `${jobId} - resource not found`,
+          },
+        };
+      }
+      if (rows[0].status === "published") {
+        return {
+          statusCode: StatusCodes.OK,
+        };
+      }
+
+      this.eventEmitter.publishJob("event_publish_job", 1, {
+        job_id: rows[0].id,
+        origin: "api-jobs",
+      });
       return {
-        statusCode: StatusCodes.NOT_IMPLEMENTED,
+        statusCode: StatusCodes.ACCEPTED,
         body: {
-          message: ReasonPhrases.NOT_IMPLEMENTED,
+          message:
+            "job will be analyzed before being definitively published. Please wait...",
         },
       };
     } catch (err) {
-      await this.module.end("ROLLBACK");
+      if (conn) {
+        await this.pgClient.rolbackTransaction(conn);
+      }
 
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -32,7 +74,9 @@ export class PublishJobUseCase implements BaseUseCase {
         },
       };
     } finally {
-      await this.module.end("END");
+      if (conn) {
+        await this.pgClient.releaseTransaction(conn);
+      }
     }
   }
 }

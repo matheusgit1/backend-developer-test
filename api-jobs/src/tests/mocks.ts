@@ -1,8 +1,8 @@
 import * as pg from "pg";
 import { PgClienteRepository } from "../infrastructure/database/pg.repository";
-import { HandlerEventClass } from "../infrastructure/services/__dtos__/handler-event.dtos";
+import { HandlerEventService } from "../infrastructure/services/__dtos__/handler-event.dtos";
 import axios, { AxiosInstance } from "axios";
-import { CustomEventEmitterClass } from "../infrastructure/events/__dtos__/emiter-events.dtos";
+import { CustomEventEmitterDto } from "../infrastructure/events/__dtos__/emiter-events.dtos";
 import {
   CompanyModuleRepository,
   CreateJobDto,
@@ -53,14 +53,14 @@ export class PgClienteMock implements PgClienteRepository {
   );
 }
 
-export class HandlerEventsMock implements HandlerEventClass {
+export class HandlerEventsMock implements HandlerEventService {
   client: AxiosInstance = jest.mocked(axios);
   publishEvent = jest.fn(
     async (_topic: string, _version: 1, _payload: any): Promise<void> => {}
   );
 }
 
-export class CustomEventEmitterMock implements CustomEventEmitterClass {
+export class CustomEventEmitterMock implements CustomEventEmitterDto {
   publishJob = jest.fn(
     (topic: string, version: number, payload: any): void => {}
   );
@@ -71,9 +71,6 @@ export class BaseModuleMock implements BaseModuleRepository {
   executeQuery = jest.fn(async (): Promise<pg.QueryResult<any>> => {
     return { ...queryresults };
   });
-  init = jest.fn(async (): Promise<void> => {});
-  beggin = jest.fn(async (): Promise<void> => {});
-  end = jest.fn(async (_strategy: FinallyStrategy): Promise<void> => {});
 }
 export class CompanyModuleMock
   extends BaseModuleMock

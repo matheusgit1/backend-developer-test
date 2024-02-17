@@ -1,9 +1,14 @@
-import { JobModuleMock, queryresults } from "./../../tests/mocks";
+import {
+  JobModuleMock,
+  PgClienteMock,
+  queryresults,
+} from "./../../tests/mocks";
 import { StatusCodes } from "http-status-codes";
 import { EditJobUseCase } from "./editJob.usecase";
 
+const pgClientMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
-const usecase = new EditJobUseCase(jobModuleMock);
+const usecase = new EditJobUseCase(pgClientMock, jobModuleMock);
 const jobId = crypto.randomUUID().toString();
 
 describe(`executando testes para ${EditJobUseCase.name}`, () => {
@@ -52,16 +57,38 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
     });
 
     it(`deve executar ações na base corretamente`, async () => {
-      const body = {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 1,
+      });
+      const bodyRequest = {
         title: "title",
         description: "description",
         location: "location",
         notes: "notes",
       };
-      const spy_jobModuleMock_init = jest.spyOn(jobModuleMock, "init");
-      const spy_jobModuleMock_beggin = jest.spyOn(jobModuleMock, "beggin");
 
-      const spy_jobModuleMock_end = jest.spyOn(jobModuleMock, "end");
+      const spy_pgClientMock_getConnection = jest.spyOn(
+        pgClientMock,
+        "getConnection"
+      );
+      const spy_pgClientMock_beginTransaction = jest.spyOn(
+        pgClientMock,
+        "beginTransaction"
+      );
+      const spy_pgClientMock_commitTransaction = jest.spyOn(
+        pgClientMock,
+        "commitTransaction"
+      );
+
+      const spy_pgClientMock_releaseTransaction = jest.spyOn(
+        pgClientMock,
+        "releaseTransaction"
+      );
+      const spy_pgClientMock_rolbackTransaction = jest.spyOn(
+        pgClientMock,
+        "rolbackTransaction"
+      );
 
       const spy_jobModuleMock_getJobById = jest.spyOn(
         jobModuleMock,
@@ -73,39 +100,41 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         "updateJob"
       );
 
-      await usecase.handler({
+      const { statusCode, body } = await usecase.handler({
         req: {
           params: {
             job_id: jobId,
           },
           body: {
-            ...body,
+            ...bodyRequest,
           },
         },
       } as any);
 
-      expect(spy_jobModuleMock_init).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_init).toHaveBeenCalledWith();
-
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledWith();
-
-      expect(spy_jobModuleMock_end).toHaveBeenCalledTimes(2);
-      expect(spy_jobModuleMock_end).toHaveBeenNthCalledWith(1, "COMMIT");
-      expect(spy_jobModuleMock_end).toHaveBeenLastCalledWith("END");
+      expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
 
       expect(spy_jobModuleMock_getJobById).toHaveBeenCalledTimes(1);
       expect(spy_jobModuleMock_getJobById).toHaveBeenCalledWith(jobId);
 
       expect(spy_jobModuleMock_updateJob).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_updateJob).toHaveBeenCalledWith(body, jobId);
+      expect(spy_jobModuleMock_updateJob).toHaveBeenCalledWith(
+        bodyRequest,
+        jobId
+      );
+
+      expect(statusCode).toBe(StatusCodes.OK);
+      expect(body).toBeDefined();
     });
   });
 
   describe(`casos de erros`, () => {
     it("se metodo de conexão de base falhar, usecase deve retornar erro", async () => {
       const message = "erro mockado";
-      jobModuleMock.init.mockRejectedValueOnce(new Error(message));
+      pgClientMock.getConnection.mockRejectedValueOnce(new Error(message));
       const body = {
         title: "title",
         description: "description",
@@ -113,10 +142,27 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         notes: "notes",
       };
 
-      const spy_jobModuleMock_init = jest.spyOn(jobModuleMock, "init");
-      const spy_jobModuleMock_beggin = jest.spyOn(jobModuleMock, "beggin");
+      const spy_pgClientMock_getConnection = jest.spyOn(
+        pgClientMock,
+        "getConnection"
+      );
+      const spy_pgClientMock_beginTransaction = jest.spyOn(
+        pgClientMock,
+        "beginTransaction"
+      );
+      const spy_pgClientMock_commitTransaction = jest.spyOn(
+        pgClientMock,
+        "commitTransaction"
+      );
 
-      const spy_jobModuleMock_end = jest.spyOn(jobModuleMock, "end");
+      const spy_pgClientMock_releaseTransaction = jest.spyOn(
+        pgClientMock,
+        "releaseTransaction"
+      );
+      const spy_pgClientMock_rolbackTransaction = jest.spyOn(
+        pgClientMock,
+        "rolbackTransaction"
+      );
 
       const spy_jobModuleMock_getJobById = jest.spyOn(
         jobModuleMock,
@@ -138,12 +184,11 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         },
       } as any);
 
-      expect(spy_jobModuleMock_init).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_init).toHaveBeenCalledWith();
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_end).toHaveBeenCalledTimes(2);
-      expect(spy_jobModuleMock_end).toHaveBeenNthCalledWith(1, "ROLLBACK");
-      expect(spy_jobModuleMock_end).toHaveBeenLastCalledWith("END");
+      expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(0);
+      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
+      expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(0);
+      expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
       expect(spy_jobModuleMock_getJobById).toHaveBeenCalledTimes(0);
       expect(spy_jobModuleMock_updateJob).toHaveBeenCalledTimes(0);
       expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -152,7 +197,7 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
 
     it("se metodo de iniciar transação na base falhar, usecase deve retornar erro", async () => {
       const message = "erro mockado";
-      jobModuleMock.beggin.mockRejectedValueOnce(new Error(message));
+      pgClientMock.beginTransaction.mockRejectedValueOnce(new Error(message));
       const body = {
         title: "title",
         description: "description",
@@ -160,10 +205,27 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         notes: "notes",
       };
 
-      const spy_jobModuleMock_init = jest.spyOn(jobModuleMock, "init");
-      const spy_jobModuleMock_beggin = jest.spyOn(jobModuleMock, "beggin");
+      const spy_pgClientMock_getConnection = jest.spyOn(
+        pgClientMock,
+        "getConnection"
+      );
+      const spy_pgClientMock_beginTransaction = jest.spyOn(
+        pgClientMock,
+        "beginTransaction"
+      );
+      const spy_pgClientMock_commitTransaction = jest.spyOn(
+        pgClientMock,
+        "commitTransaction"
+      );
 
-      const spy_jobModuleMock_end = jest.spyOn(jobModuleMock, "end");
+      const spy_pgClientMock_releaseTransaction = jest.spyOn(
+        pgClientMock,
+        "releaseTransaction"
+      );
+      const spy_pgClientMock_rolbackTransaction = jest.spyOn(
+        pgClientMock,
+        "rolbackTransaction"
+      );
 
       const spy_jobModuleMock_getJobById = jest.spyOn(
         jobModuleMock,
@@ -185,13 +247,11 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         },
       } as any);
 
-      expect(spy_jobModuleMock_init).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_init).toHaveBeenCalledWith();
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledWith();
-      expect(spy_jobModuleMock_end).toHaveBeenCalledTimes(2);
-      expect(spy_jobModuleMock_end).toHaveBeenNthCalledWith(1, "ROLLBACK");
-      expect(spy_jobModuleMock_end).toHaveBeenLastCalledWith("END");
+      expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
+      expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(1);
       expect(spy_jobModuleMock_getJobById).toHaveBeenCalledTimes(0);
       expect(spy_jobModuleMock_updateJob).toHaveBeenCalledTimes(0);
       expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -207,10 +267,27 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         notes: "notes",
       };
       jobModuleMock.updateJob.mockRejectedValueOnce(new Error(message));
-      const spy_jobModuleMock_init = jest.spyOn(jobModuleMock, "init");
-      const spy_jobModuleMock_beggin = jest.spyOn(jobModuleMock, "beggin");
+      const spy_pgClientMock_getConnection = jest.spyOn(
+        pgClientMock,
+        "getConnection"
+      );
+      const spy_pgClientMock_beginTransaction = jest.spyOn(
+        pgClientMock,
+        "beginTransaction"
+      );
+      const spy_pgClientMock_commitTransaction = jest.spyOn(
+        pgClientMock,
+        "commitTransaction"
+      );
 
-      const spy_jobModuleMock_end = jest.spyOn(jobModuleMock, "end");
+      const spy_pgClientMock_releaseTransaction = jest.spyOn(
+        pgClientMock,
+        "releaseTransaction"
+      );
+      const spy_pgClientMock_rolbackTransaction = jest.spyOn(
+        pgClientMock,
+        "rolbackTransaction"
+      );
 
       const spy_jobModuleMock_getJobById = jest.spyOn(
         jobModuleMock,
@@ -233,16 +310,11 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         },
       } as any);
 
-      expect(spy_jobModuleMock_init).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_init).toHaveBeenCalledWith();
-
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledWith();
-
-      expect(spy_jobModuleMock_end).toHaveBeenCalledTimes(2);
-      expect(spy_jobModuleMock_end).toHaveBeenNthCalledWith(1, "ROLLBACK");
-      expect(spy_jobModuleMock_end).toHaveBeenLastCalledWith("END");
-
+      expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
+      expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(1);
       expect(spy_jobModuleMock_getJobById).toHaveBeenCalledTimes(1);
       expect(spy_jobModuleMock_getJobById).toHaveBeenCalledWith(jobId);
 
@@ -257,21 +329,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
     });
 
     it(`se job_id for inválido método deve retornar erro`, async () => {
-      const spy_jobModuleMock_init = jest.spyOn(jobModuleMock, "init");
-      const spy_jobModuleMock_beggin = jest.spyOn(jobModuleMock, "beggin");
-
-      const spy_jobModuleMock_end = jest.spyOn(jobModuleMock, "end");
-
-      const spy_jobModuleMock_getJobById = jest.spyOn(
-        jobModuleMock,
-        "getJobById"
-      );
-
-      const spy_jobModuleMock_updateJob = jest.spyOn(
-        jobModuleMock,
-        "updateJob"
-      );
-
       const res = await usecase.handler({
         req: {
           params: {
@@ -286,31 +343,11 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         },
       } as any);
 
-      expect(spy_jobModuleMock_init).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_end).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_getJobById).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_updateJob).toHaveBeenCalledTimes(0);
       expect(res.statusCode).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
       expect(res.body).toHaveProperty("error");
     });
 
     it(`se parametros "body" não forem inválidos, deve retornar ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
-      const spy_jobModuleMock_init = jest.spyOn(jobModuleMock, "init");
-      const spy_jobModuleMock_beggin = jest.spyOn(jobModuleMock, "beggin");
-
-      const spy_jobModuleMock_end = jest.spyOn(jobModuleMock, "end");
-
-      const spy_jobModuleMock_getJobById = jest.spyOn(
-        jobModuleMock,
-        "getJobById"
-      );
-
-      const spy_jobModuleMock_updateJob = jest.spyOn(
-        jobModuleMock,
-        "updateJob"
-      );
-
       const res = await usecase.handler({
         req: {
           params: {
@@ -324,12 +361,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
           },
         },
       } as any);
-
-      expect(spy_jobModuleMock_init).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_beggin).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_end).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_getJobById).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_updateJob).toHaveBeenCalledTimes(0);
 
       expect(res.statusCode).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
       expect(res.body).toHaveProperty("error");

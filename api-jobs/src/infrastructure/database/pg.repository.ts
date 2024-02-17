@@ -1,7 +1,7 @@
 import * as pg from "pg";
 
 export declare class PgClienteRepository {
-  constructor();
+  constructor(...args: any[]);
 
   /**
    * pega conexão com banco de dados

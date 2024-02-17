@@ -6,6 +6,7 @@ import { GetCompanyByIdUseCase } from "../../usecases/companies/getCompanyById.u
 import { Usecases } from "../shareds";
 import { CompanyModule } from "../../modules/companies/companies.module";
 
+const pgClient = new PgCliente();
 const companyModule = new CompanyModule();
 
 export class CompaniesRoutesAdapted {
@@ -25,12 +26,12 @@ const routesAdapteds = new CompaniesRoutesAdapted([
   {
     path: "/",
     method: "get",
-    usecase: new GetCompaniesUseCase(companyModule),
+    usecase: new GetCompaniesUseCase(pgClient, companyModule),
   },
   {
     path: "/:company_id",
     method: "get",
-    usecase: new GetCompanyByIdUseCase(companyModule),
+    usecase: new GetCompanyByIdUseCase(pgClient, companyModule),
   },
 ]);
 

@@ -4,11 +4,15 @@ import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { validateUUID } from "../../utils/utilities";
+import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 
 export class DeleteJobUseCase implements BaseUseCase {
-  constructor(private readonly module: JobModuleRepository) {}
+  constructor(
+    private readonly pgClient: PgClienteRepository,
+    private readonly module: JobModuleRepository
+  ) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
-    let connection: PoolClient | undefined = undefined;
+    let conn: PoolClient | undefined = undefined;
     try {
       const jobId = req.params["job_id"];
 
@@ -30,12 +34,12 @@ export class DeleteJobUseCase implements BaseUseCase {
         };
       }
 
-      await this.module.init();
-      await this.module.beggin();
+      conn = await this.pgClient.getConnection();
+      await this.pgClient.beginTransaction(conn);
+      this.module.connection;
 
       const { rowCount } = await this.module.deleteJob(jobId);
 
-      await this.module.end("COMMIT");
       if (rowCount <= 0) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -45,6 +49,8 @@ export class DeleteJobUseCase implements BaseUseCase {
         };
       }
 
+      await this.pgClient.commitTransaction(conn);
+
       return {
         statusCode: StatusCodes.ACCEPTED,
         body: {
@@ -52,7 +58,9 @@ export class DeleteJobUseCase implements BaseUseCase {
         },
       };
     } catch (err) {
-      await this.module.end("ROLLBACK");
+      if (conn) {
+        await this.pgClient.rolbackTransaction(conn);
+      }
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
@@ -60,7 +68,9 @@ export class DeleteJobUseCase implements BaseUseCase {
         },
       };
     } finally {
-      await this.module.end("END");
+      if (conn) {
+        await this.pgClient.releaseTransaction(conn);
+      }
     }
   }
 }

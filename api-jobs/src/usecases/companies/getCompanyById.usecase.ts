@@ -1,13 +1,19 @@
+import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { Request } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { BaseUseCase } from "..";
 
 import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { PoolClient } from "pg";
 
 export class GetCompanyByIdUseCase implements BaseUseCase {
-  constructor(private readonly module: CompanyModuleRepository) {}
+  constructor(
+    private readonly pgClient: PgClienteRepository,
+    private readonly module: CompanyModuleRepository
+  ) {}
 
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
+    let conn: PoolClient | undefined = undefined;
     try {
       const companyId = req.params["company_id"];
       if (!companyId) {
@@ -18,7 +24,8 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
           },
         };
       }
-      await this.module.init();
+      conn = await this.pgClient.getConnection();
+      this.module.connection = conn;
       const company = await this.module.getCompanyById(companyId);
 
       return {
@@ -28,7 +35,9 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
         },
       };
     } catch (err) {
-      await this.module.end("ROLLBACK");
+      if (conn) {
+        await this.pgClient.rolbackTransaction(conn);
+      }
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
@@ -36,7 +45,9 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
         },
       };
     } finally {
-      await this.module.end("END");
+      if (conn) {
+        await this.pgClient.releaseTransaction(conn);
+      }
     }
   }
 }
