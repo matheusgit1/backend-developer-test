@@ -1,5 +1,6 @@
 const path = require("path")
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
+const webpack = require("webpack")
 
 module.exports = {
   entry: "./src/index.ts",
@@ -24,6 +25,11 @@ module.exports = {
       }),
     ],
   },
+  plugins: [
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^pg-native$/
+    })
+  ],
   output: {
     path: path.resolve(__dirname, "./.webpack"),
     filename: "src/index.js",

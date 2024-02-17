@@ -1,11 +1,11 @@
 import {
   EventHandlerBase,
   EventHandlerBaseDto,
-} from "../infrastructure/events/base.event-handler";
+} from "../events/base.event-handler";
 import {
   EventHandlerDictionary,
   PublishJobDto,
-} from "../functions/sqs/dtos/handlers.dto";
+} from "../functions/sqs/__dtos__/handlers.dto";
 
 export class MockPublishEventHandler
   implements EventHandlerBase<PublishJobDto>

@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import {
   EventReceived,
   PublishJobDto,
-} from "../functions/sqs/dtos/handlers.dto";
+} from "../functions/sqs/__dtos__/handlers.dto";
 
 export const genSqsHandlerContext = (functionName: string): Context => {
   const currentmillis = new Date().getTime();

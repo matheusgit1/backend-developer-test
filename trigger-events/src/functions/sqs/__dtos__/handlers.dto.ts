@@ -1,7 +1,7 @@
 import { SQSEvent } from "aws-lambda";
-import { EventHandlerBase } from "../../../infrastructure/events/base.event-handler";
+import { EventHandlerBase } from "../../../events/base.event-handler";
 
-export type AvailableEvents = "event_publish_job";
+export type AvailableEvents = "event_publish_job" | "event_edit_job";
 
 export type EventHandlerDictionary = {
   [key in AvailableEvents]: EventHandlerBase<any>;
@@ -14,7 +14,13 @@ export interface EventReceived<T> {
 }
 
 export interface PublishJobDto {
-  jobId: string;
+  job_id: string;
+  origin: string;
+}
+
+export interface EditJobDto {
+  job_id: string;
+  origin: string;
 }
 
 export declare class ListennerFromSQSDeclarations {

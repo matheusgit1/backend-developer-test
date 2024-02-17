@@ -1,4 +1,5 @@
-export interface OpenAiMOderationResponse {
+import type { AxiosInstance } from "axios";
+export interface OpenAiModerationResponse {
   id: string;
   model: string;
   results: [
@@ -32,4 +33,16 @@ export interface OpenAiMOderationResponse {
       };
     }
   ];
+}
+
+export declare class ServiceOpenAI {
+  public openAPiClient: AxiosInstance;
+  constructor(...args: any[]);
+
+  /**
+   * Função que valida moderação de dados de entradas
+   * @param {String} text
+   * @returns {Promise<boolean>} retorna true se o job for moderado, e false se o job for potencialmente prejudicial
+   */
+  validateModeration(text: string): Promise<boolean>;
 }

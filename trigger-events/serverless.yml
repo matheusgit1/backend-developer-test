@@ -1,5 +1,5 @@
 org: mapdev
-service: trigger-jobs
+service: trigger-events
 
 frameworkVersion: "3"
 
@@ -21,6 +21,14 @@ provider:
       - ${file(./values.yml):${self:provider.stage}.SUBNET2}
   environment:
     TZ: ${file(./values.yml):${self:provider.stage}.TZ}
+    DB_HOST: ${ssm:/${self:provider.stage}/trigger-jobs/db-host}
+    DB_USER: ${ssm:/${self:provider.stage}/trigger-jobs/db-user}
+    DB_NAME: ${ssm:/${self:provider.stage}/trigger-jobs/db-name}
+    DB_PASSWORD: ${ssm:/${self:provider.stage}/trigger-jobs/db-password}
+    URL_OPEN_AI: ${ssm:/${self:provider.stage}/trigger-jobs/ulr-open-ai}
+    KEY_OPEN_AI: ${ssm:/${self:provider.stage}/trigger-jobs/api-key-open-ai}
+    MOCK_CALL_OPEN_AI: ${file(./values.yml):${self:provider.stage}.MOCK_CALL_OPEN_AI}
+    MOCK_CALL_OPEN_AI_RESPONSE: ${file(./values.yml):${self:provider.stage}.MOCK_CALL_OPEN_AI_RESPONSE}
 
   iam:
     role:
@@ -31,6 +39,12 @@ provider:
             - sqs:ReceiveMessage
           Resource:
             - { "Fn::GetAtt": ["EventsQueue", "Arn"] }
+
+        - Effect: Allow
+          Action:
+            - "s3:*"
+          Resource:
+            - arn:aws:s3:::${file(./values.yml):${self:provider.stage}.S3_FEEDS_BUCKET}/*
 
 package:
   individually: false
@@ -51,8 +65,8 @@ functions:
     name: trigger-events-${self:provider.stage}
     handler: src/index._eventListenner
     memorySize: 1024
-    timeout: 60 #tempo em segundos
-    # integration: lambda
+    timeout: 30 #tempo em segundos
+    # reservedConcurrency: 10
     events:
       - sqs:
           arn:
@@ -62,10 +76,38 @@ functions:
 
 resources:
   Resources:
+    # PolicyS3:
+    #   Type: AWS::IAM::Policy
+    #   Properties:
+    #     PolicyName: PolicyS3
+    #     Users: lambda
+    #     PolicyDocument:
+    #       Version: "2012-10-17"
+    #       Statement:
+    #         - Effect: Allow
+    #           Action:
+    #             - s3:GetObject
+    #             - s3:PutObject
+    #           Resource: arn:aws:s3:::${file(./values.yml):${self:provider.stage}.S3_FEEDS_BUCKET}/* # Substitua pelo ARN do seu bucket S3
+    # S3LambdaPolicy:
+    #   Type: AWS::IAM::Policy
+    #   Properties:
+    #     PolicyName: S3LambdaAcess
+    #     Roles:
+    #       - s3_roles
+    #     PolicyDocument:
+    #       Version: "2012-10-17"
+    #       Statement:
+    #         - Effect: Allow
+    #           Action:
+    #             - s3:GetObject
+    #             - s3:PutObject
+    #           Resource: "arn:aws:s3:::${file(./values.yml):${self:provider.stage}.S3_FEEDS_BUCKET}/*"
+
     EventsQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.package.name}-${self:provider.stage}-trigger-events-queue
+        QueueName: ${self:custom.package.name}-${self:provider.stage}-events-queue
         VisibilityTimeout: 900
         MessageRetentionPeriod: 86400
         ReceiveMessageWaitTimeSeconds: 20
@@ -78,7 +120,7 @@ resources:
     EventsQueueDLQ:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.package.name}-${self:provider.stage}-trigger-events-queue-dlq
+        QueueName: ${self:custom.package.name}-${self:provider.stage}-events-queue-dlq
         VisibilityTimeout: 900
         MessageRetentionPeriod: 86400
         ReceiveMessageWaitTimeSeconds: 20
@@ -96,6 +138,20 @@ resources:
               - Ref: "AWS::Region"
               - Ref: "AWS::AccountId"
               - "event_publish_job"
+
+    # SQS-SNS Um job foi editado
+    SNSSubscriptionEditJobEvent:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: { "Fn::GetAtt": ["EventsQueue", "Arn"] }
+        TopicArn:
+          Fn::Join:
+            - ":"
+            - - "arn:aws:sns"
+              - Ref: "AWS::Region"
+              - Ref: "AWS::AccountId"
+              - "event_edit_job"
 
     # Allow SNS to send messages to SQS
     EventsQueuePolicy:

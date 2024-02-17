@@ -9,6 +9,8 @@ export const configs = {
   DB_USER: process.env.DB_USER,
   DB_NAME: process.env.DB_NAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
-  URL_OPEN_API: process.env.URL_OPEN_API,
-  KEY_OPEN_API_MODERATION: process.env.KEY_OPEN_API_MODERATION,
+  URL_OPEN_AI: process.env.URL_OPEN_AI,
+  KEY_OPEN_AI: process.env.KEY_OPEN_AI,
+  MOCK_CALL_OPEN_AI: process.env.MOCK_CALL_OPEN_AI,
+  MOCK_CALL_OPEN_AI_RESPONSE: process.env.MOCK_CALL_OPEN_AI_RESPONSE,
 };

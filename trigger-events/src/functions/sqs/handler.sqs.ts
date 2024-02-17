@@ -3,7 +3,7 @@ import {
   EventHandlerDictionary,
   EventReceived,
   ListennerFromSQSDeclarations,
-} from "./dtos/handlers.dto";
+} from "./__dtos__/handlers.dto";
 import { Logger } from "../../infrastructure/logger/logger";
 
 export class ListennerFromSQS implements ListennerFromSQSDeclarations {
@@ -17,11 +17,11 @@ export class ListennerFromSQS implements ListennerFromSQSDeclarations {
       for (const record of events.Records) {
         const snsMessage = JSON.parse(record.body);
         const event: EventReceived<any> = JSON.parse(snsMessage.Message);
-        this.logger.info(`[handler] Evento sns: `, JSON.stringify(event));
-
         if (!this.validateStrategy(event.topico)) {
           throw new Error("[handler] evento nao suportado pelo servico");
         }
+        this.logger.info(`[handler] Evento sns: `, JSON.stringify(event));
+
         await this.eventHandlerDictionary[event.topico].handler(event);
       }
     } catch (e) {

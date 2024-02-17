@@ -1,31 +1,44 @@
+import { QueryResult } from "pg";
 import { PgCliente } from "../cliente/pg.cliente";
 import { AbstrataDatabaseRepository, FinallyStrategy } from "../pg.reposiory";
 
 export abstract class AbstractDatabaseConnection
   implements AbstrataDatabaseRepository
 {
-  constructor() {}
+  constructor(private pgCliente: PgCliente) {}
   public initialized: boolean;
-  public pgCliente: PgCliente;
 
+  public async executeQuery(
+    query: string,
+    params?: any[]
+  ): Promise<QueryResult<any>> {
+    try {
+      console.log(
+        `[${AbstractDatabaseConnection.name}.executeQuery] - adiquirindo coneexão com o banco de dados`
+      );
+      return await this.pgCliente.executeQuery(query, params);
+    } catch (e) {
+      console.error(
+        `[${AbstractDatabaseConnection.name}.executeQuery] - método processado com erro`,
+        e
+      );
+      throw e;
+    }
+  }
   public async initialize(): Promise<void> {
     try {
       console.log(
-        `[${AbstractDatabaseConnection.name}.inicar] - adiquirindo coneexão com o banco de dados`
+        `[${AbstractDatabaseConnection.name}.initialize] - adiquirindo coneexão com o banco de dados`
       );
       this.pgCliente = new PgCliente();
       await this.pgCliente.getConnection();
       this.initialized = true;
     } catch (e) {
       console.error(
-        `[${AbstractDatabaseConnection.name}.inicar] - método processado com erro`,
+        `[${AbstractDatabaseConnection.name}.initialize] - método processado com erro`,
         e
       );
       throw e;
-    } finally {
-      console.info(
-        `[${AbstractDatabaseConnection.name}.inicar] - método finalizado`
-      );
     }
   }
 
@@ -38,6 +51,9 @@ export abstract class AbstractDatabaseConnection
         case "ROLLBACK":
           await this.fecharConexaoCommitandoTransacao();
           break;
+        case "END":
+          await this.fecharConexao();
+          break;
         default:
           await this.fecharConexaoExecutandoRollback();
           throw new Error(
@@ -46,13 +62,25 @@ export abstract class AbstractDatabaseConnection
       }
     } catch (e) {
       console.error(
-        `[${AbstractDatabaseConnection.name}.finalizar] - método processado com erro`,
+        `[${AbstractDatabaseConnection.name}.finalize] - método processado com erro`,
         e
       );
       throw e;
-    } finally {
-      console.info(
-        `[${AbstractDatabaseConnection.name}.finalizar] - método finalizado`
+    }
+  }
+
+  private async fecharConexao(): Promise<void> {
+    try {
+      if (!this.initialized) {
+        return;
+      }
+      await this.pgCliente.end();
+
+      this.initialized = false;
+    } catch (e) {
+      console.error(
+        `[${AbstractDatabaseConnection.name}.fecharConexao] - método processado com erro`,
+        e
       );
     }
   }
@@ -71,10 +99,6 @@ export abstract class AbstractDatabaseConnection
         `[${AbstractDatabaseConnection.name}.fecharConexaoCommitandoTransacao] - método processado com erro`,
         e
       );
-    } finally {
-      console.info(
-        `[${AbstractDatabaseConnection.name}.fecharConexaoCommitandoTransacao] - método finalizado`
-      );
     }
   }
 
@@ -92,18 +116,6 @@ export abstract class AbstractDatabaseConnection
         `[${AbstractDatabaseConnection.name}.fecharConexaoExecutandoRollback] - método processado com erro`,
         e
       );
-    } finally {
-      console.info(
-        `[${AbstractDatabaseConnection.name}.fecharConexaoExecutandoRollback] - método finalizado`
-      );
     }
   }
-
-  // private validateConnection(): void {
-  //   if (!this.initialized) {
-  //     throw new Error(
-  //       'metodo "initilize" deve ser chamado antes da operação ser executada'
-  //     );
-  //   }
-  // }
 }

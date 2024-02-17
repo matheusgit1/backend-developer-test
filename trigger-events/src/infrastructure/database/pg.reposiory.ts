@@ -1,48 +1,40 @@
 import * as pg from "pg";
 
-export declare class PGClientRepository {
-  public cliente: pg.Client;
+export declare class PgClienteRepository {
+  public client: pg.Pool;
+  constructor(...args: any[]);
 
-  public constructor();
-
-  getConnection(): Promise<void>;
+  /**
+   * adiquire conexão de polol
+   * @returns {Promise<pg.PoolClient>}
+   */
+  getConnection(): Promise<pg.PoolClient>;
 
   /**
    * inicia transação com banco de dados
+   * @param {pg.PoolClient} connection conexão do pool
+   * @returns {Promise<void>}
    */
-  beginTransaction(): Promise<void>;
+  beginTransaction(connection: pg.PoolClient): Promise<void>;
 
   /**
    * inicia finaliza transação com banco de dados
+   * @param {pg.PoolClient} connection conexão do pool
+   * @returns {Promise<void>}
    */
-  commitTransaction(): Promise<void>;
+  commitTransaction(connection: pg.PoolClient): Promise<void>;
 
   /**
    * em caso de falha a transação não é mantida no banco de dados
+   * @param {pg.PoolClient} connection conexão do pool
+   * @returns {Promise<void>}
    */
-  rolbackTransaction(): Promise<void>;
+  rolbackTransaction(connection: pg.PoolClient): Promise<void>;
 
   /**
-   * fecha conexão com banco de dados
+   *  fecha conexão com banco de dados
+   * @param {pg.PoolClient} connection conexão do pool
+   * @returns {Promise<void>}
    */
-  end(): Promise<void>;
-
-  /**
-   * executa query sql dentro da mesma transação com banco de dados
-   * @param {string} query query sql
-   * @param {any[]} params array de parametros
-   * @return {Promise<pg.QueryResult<any>>}
-   */
-  executeQuery(query: string, params?: any[]): Promise<pg.QueryResult<any>>;
-}
-
-export type FinallyStrategy = "COMMIT" | "ROLLBACK";
-
-export declare class AbstrataDatabaseRepository {
-  public initialized: boolean;
-  public pgCliente: PGClientRepository;
-  constructor(...args: any[]);
-
-  initialize(): Promise<void>;
-  finalize(strategia: FinallyStrategy): Promise<void>;
+  end(connection: pg.PoolClient): Promise<void>;
 }

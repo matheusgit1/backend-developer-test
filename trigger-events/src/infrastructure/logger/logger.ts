@@ -1,4 +1,4 @@
-import { LoggingService } from "./dtos/logger.dto";
+import { LoggingService } from "./__dtos__/logger.dto";
 
 export class Logger implements LoggingService {
   constext: string;
@@ -7,17 +7,15 @@ export class Logger implements LoggingService {
   }
 
   info(...message: any[]) {
-    console.info(`[${this.constext}]`.concat(message.map((i) => i).join("\n")));
+    console.info(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
   }
   log(...message: any[]) {
-    console.log(`[${this.constext}]`.concat(message.map((i) => i).join("\n")));
+    console.log(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
   }
   warn(...message: any[]) {
-    console.warn(`[${this.constext}]`.concat(message.map((i) => i).join("\n")));
+    console.warn(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
   }
   error(...message: any[]) {
-    console.error(
-      `[${this.constext}]`.concat(message.map((i) => i).join("\n"))
-    );
+    console.error(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
   }
 }

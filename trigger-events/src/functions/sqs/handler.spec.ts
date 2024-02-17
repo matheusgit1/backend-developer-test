@@ -9,7 +9,7 @@ dotenv.configDotenv({
 import { ListennerFromSQS } from "./handler.sqs";
 import { mockEvenstDictionary } from "../../testes/class.mock";
 import { genEventPublishJob, genSqsEvents } from "../../testes/testes.util";
-import { EventReceived } from "./dtos/handlers.dto";
+import { EventReceived } from "./__dtos__/handlers.dto";
 
 import { FakeLogger } from "../../infrastructure/logger/fake-logger";
 

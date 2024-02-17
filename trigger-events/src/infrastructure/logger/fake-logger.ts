@@ -1,4 +1,4 @@
-import { LoggingService } from "./dtos/logger.dto";
+import { LoggingService } from "./__dtos__/logger.dto";
 
 export class FakeLogger implements LoggingService {
   constext: string;
