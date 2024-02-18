@@ -89,7 +89,7 @@ As it is a microservices architecture, it is not possible to document each one h
 - Portuguese
 - English
 
-## Stack utilizada
+## Stacks
 
 Docker, Typescript, JavaScript, Shell, Jest, AWS, Autocannon
 
