@@ -40,7 +40,7 @@ export class DeleteJobUseCase implements BaseUseCase {
       await this.pgClient.beginTransaction(conn);
       this.module.connection = conn;
 
-      const { rowCount } = await this.module.deleteJob(jobId);
+      const { rowCount } = await this.module.getJobById(jobId);
 
       if (rowCount <= 0) {
         return {
@@ -56,7 +56,7 @@ export class DeleteJobUseCase implements BaseUseCase {
         origin: "api-jobs",
       });
 
-      await this.pgClient.commitTransaction(conn);
+      // await this.pgClient.commitTransaction(conn);
 
       return {
         statusCode: StatusCodes.ACCEPTED,

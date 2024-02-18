@@ -110,9 +110,6 @@ export class JobModuleMock
   // id: crypto.randomUUID().toString(),
   createJob = jest.fn(async (_input: CreateJobDto): Promise<void> => {});
   archiveJob = jest.fn(async (_jobId: string): Promise<void> => {});
-  deleteJob = jest.fn(async (_jobId: string): Promise<pg.QueryResult<any>> => {
-    return { ...queryresults };
-  });
   getJobById = jest.fn(async (_jobId: string): Promise<pg.QueryResult<any>> => {
     return { ...queryresults, rowCount: 1 };
   });

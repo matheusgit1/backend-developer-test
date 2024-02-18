@@ -45,7 +45,6 @@ export declare class CompanyModuleRepository extends BaseModuleRepository {
 export declare class JobModuleRepository extends BaseModuleRepository {
   createJob(input: CreateJobDto): Promise<void>;
   archiveJob(jobId: string): Promise<void>;
-  deleteJob(jobId: string): Promise<QueryResult<any>>;
   getJobById(jobId: string): Promise<QueryResult<Job>>;
   updateJob(
     input: Partial<CreateJobDto>,

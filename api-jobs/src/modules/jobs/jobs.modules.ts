@@ -44,13 +44,6 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
 
     await this.executeQuery(sql, [jobId]);
   }
-  async deleteJob(jobId: string): Promise<QueryResult<any>> {
-    const sql = `
-      delete from jobs where id = $1
-    `;
-
-    return await this.executeQuery(sql, [jobId]);
-  }
 
   async getJobById(jobId: string): Promise<QueryResult<any>> {
     const sql = `SELECT * FROM jobs WHERE id = $1;`;

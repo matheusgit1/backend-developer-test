@@ -62,11 +62,6 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
         "rolbackTransaction"
       );
 
-      const spy_jobModuleMock_deleteJob = jest.spyOn(
-        jobModuleMock,
-        "deleteJob"
-      );
-
       await usecase.handler({
         req: {
           params: {
@@ -77,12 +72,9 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
 
       expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
       expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
       expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
-
-      expect(spy_jobModuleMock_deleteJob).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_deleteJob).toHaveBeenCalledWith(jobId);
     });
   });
 
@@ -112,11 +104,6 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
         "rolbackTransaction"
       );
 
-      const spy_jobModuleMock_deleteJob = jest.spyOn(
-        jobModuleMock,
-        "deleteJob"
-      );
-
       const res = await usecase.handler({
         req: {
           params: {
@@ -136,7 +123,6 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
       expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_jobModuleMock_deleteJob).toHaveBeenCalledTimes(0);
 
       expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.body).toHaveProperty("error");
@@ -167,11 +153,6 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
         "rolbackTransaction"
       );
 
-      const spy_jobModuleMock_deleteJob = jest.spyOn(
-        jobModuleMock,
-        "deleteJob"
-      );
-
       const res = await usecase.handler({
         req: {
           params: {
@@ -191,61 +172,6 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
       expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
       expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_deleteJob).toHaveBeenCalledTimes(0);
-      expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("se metodo de deleção falhar, usecase deve executar rollback e encerrar conexão", async () => {
-      const message = "erro mockado";
-      jobModuleMock.deleteJob.mockRejectedValueOnce(new Error(message));
-      const spy_pgClientMock_getConnection = jest.spyOn(
-        pgClientMock,
-        "getConnection"
-      );
-      const spy_pgClientMock_beginTransaction = jest.spyOn(
-        pgClientMock,
-        "beginTransaction"
-      );
-      const spy_pgClientMock_commitTransaction = jest.spyOn(
-        pgClientMock,
-        "commitTransaction"
-      );
-
-      const spy_pgClientMock_releaseTransaction = jest.spyOn(
-        pgClientMock,
-        "releaseTransaction"
-      );
-      const spy_pgClientMock_rolbackTransaction = jest.spyOn(
-        pgClientMock,
-        "rolbackTransaction"
-      );
-
-      const spy_jobModuleMock_deleteJob = jest.spyOn(
-        jobModuleMock,
-        "deleteJob"
-      );
-
-      const res = await usecase.handler({
-        req: {
-          params: {
-            job_id: jobId,
-          },
-          body: {
-            title: "title",
-            description: "description",
-            location: "location",
-            notes: "notes",
-          },
-        },
-      } as any);
-
-      expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
-      expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_jobModuleMock_deleteJob).toHaveBeenCalledTimes(1);
       expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.body).toHaveProperty("error");
     });

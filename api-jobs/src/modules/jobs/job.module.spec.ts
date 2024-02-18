@@ -51,22 +51,6 @@ describe(`cenários de testes para ${JobsModule.name}`, () => {
       expect(spy_jobModule_executeQuery).toHaveBeenCalledTimes(1);
     });
 
-    it("deve executar deleteJob corretamente", async () => {
-      jobModule.connection = {
-        //@ts-ignore
-        query: async (_quer: string, _params: any[]): Promise<QueryResult> => {
-          return { ...queryresults };
-        },
-      };
-
-      const spy_jobModule_executeQuery = jest.spyOn(jobModule, "executeQuery");
-
-      const res = await jobModule.deleteJob("jobId");
-
-      expect(res).toBeDefined();
-      expect(spy_jobModule_executeQuery).toHaveBeenCalledTimes(1);
-    });
-
     it("deve executar updateJob corretamente", async () => {
       jobModule.connection = {
         //@ts-ignore
@@ -110,10 +94,6 @@ describe(`cenários de testes para ${JobsModule.name}`, () => {
       );
 
       await expect(jobModule.archiveJob("jobId")).rejects.toThrow(
-        `conexão com base de dados não foi instaciada. Considere usar moduleName.connection = PoolClient`
-      );
-
-      await expect(jobModule.deleteJob("jobId")).rejects.toThrow(
         `conexão com base de dados não foi instaciada. Considere usar moduleName.connection = PoolClient`
       );
 
