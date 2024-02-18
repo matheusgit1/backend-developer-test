@@ -6,7 +6,7 @@ export type AvailableStatusJobs =
   | "archived"
   | "rejected";
 
-export interface JobProperties {
+export interface JobAtributtes {
   id: string;
   company_id: string;
   title: string;
@@ -14,15 +14,17 @@ export interface JobProperties {
   location: string;
   notes: string;
   status: AvailableStatusJobs;
-  created_at: Date;
-  updated_at: Date;
+  created_at: Date | string;
+  updated_at: Date | string;
 }
 
-export declare class JobModuleRepository {
-  getJob(cliente: pg.PoolClient, jobId: string): Promise<JobProperties>;
-  updateJobStatus(
-    cliente: pg.PoolClient,
-    jobId: string,
-    status: AvailableStatusJobs
-  ): Promise<void>;
+export declare class BaseModuleRepository {
+  name: string;
+  connection: pg.PoolClient;
+  executeQuery(query: string, params?: any[]): Promise<pg.QueryResult<any>>;
+}
+
+export declare class JobModuleRepository extends BaseModuleRepository {
+  getJob(jobId: string): Promise<pg.QueryResult<JobAtributtes>>;
+  updateJobStatus(jobId: string, status: AvailableStatusJobs): Promise<void>;
 }

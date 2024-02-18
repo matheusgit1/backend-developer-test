@@ -4,7 +4,7 @@ import { PublishJobDto } from "../../functions/sqs/__dtos__/handlers.dto";
 import * as pg from "pg";
 import {
   JobModuleRepository,
-  JobProperties,
+  JobAtributtes,
 } from "../../modules/jobs/jobs.repository";
 import { PgClienteRepository } from "../../infrastructure/database/pg.reposiory";
 import { ServiceOpenAI } from "../../infrastructure/services/__dtos__/services.dtos";
@@ -15,7 +15,6 @@ import { FeedJobs } from "../__dtos__/events.dtos";
 export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
   pgClient: PgClienteRepository;
   constructor(
-    // private readonly pgClient: PgClienteRepository,
     private readonly jobModule: JobModuleRepository,
     private readonly openAiService: ServiceOpenAI,
     private readonly s3: AWS.S3,
@@ -44,9 +43,16 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
 
       const conn = await this.pgClient.getConnection();
       await this.pgClient.beginTransaction(conn);
+      this.jobModule.connection = conn;
 
-      const job = await this.jobModule.getJob(conn, event.payload.job_id);
-      this.logger.info(`[handler] jobs encontrado: `, JSON.stringify(job));
+      const { rowCount, rows } = await this.jobModule.getJob(
+        event.payload.job_id
+      );
+      this.logger.info(`[handler] jobs encontrado: `, JSON.stringify(rows));
+
+      if (rowCount === 0) {
+        return;
+      }
 
       const [
         isModeratedTitle,
@@ -54,18 +60,11 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
         isModeratedNotes,
         isModeratedlocation,
       ] = await Promise.all([
-        this.openAiService.validateModeration(job.title),
-        this.openAiService.validateModeration(job.description),
-        this.openAiService.validateModeration(job.notes),
-        this.openAiService.validateModeration(job.location),
+        this.openAiService.validateModeration(rows[0].title),
+        this.openAiService.validateModeration(rows[0].description),
+        this.openAiService.validateModeration(rows[0].notes),
+        this.openAiService.validateModeration(rows[0].location),
       ]);
-
-      this.logger.info(
-        isModeratedTitle,
-        isModeratedDescription,
-        isModeratedNotes,
-        isModeratedlocation
-      );
 
       if (
         !isModeratedTitle ||
@@ -73,7 +72,7 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
         !isModeratedNotes ||
         !isModeratedlocation
       ) {
-        await this.jobModule.updateJobStatus(conn, job.id, "rejected");
+        await this.jobModule.updateJobStatus(rows[0].id, "rejected");
         await this.pgClient.commitTransaction(conn);
         await this.pgClient.end(conn);
         this.logger.info("[handler] status job atualizado (rejected)");
@@ -86,11 +85,11 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
 
       const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
 
-      job.status = "published";
-      job.updated_at = new Date();
+      rows[0].status = "published";
+      rows[0].updated_at = new Date().toString();
 
       const newJobPublished = {
-        ...job,
+        ...rows[0],
       };
       jsonContent.feeds.unshift(newJobPublished);
 
@@ -103,16 +102,14 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
       };
 
       await this.s3.upload(uploadParams).promise();
-      await this.jobModule.updateJobStatus(conn, job.id, "published");
+      await this.jobModule.updateJobStatus(rows[0].id, "published");
       await this.pgClient.commitTransaction(conn);
-      await this.pgClient.end(conn);
 
       this.logger.log(`[handler] Método processado com exito`);
     } catch (error: any) {
       try {
         if (conn) {
           await this.pgClient.rolbackTransaction(conn);
-          await this.pgClient.end(conn);
         }
       } catch (error) {
         this.logger.log(`[handler] Erro ao executar rollback`, error);

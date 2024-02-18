@@ -1,10 +1,7 @@
-import { promisify } from "util";
-import { Client } from "pg";
 import * as pg from "pg";
 import { configs } from "../../../configs/envs.config";
 import { PgClienteRepository } from "../pg.reposiory";
 
-// export class PgCliente implements PgClienteRepository
 export class PgClient implements PgClienteRepository {
   public client: pg.Pool;
   constructor() {
@@ -48,22 +45,6 @@ export class PgClient implements PgClienteRepository {
    *  fecha conexão com banco de dados
    */
   public async end(connection: pg.PoolClient): Promise<void> {
-    // const releaseAsync = promisify(connection.release).bind(connection);
-    // await releaseAsync();
     await connection.release();
   }
-
-  // /**
-  //  * executa query sql dentro da mesma transação com banco de dados
-  //  * @param {string} query query sql
-  //  * @param {any[]} params array de parametros
-  //  * @return {Promise<pg.QueryResult<any>>}
-  //  */
-  // public async executeQuery(
-  //   connection: pg.PoolClient
-  //   query: string,
-  //   params?: any[]
-  // ): Promise<pg.QueryResult<any>> {
-  //   return await this.core.query(query, params);
-  // }
 }

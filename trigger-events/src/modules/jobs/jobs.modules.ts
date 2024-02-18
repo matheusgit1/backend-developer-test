@@ -1,27 +1,28 @@
 import { Logger } from "../../infrastructure/logger/logger";
 import * as pg from "pg";
 import { AvailableStatusJobs, JobModuleRepository } from "./jobs.repository";
+import { BaseModule } from "../base.module";
 
-export class JobModule implements JobModuleRepository {
-  constructor(private readonly logger: Logger = new Logger(JobModule.name)) {}
+export class JobModule extends BaseModule implements JobModuleRepository {
+  constructor(private readonly logger: Logger = new Logger(JobModule.name)) {
+    super(JobModule.name);
+  }
 
-  async getJob(cliente: pg.PoolClient, jobId: string): Promise<any> {
+  async getJob(jobId: string): Promise<pg.QueryResult<any>> {
     const sql = `
         select * from jobs where id = $1;
       `;
 
-    const { rows } = await cliente.query(sql, [jobId]);
-    return rows[0];
+    return await this.executeQuery(sql, [jobId]);
   }
 
   async updateJobStatus(
-    cliente: pg.PoolClient,
     jobId: string,
     status: AvailableStatusJobs
   ): Promise<void> {
     const sql = `
       update jobs set status = $1::job_status, updated_at = NOW() where id = $2
     `;
-    await cliente.query(sql, [status, jobId]);
+    await this.executeQuery(sql, [status, jobId]);
   }
 }
