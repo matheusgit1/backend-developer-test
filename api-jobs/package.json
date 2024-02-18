@@ -10,7 +10,13 @@
     "test:coverage": "jest --coverage",
     "test": "jest",
     "autocannon:server": "ts-node-dev --respawn --pretty --transpile-only src/@autocannon/server/target.ts",
-    "autocannon:test": "ts-node-dev --transpile-only src/@autocannon/teste.ts"
+    "autocannon:test": "ts-node-dev --transpile-only src/@autocannon/teste.ts",
+    "test:usecase": "jest src/usecases",
+    "test:usecase:coverage": "jest src/usecases --coverage",
+    "test:modules": "jest src/usecases",
+    "test:modules:coverage": "jest src/modules --coverage",
+    "test:controllers": "jest src/controllers",
+    "test:controllers:coverage": "jest src/controllers --coverage"
   },
   "keywords": [
     "jobs",

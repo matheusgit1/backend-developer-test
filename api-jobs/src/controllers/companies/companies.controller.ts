@@ -13,7 +13,7 @@ export class CompaniesRoutesAdapted {
   public routes: Router = Router();
   constructor(private readonly usecases: Usecases) {
     for (const { method, path, usecase } of this.usecases) {
-      this.routes[method](
+      this.routes[method.toLowerCase()](
         path,
         async (req: Request, res: Response, next: NextFunction) =>
           await adaptRoute(() => usecase.handler({ req, next }), res)

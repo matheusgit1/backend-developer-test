@@ -69,9 +69,6 @@ const jobModuleMock: JobModuleRepository = {
   },
   createJob: async (_input: CreateJobDto): Promise<void> => {},
   archiveJob: async (_jobId: string): Promise<void> => {},
-  deleteJob: async (_jobId: string): Promise<QueryResult<any>> => {
-    return { ...queryresults, rowCount: 1 };
-  },
   getJobById: async (_jobId: string): Promise<QueryResult<any>> => {
     return { ...queryresults, rowCount: 1 };
   },

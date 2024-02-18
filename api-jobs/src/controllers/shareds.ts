@@ -1,7 +1,8 @@
 import { BaseUseCase } from "../usecases";
+import type {Method} from 'axios'
 
 export interface UsecasesDictionary {
-  method: "get" | "head" | "post" | "delete" | "put";
+  method: Method;
   path: string;
   usecase: BaseUseCase;
 }

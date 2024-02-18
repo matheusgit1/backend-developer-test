@@ -6,7 +6,7 @@ async function test() {
     title: "load test",
     url: "http://localhost:3001",
     connections: 300,
-    duration: 30,
+    duration: 10,
     pipelining: 3,
     workers: cpus().length,
     requests: [
