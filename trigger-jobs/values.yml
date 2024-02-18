@@ -1,6 +1,0 @@
-develop:
-  REGIAO: "us-east-1"
-  SECURITY_GROUP_API: "sg-01b1b0c461d67bd29"
-  SUBNET1: "subnet-00b09ecd1074b9d66" #privada
-  SUBNET2: "subnet-00b09ecd1074b9d66" #publica
-  TZ: "America/Sao_Paulo"
