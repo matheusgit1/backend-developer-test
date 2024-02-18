@@ -52,7 +52,7 @@ describe(`executando testes para ${GetFeedUseCase.name}`, () => {
       const spy_feedModuleMock_getFeed = jest.spyOn(feedModuleMock, "getFeed");
 
       const { statusCode, body } = await usecase.handler({} as any);
-      console.log(body);
+
       expect(spy_cacheMock_get).toHaveBeenCalledTimes(1);
       expect(spy_cacheMock_get).toHaveBeenCalledWith(cacheKey);
       expect(spy_cacheMock_set).toHaveBeenCalledTimes(0);
@@ -86,7 +86,7 @@ describe(`executando testes para ${GetFeedUseCase.name}`, () => {
     const spy_feedModuleMock_getFeed = jest.spyOn(feedModuleMock, "getFeed");
 
     const { statusCode, body } = await usecase.handler({} as any);
-    console.log(body);
+
     expect(spy_cacheMock_get).toHaveBeenCalledTimes(1);
     expect(spy_cacheMock_get).toHaveBeenCalledWith(cacheKey);
     expect(spy_cacheMock_set).toHaveBeenCalledTimes(1);

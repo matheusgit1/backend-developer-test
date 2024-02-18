@@ -7,11 +7,11 @@ export class CustomEventEmitter implements CustomEventEmitterDto {
     private readonly emiter: EventEmitter,
     private readonly handlerEvents: HandlerEventService
   ) {
-    this.emiter.on("publish_job", async (topic, version, payload) => {
+    this.emiter.on("job_actions", async (topic, version, payload) => {
       await this.handlerEvents.publishEvent(topic, version, payload);
     });
   }
   public publishJob(topic: string, version: number, payload: any): void {
-    this.emiter.emit("publish_job", topic, version, payload);
+    this.emiter.emit("job_actions", topic, version, payload);
   }
 }

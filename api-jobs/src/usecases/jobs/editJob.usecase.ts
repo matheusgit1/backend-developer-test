@@ -5,11 +5,13 @@ import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { validateUUID } from "../../utils/utilities";
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { PoolClient } from "pg";
+import { CustomEventEmitterDto } from "src/infrastructure/events/__dtos__/emiter-events.dtos";
 
 export class EditJobUseCase implements BaseUseCase {
   constructor(
     private readonly pgClient: PgClienteRepository,
-    private readonly module: JobModuleRepository
+    private readonly module: JobModuleRepository,
+    private readonly eventEmitter: CustomEventEmitterDto
   ) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
     let conn: PoolClient | undefined = undefined;
@@ -73,6 +75,13 @@ export class EditJobUseCase implements BaseUseCase {
             error: `${jobId} - job_id dos not exist`,
           },
         };
+      }
+
+      if (rows[0].status === "published") {
+        this.eventEmitter.publishJob("event_edit_job", 1, {
+          job_id: rows[0].id,
+          origin: "api-jobs",
+        });
       }
 
       await this.pgClient.commitTransaction(conn);

@@ -46,12 +46,20 @@ const routesAdapteds = new JobsRoutesAdapted([
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(pgCliente, jobModule),
+    usecase: new EditJobUseCase(
+      pgCliente,
+      jobModule,
+      new CustomEventEmitter(new EventEmitter(), new HandlerEvents())
+    ),
   },
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(pgCliente, jobModule),
+    usecase: new DeleteJobUseCase(
+      pgCliente,
+      jobModule,
+      new CustomEventEmitter(new EventEmitter(), new HandlerEvents())
+    ),
   },
   {
     path: "/:job_id/archive",

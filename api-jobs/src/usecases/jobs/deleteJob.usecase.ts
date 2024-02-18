@@ -5,11 +5,13 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { validateUUID } from "../../utils/utilities";
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
+import { CustomEventEmitterDto } from "src/infrastructure/events/__dtos__/emiter-events.dtos";
 
 export class DeleteJobUseCase implements BaseUseCase {
   constructor(
     private readonly pgClient: PgClienteRepository,
-    private readonly module: JobModuleRepository
+    private readonly module: JobModuleRepository,
+    private readonly eventEmitter: CustomEventEmitterDto
   ) {}
   public async handler({ req }: { req: Request }): Promise<HttpResponse> {
     let conn: PoolClient | undefined = undefined;
@@ -36,7 +38,7 @@ export class DeleteJobUseCase implements BaseUseCase {
 
       conn = await this.pgClient.getConnection();
       await this.pgClient.beginTransaction(conn);
-      this.module.connection;
+      this.module.connection = conn;
 
       const { rowCount } = await this.module.deleteJob(jobId);
 
@@ -49,7 +51,12 @@ export class DeleteJobUseCase implements BaseUseCase {
         };
       }
 
-      await this.pgClient.commitTransaction(conn);
+      this.eventEmitter.publishJob("event_delete_job", 1, {
+        job_id: jobId,
+        origin: "api-jobs",
+      });
+
+      // await this.pgClient.commitTransaction(conn);
 
       return {
         statusCode: StatusCodes.ACCEPTED,
