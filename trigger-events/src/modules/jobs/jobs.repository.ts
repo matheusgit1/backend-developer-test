@@ -27,4 +27,5 @@ export declare class BaseModuleRepository {
 export declare class JobModuleRepository extends BaseModuleRepository {
   getJob(jobId: string): Promise<pg.QueryResult<JobAtributtes>>;
   updateJobStatus(jobId: string, status: AvailableStatusJobs): Promise<void>;
+  deleteJob(jobId: string): Promise<void>;
 }

@@ -1,7 +1,10 @@
 import { SQSEvent } from "aws-lambda";
 import { EventHandlerBase } from "../../../events/base.event-handler";
 
-export type AvailableEvents = "event_publish_job" | "event_edit_job";
+export type AvailableEvents =
+  | "event_publish_job"
+  | "event_edit_job"
+  | "event_delete_job";
 
 export type EventHandlerDictionary = {
   [key in AvailableEvents]: EventHandlerBase<any>;
@@ -19,6 +22,11 @@ export interface PublishJobDto {
 }
 
 export interface EditJobDto {
+  job_id: string;
+  origin: string;
+}
+
+export interface DeleteJobDto {
   job_id: string;
   origin: string;
 }

@@ -1,21 +1,21 @@
 import { LoggingService } from "./__dtos__/logger.dto";
 
 export class Logger implements LoggingService {
-  constext: string;
+  context: string;
   constructor(context: string) {
-    this.constext = context;
+    this.context = context;
   }
 
   info(...message: any[]) {
-    console.info(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
+    console.info(`[${this.context}]`.concat(message.map((i) => i).join(" ")));
   }
   log(...message: any[]) {
-    console.log(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
+    console.log(`[${this.context}]`.concat(message.map((i) => i).join(" ")));
   }
   warn(...message: any[]) {
-    console.warn(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
+    console.warn(`[${this.context}]`.concat(message.map((i) => i).join(" ")));
   }
   error(...message: any[]) {
-    console.error(`[${this.constext}]`.concat(message.map((i) => i).join(" ")));
+    console.error(`[${this.context}]`.concat(message.map((i) => i).join(" ")));
   }
 }

@@ -39,9 +39,12 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
 
       const conn = await this.pgClient.getConnection();
       await this.pgClient.beginTransaction(conn);
+      this.jobModule.connection = conn;
 
-      const job = await this.jobModule.getJob(conn, event.payload.job_id);
-      this.logger.info(`[handler] jobs encontrado: `, JSON.stringify(job));
+      const { rowCount, rows } = await this.jobModule.getJob(
+        event.payload.job_id
+      );
+      this.logger.info(`[handler] jobs encontrado: `, JSON.stringify(rows));
 
       const [
         isModeratedTitle,
@@ -49,10 +52,10 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
         isModeratedNotes,
         isModeratedlocation,
       ] = await Promise.all([
-        this.openAiService.validateModeration(job.title),
-        this.openAiService.validateModeration(job.description),
-        this.openAiService.validateModeration(job.notes),
-        this.openAiService.validateModeration(job.location),
+        this.openAiService.validateModeration(rows[0].title),
+        this.openAiService.validateModeration(rows[0].description),
+        this.openAiService.validateModeration(rows[0].notes),
+        this.openAiService.validateModeration(rows[0].location),
       ]);
 
       this.logger.info(
@@ -68,20 +71,16 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
         !isModeratedNotes ||
         !isModeratedlocation
       ) {
-        await this.jobModule.updateJobStatus(conn, job.id, "rejected");
+        await this.jobModule.updateJobStatus(rows[0].id, "rejected");
         const jsonInBucket = await this.s3.getObject(downloadParams).promise();
         const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
         console.log("json content: ", jsonContent, typeof jsonContent);
-        const feeds = jsonContent.feeds.filter((_item) => _item.id !== job.id);
+        const feeds = jsonContent.feeds.filter(
+          (_item) => _item.id !== rows[0].id
+        );
         const newJsonContent = {
           feeds: feeds,
         };
-
-        console.log("new json content: ", newJsonContent);
-
-        // const updatedJsonContent = JSON.stringify(newJsonContent);
-
-        // console.log(updatedJsonContent);
 
         const uploadParams = {
           Bucket: bucketName,

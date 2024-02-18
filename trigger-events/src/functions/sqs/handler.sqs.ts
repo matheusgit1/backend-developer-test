@@ -27,6 +27,7 @@ export class ListennerFromSQS implements ListennerFromSQSDeclarations {
     } catch (e) {
       this.logger.error(`[handler]Método processado com erro`, e);
     }
+    process.exit(0);
   }
 
   public validateStrategy(strategy: string): boolean {

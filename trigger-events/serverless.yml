@@ -76,34 +76,6 @@ functions:
 
 resources:
   Resources:
-    # PolicyS3:
-    #   Type: AWS::IAM::Policy
-    #   Properties:
-    #     PolicyName: PolicyS3
-    #     Users: lambda
-    #     PolicyDocument:
-    #       Version: "2012-10-17"
-    #       Statement:
-    #         - Effect: Allow
-    #           Action:
-    #             - s3:GetObject
-    #             - s3:PutObject
-    #           Resource: arn:aws:s3:::${file(./values.yml):${self:provider.stage}.S3_FEEDS_BUCKET}/* # Substitua pelo ARN do seu bucket S3
-    # S3LambdaPolicy:
-    #   Type: AWS::IAM::Policy
-    #   Properties:
-    #     PolicyName: S3LambdaAcess
-    #     Roles:
-    #       - s3_roles
-    #     PolicyDocument:
-    #       Version: "2012-10-17"
-    #       Statement:
-    #         - Effect: Allow
-    #           Action:
-    #             - s3:GetObject
-    #             - s3:PutObject
-    #           Resource: "arn:aws:s3:::${file(./values.yml):${self:provider.stage}.S3_FEEDS_BUCKET}/*"
-
     EventsQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -152,6 +124,19 @@ resources:
               - Ref: "AWS::Region"
               - Ref: "AWS::AccountId"
               - "event_edit_job"
+
+    SNSSubscriptionDeleteJobEvent:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: { "Fn::GetAtt": ["EventsQueue", "Arn"] }
+        TopicArn:
+          Fn::Join:
+            - ":"
+            - - "arn:aws:sns"
+              - Ref: "AWS::Region"
+              - Ref: "AWS::AccountId"
+              - "event_delete_job"
 
     # Allow SNS to send messages to SQS
     EventsQueuePolicy:
