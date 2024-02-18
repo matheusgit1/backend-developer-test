@@ -4,7 +4,7 @@ import { HandlerEventService } from "./__dtos__/handler-event.dtos";
 import { configs } from "../../configs/envs/environments.config";
 
 export class HandlerEvents implements HandlerEventService {
-  public readonly client: AxiosInstance;
+  public client: AxiosInstance;
   constructor() {
     this.client = axios.create({
       baseURL: configs.URL_HANDLER_EVENTS,

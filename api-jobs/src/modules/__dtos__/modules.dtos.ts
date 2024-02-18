@@ -1,4 +1,4 @@
-import { PoolClient, QueryResult } from "pg";
+import { QueryResult } from "pg";
 import { BaseModuleRepository } from "../base.repository";
 
 export interface CreateJobDto {
@@ -15,6 +15,12 @@ export type AvailableStatusJobs =
   | "archived"
   | "rejected";
 
+export interface Company {
+  id: string;
+  name: string;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
 export interface Job {
   id: string;
   company_id: string;
@@ -32,8 +38,8 @@ export interface FeedJobs {
   feeds: JobInFeed[];
 }
 export declare class CompanyModuleRepository extends BaseModuleRepository {
-  getCompanies(): Promise<Array<any>>;
-  getCompanyById(id: string): Promise<Array<any>>;
+  getCompanies(): Promise<QueryResult<Company>>;
+  getCompanyById(id: string): Promise<QueryResult<Company>>;
 }
 
 export declare class JobModuleRepository extends BaseModuleRepository {

@@ -20,7 +20,7 @@ export class GetCompaniesUseCase implements BaseUseCase {
 
       return {
         statusCode: StatusCodes.OK,
-        body: companies.map((company) => ({
+        body: companies.rows.map((company) => ({
           id: company.id,
           name: company.name,
         })),

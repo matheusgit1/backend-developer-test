@@ -20,27 +20,31 @@ const usecases: Usecases = [
   {
     path: "/",
     method: "post",
-    usecase: new CreateJobUseCase(jobModuleMock),
+    usecase: new CreateJobUseCase(pgClienteMock, jobModuleMock),
   },
   {
     path: "/:job_id/publish",
     method: "put",
-    usecase: new PublishJobUseCase(jobModuleMock, mockCustomEventEmitter),
+    usecase: new PublishJobUseCase(
+      pgClienteMock,
+      jobModuleMock,
+      mockCustomEventEmitter
+    ),
   },
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(jobModuleMock),
+    usecase: new EditJobUseCase(pgClienteMock, jobModuleMock),
   },
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(jobModuleMock),
+    usecase: new DeleteJobUseCase(pgClienteMock, jobModuleMock),
   },
   {
     path: "/:job_id/archive",
     method: "put",
-    usecase: new ArchiveJobUseCase(jobModuleMock),
+    usecase: new ArchiveJobUseCase(pgClienteMock, jobModuleMock),
   },
 ];
 
@@ -80,9 +84,19 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
 
     it("deve executar '/:job_id/publish' com sucesso", async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 1,
+        rows: [
+          {
+            id: "job_id",
+            status: "draft",
+          },
+        ],
+      });
       const { body, status } = await request(app).put(`/${jobId}/publish`);
       expect(body).toBeDefined();
-      expect(status).toBe(StatusCodes.NOT_IMPLEMENTED);
+      expect(status).toBe(StatusCodes.ACCEPTED);
     });
 
     it("deve executar '/:job_id' com sucesso", async () => {
@@ -134,7 +148,9 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
   describe(`casos de erros`, () => {
     describe('cenários para "/"', () => {
       it(`deve executar '/' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-        jobModuleMock.init.mockRejectedValueOnce(new Error("erro mockado"));
+        pgClienteMock.getConnection.mockRejectedValueOnce(
+          new Error("erro mockado")
+        );
         const { body, status } = await request(app)
           .post("/")
           .send({
@@ -179,18 +195,28 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
       });
     });
     describe('cenários para "/:job_id/publish"', () => {
-      it(`deve executar '/' com status code ${StatusCodes.NOT_IMPLEMENTED}`, async () => {
+      it(`deve executar '/' com status code ${StatusCodes.ACCEPTED}`, async () => {
+        jobModuleMock.getJobById.mockResolvedValueOnce({
+          ...queryresults,
+          rowCount: 1,
+          rows: [
+            {
+              id: "job_id",
+              status: "draft",
+            },
+          ],
+        });
         const { body, status } = await request(app)
           .put(`/${jobId}/publish`)
           .set("Content-Type", "application/json")
           .set("Accept", "application/json");
         // .set("company_id", crypto.randomUUID().toString());
-        expect(status).toEqual(StatusCodes.NOT_IMPLEMENTED);
+        expect(status).toEqual(StatusCodes.ACCEPTED);
       });
     });
     describe('cenários para "/:job_id" (edição)', () => {
       it(`deve executar '/' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-        jobModuleMock.init.mockRejectedValueOnce(new Error());
+        pgClienteMock.getConnection.mockRejectedValueOnce(new Error());
         const { body, status } = await request(app)
           .put(`/${jobId}`)
           .send({
@@ -227,7 +253,7 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
     describe('cenários para "/:job_id" (delete)', () => {
       it(`deve executar '/' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-        jobModuleMock.init.mockRejectedValueOnce(new Error());
+        pgClienteMock.getConnection.mockRejectedValueOnce(new Error());
         const { body, status } = await request(app)
           .delete(`/${jobId}`)
           .set("Content-Type", "application/json")
@@ -246,7 +272,7 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
     describe('cenários para "/:job_id/archive" ', () => {
       it(`deve executar '/:job_id/archive' com status code ${StatusCodes.INTERNAL_SERVER_ERROR} se alguma ação na base de dados falhar (conexão)`, async () => {
-        jobModuleMock.init.mockRejectedValueOnce(new Error());
+        pgClienteMock.getConnection.mockRejectedValueOnce(new Error());
         const { body, status } = await request(app)
           .delete(`/${jobId}`)
           .set("Content-Type", "application/json")

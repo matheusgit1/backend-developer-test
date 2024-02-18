@@ -1,5 +1,4 @@
 import { configs } from "../../configs/envs/environments.config";
-import { PgCliente } from "../../infrastructure/database/client/database.repository";
 import { FeedJobs, FeedModuleRepository } from "../__dtos__/modules.dtos";
 import { BaseModule } from "../base.module";
 import * as AWS from "aws-sdk";

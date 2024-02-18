@@ -1,3 +1,4 @@
+import { Company, FeedJobs } from "../modules/__dtos__/modules.dtos";
 import * as pg from "pg";
 import { PgClienteRepository } from "../infrastructure/database/pg.repository";
 import { HandlerEventService } from "../infrastructure/services/__dtos__/handler-event.dtos";
@@ -6,14 +7,10 @@ import { CustomEventEmitterDto } from "../infrastructure/events/__dtos__/emiter-
 import {
   CompanyModuleRepository,
   CreateJobDto,
-  FeedJobs,
   FeedModuleRepository,
   JobModuleRepository,
 } from "../modules/__dtos__/modules.dtos";
-import {
-  BaseModuleRepository,
-  FinallyStrategy,
-} from "../modules/base.repository";
+import { BaseModuleRepository } from "../modules/base.repository";
 import Cache from "node-cache";
 
 export const queryresults = {
@@ -76,21 +73,33 @@ export class CompanyModuleMock
   extends BaseModuleMock
   implements CompanyModuleRepository
 {
-  getCompanies = jest.fn(async (): Promise<Array<any>> => {
-    return [
-      {
-        id: crypto.randomUUID().toString(),
-        name: "Company",
-      },
-    ];
+  getCompanies = jest.fn(async (): Promise<pg.QueryResult<Company>> => {
+    return {
+      ...queryresults,
+      rowCount: 1,
+      rows: [
+        {
+          id: crypto.randomUUID().toString(),
+          name: "Company",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+        },
+      ],
+    };
   });
-  getCompanyById = jest.fn(async (): Promise<Array<any>> => {
-    return [
-      {
-        id: crypto.randomUUID().toString(),
-        name: "Company",
-      },
-    ];
+  getCompanyById = jest.fn(async (): Promise<pg.QueryResult<Company>> => {
+    return {
+      ...queryresults,
+      rowCount: 1,
+      rows: [
+        {
+          id: crypto.randomUUID().toString(),
+          name: "Company",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+        },
+      ],
+    };
   });
 }
 
@@ -146,3 +155,31 @@ export class FeedModuleMock
     };
   });
 }
+
+export const S3 = {
+  getObject: jest.fn().mockReturnValue({
+    promise: () => {
+      return {
+        Body: {
+          toString: () => {
+            return JSON.stringify({
+              feeds: [
+                {
+                  id: "id",
+                  company_id: "company_id",
+                  title: "title",
+                  description: "description",
+                  notes: "notes",
+                  location: "location",
+                  created_at: new Date().toString(),
+                  updated_at: new Date().toString(),
+                  status: "published",
+                },
+              ],
+            } as FeedJobs);
+          },
+        },
+      };
+    },
+  }),
+};

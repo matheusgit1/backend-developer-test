@@ -2,13 +2,12 @@ import {
   CreateJobDto,
   FeedJobs,
   FeedModuleRepository,
-} from "./../../modules/__dtos__/modules.dtos";
-import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
+  JobModuleRepository,
+} from "../../modules/__dtos__/modules.dtos";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { HealthRoutesAdapted } from "../../controllers/health/health.controller";
 import { Usecases } from "../../controllers/shareds";
 import { GetHealthUseCase } from "../../usecases/health/gethealth.usecase";
-import { queryresults } from "../../tests/mocks";
 import { GetCompanyByIdUseCase } from "../../usecases/companies/getCompanyById.usecase";
 import { CompaniesRoutesAdapted } from "../../controllers/companies/companies.controller";
 import { CreateJobUseCase } from "../../usecases/jobs/CreateJob.usecase";
@@ -25,6 +24,24 @@ import { FeedRoutesAdapted } from "../../controllers/feed/feed.controller";
 import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
 import Cache from "node-cache";
 
+export const queryresults = {
+  rowCount: 1,
+  rows: [],
+  oid: null,
+  command: "command",
+  fields: [
+    {
+      name: "name",
+      tableID: 1,
+      columnID: 1,
+      dataTypeID: 1,
+      dataTypeSize: 1,
+      dataTypeModifier: 1,
+      format: "format",
+    },
+  ],
+};
+
 const latencia = 500; //milisegundos
 
 const cache: Partial<Cache> = {
@@ -34,6 +51,7 @@ const cache: Partial<Cache> = {
     return true;
   },
 };
+
 const connection: PoolClient = {
   //@ts-ignore
   query: async (_query: string, _params?: any[]): Promise<QueryResult<any>> => {
@@ -45,7 +63,7 @@ const jobModuleMock: JobModuleRepository = {
   connection: connection,
   executeQuery: async (
     _query: string,
-    params?: any[]
+    _params?: any[]
   ): Promise<QueryResult<any>> => {
     return { ...queryresults, rowCount: 1 };
   },
@@ -69,29 +87,39 @@ const companyModuleMock: CompanyModuleRepository = {
   connection: connection,
   executeQuery: async (
     _query: string,
-    params?: any[]
+    _params?: any[]
   ): Promise<QueryResult<any>> => {
     return { ...queryresults, rowCount: 1 };
   },
-  getCompanies: async (): Promise<Array<any>> => {
-    return [
-      {
-        id: crypto.randomUUID().toString(),
-        name: "Company",
-      },
-    ];
+  getCompanies: async (): Promise<QueryResult<any>> => {
+    return {
+      ...queryresults,
+      rowCount: 1,
+      rows: [
+        {
+          id: crypto.randomUUID().toString(),
+          name: "Company",
+          status: "draft",
+        },
+      ],
+    };
   },
-  getCompanyById: async (): Promise<Array<any>> => {
-    return [
-      {
-        id: crypto.randomUUID().toString(),
-        name: "Company",
-      },
-    ];
+  getCompanyById: async (): Promise<QueryResult<any>> => {
+    return {
+      ...queryresults,
+      rowCount: 1,
+      rows: [
+        {
+          id: crypto.randomUUID().toString(),
+          name: "Company",
+          status: "draft",
+        },
+      ],
+    };
   },
 };
 
-const feedmodule: FeedModuleRepository = {
+const feedmoduleMock: FeedModuleRepository = {
   connection: "connection" as unknown as any,
   executeQuery: async (): Promise<QueryResult<any>> => {
     return { ...queryresults };
@@ -205,12 +233,12 @@ const feedusecases: Usecases = [
   {
     path: "/",
     method: "get",
-    usecase: new GetFeedUseCase(feedmodule, cache as any),
+    usecase: new GetFeedUseCase(feedmoduleMock, cache as any),
   },
 ];
 
 export const { routes: jobroutes } = new JobsRoutesAdapted(jobsusecases);
-export const { routes: helthroutes } = new HealthRoutesAdapted(helthUsecases);
+export const { routes: healthroutes } = new HealthRoutesAdapted(helthUsecases);
 export const { routes: companyroutes } = new CompaniesRoutesAdapted(
   companiesusecases
 );

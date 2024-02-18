@@ -4,7 +4,7 @@ import { BaseModuleRepository, FinallyStrategy } from "./base.repository";
 
 export class BaseModule implements BaseModuleRepository {
   public connection: PoolClient = undefined;
-  private moduleName: string;
+  public moduleName: string;
   constructor(moduleName: string) {
     this.moduleName = moduleName;
   }

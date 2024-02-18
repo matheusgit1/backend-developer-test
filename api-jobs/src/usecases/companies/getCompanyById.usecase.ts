@@ -26,12 +26,12 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
       }
       conn = await this.pgClient.getConnection();
       this.module.connection = conn;
-      const company = await this.module.getCompanyById(companyId);
+      const { rowCount, rows } = await this.module.getCompanyById(companyId);
 
       return {
         statusCode: 200,
         body: {
-          ...company[0],
+          ...rows[0],
         },
       };
     } catch (err) {
