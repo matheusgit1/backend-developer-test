@@ -56,7 +56,7 @@ export class DeleteJobUseCase implements BaseUseCase {
         origin: "api-jobs",
       });
 
-      // await this.pgClient.commitTransaction(conn);
+      await this.pgClient.commitTransaction(conn);
 
       return {
         statusCode: StatusCodes.ACCEPTED,

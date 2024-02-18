@@ -6,7 +6,7 @@ import request from "supertest";
 
 import { CustomEventEmitterMock, PgClienteMock } from "../../tests/mocks";
 import { JobsRoutesAdapted } from "./jobs.controller";
-import { CreateJobUseCase } from "../../usecases/jobs/CreateJob.usecase";
+import { CreateJobUseCase } from "../../usecases/jobs/createJob.usecase";
 import { PublishJobUseCase } from "../../usecases/jobs/publishJob.usecase";
 import { EditJobUseCase } from "../../usecases/jobs/editJob.usecase";
 import { DeleteJobUseCase } from "../../usecases/jobs/deleteJob.usecase";
@@ -34,12 +34,20 @@ const usecases: Usecases = [
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(pgClienteMock, jobModuleMock),
+    usecase: new EditJobUseCase(
+      pgClienteMock,
+      jobModuleMock,
+      mockCustomEventEmitter
+    ),
   },
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(pgClienteMock, jobModuleMock),
+    usecase: new DeleteJobUseCase(
+      pgClienteMock,
+      jobModuleMock,
+      mockCustomEventEmitter
+    ),
   },
   {
     path: "/:job_id/archive",
@@ -100,6 +108,16 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
 
     it("deve executar '/:job_id' com sucesso", async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 1,
+        rows: [
+          {
+            id: "job_id",
+            status: "draft",
+          },
+        ],
+      });
       const { body, status } = await request(app)
         .put(`/${jobId}`)
         .send({
@@ -115,6 +133,16 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
 
     it("deve executar '/:job_id' com sucesso mesmo com apenas um parametro", async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 1,
+        rows: [
+          {
+            id: "job_id",
+            status: "draft",
+          },
+        ],
+      });
       const { body, status } = await request(app)
         .put(`/${jobId}`)
         .send({
@@ -286,7 +314,6 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
           .delete(`/jobId`)
           .set("Content-Type", "application/json")
           .set("Accept", "application/json");
-        // .set("company_id", crypto.randomUUID().toString());
         expect(status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
       });
     });

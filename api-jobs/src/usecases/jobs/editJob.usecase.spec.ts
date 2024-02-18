@@ -1,4 +1,5 @@
 import {
+  CustomEventEmitterMock,
   JobModuleMock,
   PgClienteMock,
   queryresults,
@@ -8,7 +9,13 @@ import { EditJobUseCase } from "./editJob.usecase";
 
 const pgClientMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
-const usecase = new EditJobUseCase(pgClientMock, jobModuleMock);
+const customEventEmmiter = new CustomEventEmitterMock();
+
+const usecase = new EditJobUseCase(
+  pgClientMock,
+  jobModuleMock,
+  customEventEmmiter
+);
 const jobId = crypto.randomUUID().toString();
 
 describe(`executando testes para ${EditJobUseCase.name}`, () => {
@@ -21,6 +28,16 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
   jest.useRealTimers();
   describe(`casos de sucesso`, () => {
     it(`deve retornar status code ${StatusCodes.OK}`, async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 1,
+        rows: [
+          {
+            id: "id",
+            status: "draft",
+          },
+        ],
+      });
       const res = await usecase.handler({
         req: {
           params: {
@@ -39,6 +56,16 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
     });
 
     it(`deve retornar status code ${StatusCodes.OK} mesmo se apenas um parametro for informado`, async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 1,
+        rows: [
+          {
+            id: "id",
+            status: "draft",
+          },
+        ],
+      });
       const res = await usecase.handler({
         req: {
           params: {
@@ -60,6 +87,12 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
       jobModuleMock.getJobById.mockResolvedValueOnce({
         ...queryresults,
         rowCount: 1,
+        rows: [
+          {
+            id: "id",
+            status: "draft",
+          },
+        ],
       });
       const bodyRequest = {
         title: "title",

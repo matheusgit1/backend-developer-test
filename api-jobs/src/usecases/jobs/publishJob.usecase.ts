@@ -66,7 +66,6 @@ export class PublishJobUseCase implements BaseUseCase {
       if (conn) {
         await this.pgClient.rolbackTransaction(conn);
       }
-      console.error("erro publishjob", err);
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {

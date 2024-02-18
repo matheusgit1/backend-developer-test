@@ -59,7 +59,7 @@ export class HandlerEventsMock implements HandlerEventService {
 
 export class CustomEventEmitterMock implements CustomEventEmitterDto {
   publishJob = jest.fn(
-    (topic: string, version: number, payload: any): void => {}
+    (_topic: string, _version: number, _payload: any): void => {}
   );
 }
 

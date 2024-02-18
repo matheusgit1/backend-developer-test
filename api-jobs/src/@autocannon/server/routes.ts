@@ -10,7 +10,7 @@ import { Usecases } from "../../controllers/shareds";
 import { GetHealthUseCase } from "../../usecases/health/gethealth.usecase";
 import { GetCompanyByIdUseCase } from "../../usecases/companies/getCompanyById.usecase";
 import { CompaniesRoutesAdapted } from "../../controllers/companies/companies.controller";
-import { CreateJobUseCase } from "../../usecases/jobs/CreateJob.usecase";
+import { CreateJobUseCase } from "../../usecases/jobs/createJob.usecase";
 import { PublishJobUseCase } from "../../usecases/jobs/publishJob.usecase";
 import { EditJobUseCase } from "../../usecases/jobs/editJob.usecase";
 import { DeleteJobUseCase } from "../../usecases/jobs/deleteJob.usecase";
@@ -24,7 +24,7 @@ import { FeedRoutesAdapted } from "../../controllers/feed/feed.controller";
 import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
 import Cache from "node-cache";
 
-export const queryresults = {
+export const queryresults: QueryResult<any> = {
   rowCount: 1,
   rows: [],
   oid: null,
@@ -215,12 +215,20 @@ const jobsusecases: Usecases = [
   {
     path: "/:job_id",
     method: "put",
-    usecase: new EditJobUseCase(pgClienteMock, jobModuleMock),
+    usecase: new EditJobUseCase(
+      pgClienteMock,
+      jobModuleMock,
+      mockCustomEventEmitter
+    ),
   },
   {
     path: "/:job_id",
     method: "delete",
-    usecase: new DeleteJobUseCase(pgClienteMock, jobModuleMock),
+    usecase: new DeleteJobUseCase(
+      pgClienteMock,
+      jobModuleMock,
+      mockCustomEventEmitter
+    ),
   },
   {
     path: "/:job_id/archive",

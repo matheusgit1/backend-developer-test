@@ -68,7 +68,7 @@ export class EditJobUseCase implements BaseUseCase {
         this.module.getJobById(jobId),
       ]);
 
-      if (rowCount < 1) {
+      if (rowCount == 0) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
           body: {
@@ -94,7 +94,6 @@ export class EditJobUseCase implements BaseUseCase {
       if (conn) {
         await this.pgClient.rolbackTransaction(conn);
       }
-
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {

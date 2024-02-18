@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { JobModuleMock, PgClienteMock } from "../../tests/mocks";
-import { CreateJobUseCase } from "./CreateJob.usecase";
+import { CreateJobUseCase } from "./createJob.usecase";
 
 const pgClientMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();

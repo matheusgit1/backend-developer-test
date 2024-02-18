@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { adaptRoute } from "../adapters";
-import { CreateJobUseCase } from "../../usecases/jobs/CreateJob.usecase";
+import { CreateJobUseCase } from "../../usecases/jobs/createJob.usecase";
 import { PgCliente } from "../../infrastructure/database/client/database.repository";
 import { PublishJobUseCase } from "../../usecases/jobs/publishJob.usecase";
 import { CustomEventEmitter } from "../../infrastructure/events/emiter.events";

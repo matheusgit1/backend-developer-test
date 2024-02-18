@@ -1,10 +1,20 @@
-import { JobModuleMock, PgClienteMock } from "./../../tests/mocks";
+import {
+  CustomEventEmitterMock,
+  JobModuleMock,
+  PgClienteMock,
+} from "./../../tests/mocks";
 import { StatusCodes } from "http-status-codes";
 import { DeleteJobUseCase } from "./deleteJob.usecase";
 
 const pgClientMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
-const usecase = new DeleteJobUseCase(pgClientMock, jobModuleMock);
+const customEventEmmiter = new CustomEventEmitterMock();
+
+const usecase = new DeleteJobUseCase(
+  pgClientMock,
+  jobModuleMock,
+  customEventEmmiter
+);
 const jobId = crypto.randomUUID().toString();
 const companyId = crypto.randomUUID().toString();
 
