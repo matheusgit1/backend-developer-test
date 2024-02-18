@@ -66,7 +66,7 @@ after deployment, in the aws console, retrieve the values of the api key and the
 
 Typescript, JavaScript, Shell, Jest, IaC
 
-## Teste unitários
+## Unit testing
 
 To run unit tests, use the command lines below
 
