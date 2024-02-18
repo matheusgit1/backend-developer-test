@@ -10,10 +10,6 @@ The solution implemented to solve the problem is described in the figure below
 
 Below are some considerations before we test the app in your own environment, read them carefully
 
-Frontend:
-Api de compras:
-Api de produtos:
-
 ## Initial Considerations
 
 As it is a system based on microservices and events, we must prepare the environment to receive and publish events, and events must be defined so that other microservices know what they are receiving in a standardized way. events was developed, designed to validate what is received with a well-defined schema stored in the dynamoDB service, in a "handler_eventos" table.
