@@ -4,17 +4,23 @@ import { PublishJobEventHandler } from "./events/publish_job";
 import { EditJobEventHandler } from "./events/edit_job";
 import { JobModule } from "./modules/jobs/jobs.modules";
 import { OpenAiService } from "./infrastructure/services/open-ia.service";
-import * as AWS from "aws-sdk";
 import { DeleteJobEventHandler } from "./events/delete_job";
+import { AWSPort } from "./ports/aws/aws.port";
+import { PgClient } from "./infrastructure/database/cliente/pg.cliente";
 
+const pgClient = new PgClient();
 const jobModule = new JobModule();
 const openAIService = new OpenAiService();
-const s3 = new AWS.S3();
+const portAWS = new AWSPort();
 
 const evenstDictionary: EventHandlerDictionary = {
-  event_publish_job: new PublishJobEventHandler(jobModule, openAIService, s3),
-  event_edit_job: new EditJobEventHandler(jobModule, openAIService, s3),
-  event_delete_job: new DeleteJobEventHandler(jobModule, s3),
+  event_publish_job: new PublishJobEventHandler(
+    jobModule,
+    openAIService,
+    portAWS
+  ),
+  event_edit_job: new EditJobEventHandler(jobModule, openAIService, portAWS),
+  event_delete_job: new DeleteJobEventHandler(jobModule, portAWS),
 };
 
 const eventListenner = new ListennerFromSQS(evenstDictionary);

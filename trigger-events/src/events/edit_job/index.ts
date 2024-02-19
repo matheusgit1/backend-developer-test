@@ -2,12 +2,13 @@ import { EventHandlerBase, EventHandlerBaseDto } from "../base.event-handler";
 import { Logger } from "../../infrastructure/logger/logger";
 import { EditJobDto } from "../../functions/sqs/__dtos__/handlers.dto";
 import * as pg from "pg";
-import { JobModuleRepository } from "../../modules/jobs/jobs.repository";
 import { PgClienteRepository } from "../../infrastructure/database/pg.reposiory";
 import { ServiceOpenAI } from "../../infrastructure/services/__dtos__/services.dtos";
 import * as AWS from "aws-sdk";
 import { PgClient } from "../../infrastructure/database/cliente/pg.cliente";
 import { FeedJobs } from "../__dtos__/events.dtos";
+import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
   pgClient: PgClienteRepository;
@@ -15,7 +16,7 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
     // private readonly pgClient: PgClienteRepository,
     private readonly jobModule: JobModuleRepository,
     private readonly openAiService: ServiceOpenAI,
-    private readonly s3: AWS.S3,
+    private readonly awsPort: AWSPortDto,
     private readonly logger = new Logger(EditJobEventHandler.name)
   ) {
     this.pgClient = new PgClient();
@@ -37,7 +38,7 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
         Key: key,
       };
 
-      const conn = await this.pgClient.getConnection();
+      conn = await this.pgClient.getConnection();
       await this.pgClient.beginTransaction(conn);
       this.jobModule.connection = conn;
 
@@ -59,10 +60,13 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
       ]);
 
       this.logger.info(
-        isModeratedTitle,
-        isModeratedDescription,
-        isModeratedNotes,
-        isModeratedlocation
+        `[handler] moderações: `,
+        JSON.stringify({
+          isModeratedTitle,
+          isModeratedDescription,
+          isModeratedNotes,
+          isModeratedlocation,
+        })
       );
 
       if (
@@ -72,7 +76,7 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
         !isModeratedlocation
       ) {
         await this.jobModule.updateJobStatus(rows[0].id, "rejected");
-        const jsonInBucket = await this.s3.getObject(downloadParams).promise();
+        const jsonInBucket = await this.awsPort.getObjectFroms3(downloadParams);
         const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
         console.log("json content: ", jsonContent, typeof jsonContent);
         const feeds = jsonContent.feeds.filter(
@@ -88,27 +92,28 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
           Body: JSON.stringify(newJsonContent),
         };
 
-        await this.s3.upload(uploadParams).promise();
+        await this.awsPort.uploadObjectToS3(uploadParams);
 
         await this.pgClient.commitTransaction(conn);
 
         this.logger.info("[handler] status job atualizado (rejected)");
       }
 
-      await this.pgClient.end(conn);
-
       this.logger.log(`[handler] Método processado com exito`);
     } catch (error: any) {
       try {
         if (conn) {
           await this.pgClient.rolbackTransaction(conn);
-          await this.pgClient.end(conn);
         }
+        this.logger.error("error handler", error);
       } catch (error) {
         this.logger.log(`[handler] Erro ao executar rollback`, error);
       }
       this.logger.error(`[handler] - método processado com error: `, error);
-      throw error;
+    } finally {
+      if (conn) {
+        await this.pgClient.end(conn);
+      }
     }
   }
 }

@@ -6,13 +6,14 @@ import * as pg from "pg";
 import * as AWS from "aws-sdk";
 import { FeedJobs } from "../__dtos__/events.dtos";
 import { PgClienteRepository } from "../../infrastructure/database/pg.reposiory";
-import { JobModuleRepository } from "../../modules/jobs/jobs.repository";
+import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
+import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
   pgClient: PgClienteRepository;
   constructor(
     private readonly jobModule: JobModuleRepository,
-    private readonly s3: AWS.S3,
+    private readonly awsPort: AWSPortDto,
     private readonly logger = new Logger(DeleteJobEventHandler.name)
   ) {
     this.pgClient = new PgClient();
@@ -36,7 +37,7 @@ export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
         Key: key,
       };
 
-      const jsonInBucket = await this.s3.getObject(downloadParams).promise();
+      const jsonInBucket = await this.awsPort.getObjectFroms3(downloadParams);
       const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
 
       const feeds = jsonContent.feeds.filter(
@@ -58,7 +59,7 @@ export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
         Body: JSON.stringify(newJsonContent),
       };
 
-      await this.s3.upload(uploadParams).promise();
+      await this.awsPort.uploadObjectToS3(uploadParams);
 
       this.logger.info(
         `[handler] feed atualizado ${event.payload.job_id} removido do feed`
@@ -71,11 +72,11 @@ export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
       if (conn) {
         await this.pgClient.rolbackTransaction(conn);
       }
+      console.error(error);
       this.logger.error(`[handler] - método processado com error: `, error);
-      throw error;
     } finally {
       if (conn) {
-        await this.pgClient.rolbackTransaction(conn);
+        await this.pgClient.end(conn);
       }
     }
   }

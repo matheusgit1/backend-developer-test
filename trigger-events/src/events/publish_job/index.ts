@@ -2,22 +2,20 @@ import { EventHandlerBase, EventHandlerBaseDto } from "../base.event-handler";
 import { Logger } from "../../infrastructure/logger/logger";
 import { PublishJobDto } from "../../functions/sqs/__dtos__/handlers.dto";
 import * as pg from "pg";
-import {
-  JobModuleRepository,
-  JobAtributtes,
-} from "../../modules/jobs/jobs.repository";
 import { PgClienteRepository } from "../../infrastructure/database/pg.reposiory";
 import { ServiceOpenAI } from "../../infrastructure/services/__dtos__/services.dtos";
 import * as AWS from "aws-sdk";
 import { PgClient } from "../../infrastructure/database/cliente/pg.cliente";
 import { FeedJobs } from "../__dtos__/events.dtos";
+import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
+import { JobModuleRepository } from "src/modules/__dtos__/modules.dtos";
 
 export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
   pgClient: PgClienteRepository;
   constructor(
     private readonly jobModule: JobModuleRepository,
     private readonly openAiService: ServiceOpenAI,
-    private readonly s3: AWS.S3,
+    private readonly awsPort: AWSPortDto,
     private readonly logger = new Logger(PublishJobEventHandler.name)
   ) {
     this.pgClient = new PgClient();
@@ -41,7 +39,7 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
         Key: key,
       };
 
-      const conn = await this.pgClient.getConnection();
+      conn = await this.pgClient.getConnection();
       await this.pgClient.beginTransaction(conn);
       this.jobModule.connection = conn;
 
@@ -79,9 +77,9 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
         return;
       }
 
-      const jsonInBucket = await this.s3
-        .getObject(downloadJsonBucket)
-        .promise();
+      const jsonInBucket = await this.awsPort.getObjectFroms3(
+        downloadJsonBucket
+      );
 
       const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
 
@@ -101,7 +99,7 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
         Body: newJsonContent,
       };
 
-      await this.s3.upload(uploadParams).promise();
+      await this.awsPort.uploadObjectToS3(uploadParams);
       await this.jobModule.updateJobStatus(rows[0].id, "published");
       await this.pgClient.commitTransaction(conn);
 
@@ -114,8 +112,12 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
       } catch (error) {
         this.logger.log(`[handler] Erro ao executar rollback`, error);
       }
+      this.logger.error("error handler", error);
       this.logger.error(`[handler] - método processado com error: `, error);
-      throw error;
+    } finally {
+      if (conn) {
+        await this.pgClient.end(conn);
+      }
     }
   }
 }

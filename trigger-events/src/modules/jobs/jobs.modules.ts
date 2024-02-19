@@ -1,7 +1,10 @@
 import { Logger } from "../../infrastructure/logger/logger";
 import * as pg from "pg";
-import { AvailableStatusJobs, JobModuleRepository } from "./jobs.repository";
 import { BaseModule } from "../base.module";
+import {
+  AvailableStatusJobs,
+  JobModuleRepository,
+} from "../__dtos__/modules.dtos";
 
 export class JobModule extends BaseModule implements JobModuleRepository {
   constructor(private readonly logger: Logger = new Logger(JobModule.name)) {

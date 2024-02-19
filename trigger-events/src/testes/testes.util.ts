@@ -1,9 +1,36 @@
+
 import { Context, SQSEvent } from "aws-lambda";
 import { v4 } from "uuid";
 import {
   EventReceived,
   PublishJobDto,
 } from "../functions/sqs/__dtos__/handlers.dto";
+import { QueryResult } from "pg";
+
+export const queryresults: QueryResult<any> = {
+  rowCount: 1,
+  rows: [],
+  oid: null,
+  command: "command",
+  fields: [
+    {
+      name: "name",
+      tableID: 1,
+      columnID: 1,
+      dataTypeID: 1,
+      dataTypeSize: 1,
+      dataTypeModifier: 1,
+      format: "format",
+    },
+  ],
+};
+
+export const connection = {
+  //@ts-ignore
+  query: async (_quer: string, _params: any[]): Promise<QueryResult> => {
+    return { ...queryresults };
+  },
+}
 
 export const genSqsHandlerContext = (functionName: string): Context => {
   const currentmillis = new Date().getTime();
