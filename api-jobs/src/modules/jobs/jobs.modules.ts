@@ -36,7 +36,7 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
       notes,
     ]);
   }
-
+ 
   async archiveJob(jobId: string): Promise<void> {
     const sql = `
       update jobs set status = 'archived'::job_status, updated_at = NOW() where id = $1;

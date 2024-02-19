@@ -57,13 +57,6 @@ export class PgClienteMock implements PgClienteRepository {
   );
 }
 
-export class HandlerEventsMock implements HandlerEventService {
-  client: AxiosInstance = jest.mocked(axios);
-  publishEvent = jest.fn(
-    async (_topic: string, _version: 1, _payload: any): Promise<void> => {}
-  );
-}
-
 export class CustomEventEmitterMock implements CustomEventEmitterDto {
   publishJob = jest.fn(
     (_topic: string, _version: number, _payload: any): void => {}

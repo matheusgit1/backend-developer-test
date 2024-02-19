@@ -1,3 +1,4 @@
+import { queryresults } from "./../../@autocannon/server/routes";
 import {
   CustomEventEmitterMock,
   JobModuleMock,
@@ -195,6 +196,40 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
         req: {
           params: {
             job_id: "job_id",
+          },
+          headers: {
+            company_id: companyId,
+          },
+        },
+      } as any);
+
+      expect(res.statusCode).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it(`se job_id "não for informado nos params, deve retornar ${StatusCodes.BAD_REQUEST}`, async () => {
+      const res = await usecase.handler({
+        req: {
+          params: {},
+          headers: {
+            // company_id: companyId,
+          },
+        },
+      } as any);
+
+      expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it(`se job_id informado não for encontrado, deve retornar statusCode ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 0,
+      });
+      const res = await usecase.handler({
+        req: {
+          params: {
+            job_id: jobId,
           },
           headers: {
             company_id: companyId,

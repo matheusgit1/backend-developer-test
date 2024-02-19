@@ -162,6 +162,97 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
       expect(statusCode).toBe(StatusCodes.OK);
       expect(body).toBeDefined();
     });
+
+    it(`deve job tiver status 'published', evento de edição deve ser disparado`, async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 1,
+        rows: [
+          {
+            id: jobId,
+            status: "published",
+          },
+        ],
+      });
+      const bodyRequest = {
+        title: "title",
+        description: "description",
+        location: "location",
+        notes: "notes",
+      };
+      const spy_customEventEmmiter_publishJob = jest.spyOn(
+        customEventEmmiter,
+        "publishJob"
+      );
+      const spy_pgClientMock_getConnection = jest.spyOn(
+        pgClientMock,
+        "getConnection"
+      );
+      const spy_pgClientMock_beginTransaction = jest.spyOn(
+        pgClientMock,
+        "beginTransaction"
+      );
+      const spy_pgClientMock_commitTransaction = jest.spyOn(
+        pgClientMock,
+        "commitTransaction"
+      );
+
+      const spy_pgClientMock_releaseTransaction = jest.spyOn(
+        pgClientMock,
+        "releaseTransaction"
+      );
+      const spy_pgClientMock_rolbackTransaction = jest.spyOn(
+        pgClientMock,
+        "rolbackTransaction"
+      );
+
+      const spy_jobModuleMock_getJobById = jest.spyOn(
+        jobModuleMock,
+        "getJobById"
+      );
+
+      const spy_jobModuleMock_updateJob = jest.spyOn(
+        jobModuleMock,
+        "updateJob"
+      );
+
+      const { statusCode, body } = await usecase.handler({
+        req: {
+          params: {
+            job_id: jobId,
+          },
+          body: {
+            ...bodyRequest,
+          },
+        },
+      } as any);
+
+      expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
+      expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
+      expect(spy_customEventEmmiter_publishJob).toHaveBeenCalledTimes(1);
+      expect(spy_customEventEmmiter_publishJob).toHaveBeenCalledWith(
+        "event_edit_job",
+        1,
+        {
+          job_id: jobId,
+          origin: "api-jobs",
+        }
+      );
+      expect(spy_jobModuleMock_getJobById).toHaveBeenCalledTimes(1);
+      expect(spy_jobModuleMock_getJobById).toHaveBeenCalledWith(jobId);
+
+      expect(spy_jobModuleMock_updateJob).toHaveBeenCalledTimes(1);
+      expect(spy_jobModuleMock_updateJob).toHaveBeenCalledWith(
+        bodyRequest,
+        jobId
+      );
+
+      expect(statusCode).toBe(StatusCodes.OK);
+      expect(body).toBeDefined();
+    });
   });
 
   describe(`casos de erros`, () => {
@@ -380,6 +471,25 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
       expect(res.body).toHaveProperty("error");
     });
 
+    it(`se job_id não for inválido método deve retornar statusCode ${StatusCodes.BAD_REQUEST}`, async () => {
+      const res = await usecase.handler({
+        req: {
+          params: {
+            // job_id: "jobId",
+          },
+          body: {
+            title: "title",
+            description: "description",
+            location: "location",
+            notes: "notes",
+          },
+        },
+      } as any);
+
+      expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(res.body).toHaveProperty("error");
+    });
+
     it(`se parametros "body" não forem inválidos, deve retornar ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
       const res = await usecase.handler({
         req: {
@@ -391,6 +501,29 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
             // description: "description",
             // location: "location",
             // notes: "notes",
+          },
+        },
+      } as any);
+
+      expect(res.statusCode).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it(`se jobId não for localizado na base, deve retornar ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce({
+        ...queryresults,
+        rowCount: 0,
+      });
+      const res = await usecase.handler({
+        req: {
+          params: {
+            job_id: jobId,
+          },
+          body: {
+            title: "title",
+            description: "description",
+            location: "location",
+            notes: "notes",
           },
         },
       } as any);
