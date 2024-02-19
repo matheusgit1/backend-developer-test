@@ -122,7 +122,7 @@ para executar o teste, execute o comando abaixo:
 npm run autocannon:test
 ```
 
-o teste padrão dura 10 segundos, simula 300 conexões simultanes, e opera com todas os nucleos do processamento
+O teste padrão dura 10 segundos, simula 300 conexões simultaneas, e opera com todas os nucleos do processamento
 
 *estas variaveis e valores podem ser alteradas em ./src/@autocannon/test*
 
@@ -130,7 +130,7 @@ feito isso. um relatório final do teste é exibido:
 
 ![relatório](https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/assets/load-test-with-autocannon.png)
 
-**iportante: ** nesse exemplo temos um cenário mais pesado simulado com alta latencia
+**importante: ** nesse exemplo temos um cenário mais pesado simulado com alta latencia
 
 para alterar esse parametro mude a variavel latencia em ./src/@autocannon/server/routes.ts
 
