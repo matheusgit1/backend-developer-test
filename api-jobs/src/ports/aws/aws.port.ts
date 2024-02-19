@@ -1,4 +1,11 @@
-import * as AWS from "aws-sdk";
+// import * as AWS from "aws-sdk";
+import {
+  GetObjectCommandInput,
+  GetObjectCommandOutput,
+  S3,
+  UploadPartCommandInput,
+  UploadPartCommandOutput,
+} from "@aws-sdk/client-s3";
 import { AWSPortDto } from "../__dtos__/ports.dtos";
 
 /**
@@ -8,14 +15,16 @@ import { AWSPortDto } from "../__dtos__/ports.dtos";
  * e de carga, também disponível neste repositório
  */
 export class AWSPort implements AWSPortDto {
-  constructor(private readonly s3: AWS.S3) {}
-  async getObjectFroms3(downloadParams: AWS.S3.GetObjectRequest): Promise<any> {
-    return await this.s3.getObject(downloadParams).promise();
+  constructor(private readonly s3: S3) {}
+  async getObjectFroms3(
+    downloadParams: GetObjectCommandInput
+  ): Promise<GetObjectCommandOutput> {
+    return await this.s3.getObject(downloadParams);
   }
 
   async uploadObjectToS3(
-    uploadParams: AWS.S3.PutObjectRequest
-  ): Promise<AWS.S3.ManagedUpload.SendData> {
-    return await this.s3.upload(uploadParams).promise();
+    uploadParams: UploadPartCommandInput
+  ): Promise<UploadPartCommandOutput> {
+    return await this.s3.uploadPart(uploadParams);
   }
 }

@@ -12,12 +12,13 @@ import {
 } from "../modules/__dtos__/modules.dtos";
 import { BaseModuleRepository } from "../modules/base.repository";
 import Cache from "node-cache";
-import {
-  GetObjectRequest,
-  ManagedUpload,
-  PutObjectRequest,
-} from "aws-sdk/clients/s3";
 import { AWSPortDto } from "../ports/__dtos__/ports.dtos";
+import {
+  GetObjectCommandInput,
+  GetObjectCommandOutput,
+  UploadPartCommandInput,
+  UploadPartCommandOutput,
+} from "@aws-sdk/client-s3";
 
 export const queryresults = {
   rowCount: 1,
@@ -190,21 +191,21 @@ export const S3 = {
 export class AWSPortMock implements AWSPortDto {
   uploadObjectToS3 = jest.fn(
     async (
-      _uploadParams: PutObjectRequest
-    ): Promise<ManagedUpload.SendData> => {
+      _uploadParams: UploadPartCommandInput
+    ): Promise<UploadPartCommandOutput> => {
       return {
-        Location: "Location",
-        ETag: "ETag",
-        Bucket: "Bucket",
-        Key: "Key",
+        $metadata: {},
       };
     }
   );
   getObjectFroms3 = jest.fn(
-    async (_downloadParams: GetObjectRequest): Promise<any> => {
+    async (
+      _downloadParams: GetObjectCommandInput
+    ): Promise<GetObjectCommandOutput> => {
       return {
+        //@ts-ignore
         Body: {
-          toString: () => {
+          transformToString: async () => {
             return JSON.stringify({
               feeds: [
                 {

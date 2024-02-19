@@ -16,6 +16,7 @@ export class GetFeedUseCase implements BaseUseCase {
   public async handler({ req: _req }: { req: Request }): Promise<HttpResponse> {
     try {
       const feedInCache = this.cache.get<string>(cacheKey);
+
       if (feedInCache) {
         return {
           statusCode: StatusCodes.OK,
@@ -26,6 +27,7 @@ export class GetFeedUseCase implements BaseUseCase {
       }
       //cria cache a cada 30 min - 60 * 30
       const feed = await this.module.getFeed();
+
       this.cache.set(
         cacheKey,
         JSON.stringify(feed),

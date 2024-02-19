@@ -153,16 +153,6 @@ const pgClienteMock: PgClienteRepository = {
       setTimeout(() => {}, latencia);
     });
   },
-  executeQuery: async (
-    _Connection: PoolClient,
-    _query: string,
-    _params?: any[]
-  ): Promise<QueryResult<any>> => {
-    new Promise<void>((_resolve, _reject) => {
-      setTimeout(() => {}, latencia);
-    });
-    return { ...queryresults };
-  },
 };
 
 const mockCustomEventEmitter: CustomEventEmitterDto = {

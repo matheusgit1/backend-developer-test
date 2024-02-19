@@ -13,7 +13,7 @@ const loggermiddleware = (req: Request, _res: Response, next: NextFunction) => {
   console.log(
     `Endpoint: ${req.originalUrl}. Method: ${
       req.method
-    }. Body: ${JSON.stringify(req.body)}`
+    }. Body: ${JSON.stringify(req.body)}. \nProcess id: ${process.pid}`
   );
   next();
 };

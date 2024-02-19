@@ -13,7 +13,9 @@ export class FeedModule extends BaseModule implements FeedModuleRepository {
       Key: configs.BUCKET_FEED_CLIENT_FILE_KEY,
     });
 
-    const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
+    const feed = await jsonInBucket.Body.transformToString();
+
+    const jsonContent: FeedJobs = await JSON.parse(feed);
     return jsonContent;
   }
 }

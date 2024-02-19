@@ -5,13 +5,13 @@ import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
 import { FeedModule } from "../../modules/feed/feed.module";
 import Cache from "node-cache";
 import { AWSPort } from "../../ports/aws/aws.port";
-import * as AWS from "aws-sdk";
+import { S3 } from "@aws-sdk/client-s3";
 import { configs } from "../../configs/envs/environments.config";
 
 const cache = new Cache();
 const feedModule = new FeedModule(
   new AWSPort(
-    new AWS.S3({
+    new S3({
       region: configs.AWS_DEFAULT_REGION,
       credentials: {
         secretAccessKey: configs.AWS_SECRET_ACCESS_KEY,

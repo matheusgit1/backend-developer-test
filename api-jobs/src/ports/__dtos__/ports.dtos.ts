@@ -1,15 +1,17 @@
-
-import * as AWS from "aws-sdk";
-import { GetObjectOutput } from "aws-sdk/clients/s3";
-import { PromiseResult } from "aws-sdk/lib/request";
+import {
+  GetObjectCommandInput,
+  GetObjectCommandOutput,
+  UploadPartCommandInput,
+  UploadPartCommandOutput,
+} from "@aws-sdk/client-s3";
 
 export declare class AWSPortDto {
   constructor(...args: any[]);
   getObjectFroms3(
-    downloadParams: AWS.S3.GetObjectRequest
-  ): Promise<PromiseResult<GetObjectOutput, AWS.AWSError>>;
+    downloadParams: GetObjectCommandInput
+  ): Promise<GetObjectCommandOutput>;
 
   uploadObjectToS3(
-    uploadParams: AWS.S3.PutObjectRequest
-  ): Promise<AWS.S3.ManagedUpload.SendData>;
+    uploadParams: UploadPartCommandInput
+  ): Promise<UploadPartCommandOutput>;
 }
