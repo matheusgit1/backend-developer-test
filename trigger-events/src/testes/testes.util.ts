@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import {
   EventReceived,
   PublishJobDto,
-} from "../functions/sqs/__dtos__/handlers.dto";
+} from "../functions/sqs/events/__dtos__/handlers.dto";
 import { QueryResult } from "pg";
 
 export const queryresults: QueryResult<any> = {

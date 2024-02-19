@@ -10,7 +10,7 @@ import {
   EditJobDto,
   EventHandlerDictionary,
   PublishJobDto,
-} from "../functions/sqs/__dtos__/handlers.dto";
+} from "../functions/sqs/events/__dtos__/handlers.dto";
 import { connection, queryresults } from "./testes.util";
 import { PoolClient, QueryResult } from "pg";
 import {
