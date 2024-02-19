@@ -86,18 +86,18 @@ Por se tratar de uma arquitetura de microsserviços, não é possível documenta
 
 ### api-jobs:
 
-- Português:
-- Inglês
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/api-jobs/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/api-jobs/README-english.md
 
 ### handler-events:
 
-- Português:
-- Inglês
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/handler-eventos/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/handler-eventos/README-english.md
 
 ### trigger-events:
 
-- Português:
-- Inglês
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/trigger-events/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/trigger-events/README-english.md
 
 ## Stack utilizada
 
