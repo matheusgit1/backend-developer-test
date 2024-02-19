@@ -13,4 +13,6 @@ export const configs = {
   KEY_OPEN_AI: process.env.KEY_OPEN_AI,
   MOCK_CALL_OPEN_AI: process.env.MOCK_CALL_OPEN_AI,
   MOCK_CALL_OPEN_AI_RESPONSE: process.env.MOCK_CALL_OPEN_AI_RESPONSE,
+  BUCKET_FEED_NAME: process.env.BUCKET_FEED_NAME,
+  BUCKET_FEED_FILE_KEY: process.env.BUCKET_FEED_FILE_KEY,
 };

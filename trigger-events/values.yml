@@ -6,4 +6,5 @@ develop:
   TZ: "America/Sao_Paulo"
   MOCK_CALL_OPEN_AI: "true"
   MOCK_CALL_OPEN_AI_RESPONSE: "false"
-  S3_FEEDS_BUCKET: "global-feeds"
+  BUCKET_FEED_NAME: "global-feeds"
+  BUCKET_FEED_FILE_KEY: "jobs/feed.json"

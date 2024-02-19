@@ -8,6 +8,7 @@ import { FeedJobs } from "../__dtos__/events.dtos";
 import { PgClienteRepository } from "../../infrastructure/database/pg.reposiory";
 import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
+import { configs } from "../../configs/envs.config";
 
 export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
   constructor(
@@ -27,8 +28,8 @@ export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
         JSON.stringify(event)
       );
 
-      const bucketName = "global-feeds";
-      const key = "jobs/feed.json";
+      const bucketName = configs.BUCKET_FEED_NAME;
+      const key = configs.BUCKET_FEED_FILE_KEY;
 
       const downloadParams = {
         Bucket: bucketName,

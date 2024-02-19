@@ -29,6 +29,8 @@ provider:
     KEY_OPEN_AI: ${ssm:/${self:provider.stage}/trigger-jobs/api-key-open-ai}
     MOCK_CALL_OPEN_AI: ${file(./values.yml):${self:provider.stage}.MOCK_CALL_OPEN_AI}
     MOCK_CALL_OPEN_AI_RESPONSE: ${file(./values.yml):${self:provider.stage}.MOCK_CALL_OPEN_AI_RESPONSE}
+    BUCKET_FEED_NAME: ${file(./values.yml):${self:provider.stage}.BUCKET_FEED_NAME}
+    BUCKET_FEED_FILE_KEY: ${file(./values.yml):${self:provider.stage}.BUCKET_FEED_FILE_KEY}
 
   iam:
     role:
@@ -44,7 +46,7 @@ provider:
           Action:
             - "s3:*"
           Resource:
-            - arn:aws:s3:::${file(./values.yml):${self:provider.stage}.S3_FEEDS_BUCKET}/*
+            - arn:aws:s3:::${file(./values.yml):${self:provider.stage}.BUCKET_FEED_NAME}/*
 
 package:
   individually: false

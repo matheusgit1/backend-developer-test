@@ -8,6 +8,7 @@ import * as AWS from "aws-sdk";
 import { FeedJobs } from "../__dtos__/events.dtos";
 import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
 import { JobModuleRepository } from "src/modules/__dtos__/modules.dtos";
+import { configs } from "../../configs/envs.config";
 
 export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
   constructor(
@@ -28,8 +29,8 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
         JSON.stringify(event)
       );
 
-      const bucketName = "global-feeds";
-      const key = "jobs/feed.json";
+      const bucketName = configs.BUCKET_FEED_NAME;
+      const key = configs.BUCKET_FEED_FILE_KEY;
 
       const downloadJsonBucket = {
         Bucket: bucketName,
