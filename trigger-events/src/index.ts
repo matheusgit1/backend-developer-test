@@ -1,12 +1,13 @@
 import { PgClient } from "./infrastructure/database/cliente/pg.cliente";
-import { EventHandlerDictionary } from "@functions/sqs/__dtos__/handlers.dto";
-import { ListennerFromSQS } from "./functions/sqs/handler.sqs";
+import { EventHandlerDictionary } from "@functions/sqs/events/__dtos__/handlers.dto";
+import { ListennerFromSQS } from "./functions/sqs/events/event-handler.sqs";
 import { PublishJobEventHandler } from "./events/publish_job";
 import { EditJobEventHandler } from "./events/edit_job";
 import { JobModule } from "./modules/jobs/jobs.modules";
 import { OpenAiService } from "./infrastructure/services/open-ia.service";
 import { DeleteJobEventHandler } from "./events/delete_job";
 import { AWSPort } from "./ports/aws/aws.port";
+import { TriggerFeedJobsByEventbridge } from "@functions/eventbridge/update-feed-jobs/jobs-handler.eventbridge";
 import * as AWS from "aws-sdk";
 
 const pgCLiente = new PgClient();
@@ -34,4 +35,13 @@ const eventListenner = new ListennerFromSQS(evenstDictionary);
 
 const _eventListenner = eventListenner.handler.bind(eventListenner);
 
-export { _eventListenner };
+const triggerUpdateFeedJobseventBridge = new TriggerFeedJobsByEventbridge(
+  portAWS
+);
+
+const _triggerUpdateFeedJobseventBridge =
+  triggerUpdateFeedJobseventBridge.handler.bind(
+    triggerUpdateFeedJobseventBridge
+  );
+
+export { _eventListenner, _triggerUpdateFeedJobseventBridge };

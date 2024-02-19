@@ -31,6 +31,7 @@ provider:
     MOCK_CALL_OPEN_AI_RESPONSE: ${file(./values.yml):${self:provider.stage}.MOCK_CALL_OPEN_AI_RESPONSE}
     BUCKET_FEED_NAME: ${file(./values.yml):${self:provider.stage}.BUCKET_FEED_NAME}
     BUCKET_FEED_FILE_KEY: ${file(./values.yml):${self:provider.stage}.BUCKET_FEED_FILE_KEY}
+    BUCKET_FEED_CLIENT_FILE_KEY: ${file(./values.yml):${self:provider.stage}.BUCKET_FEED_CLIENT_FILE_KEY}
 
   iam:
     role:
@@ -75,6 +76,16 @@ functions:
             Fn::GetAtt: ["EventsQueue", "Arn"]
           batchSize: 10
           # functionResponseType: ReportBatchItemFailures
+
+  handlerUpdateFeedJob:
+    name: trigger-update-feed-job-${self:provider.stage}
+    handler: src/index._triggerUpdateFeedJobseventBridge
+    memorySize: 1024
+    timeout: 30 #tempo em segundos
+    # reservedConcurrency: 10
+    events:
+      - eventBridge:
+          schedule: rate(30 minutes)
 
 resources:
   Resources:

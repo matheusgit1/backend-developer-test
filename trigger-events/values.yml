@@ -8,3 +8,4 @@ develop:
   MOCK_CALL_OPEN_AI_RESPONSE: "false"
   BUCKET_FEED_NAME: "global-feeds"
   BUCKET_FEED_FILE_KEY: "jobs/feed.json"
+  BUCKET_FEED_CLIENT_FILE_KEY: "jobs/feed-client.json"
