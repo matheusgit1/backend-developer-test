@@ -80,6 +80,8 @@ in s3, create a bucket, in the same bucket create a new folder with an initial j
 }
 ```
 
+one will be used to be updated by events, the second will be a periodic copy of the first and will be delivered via api, save the names as the job-api and trigger-events service will need them in their environment variables.
+
 ## About services
 
 As it is a microservices architecture, it is not possible to document each one here, but all services have their own documentation

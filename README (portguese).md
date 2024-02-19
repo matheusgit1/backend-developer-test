@@ -72,13 +72,15 @@ Salve os valores da sub-rede pública e privada, eles serão usados para configu
 
 - step 5
 
-no s3,crie um bucket, no mesmo bucket crie um nova pasta com uma arquivo json inicial com o seguinte formato
+no s3,crie um bucket, no mesmo bucket crie um nova pasta com dois arquivo json inicial com o seguinte formato.
 
 ```JSON
 {
   feeds: []
 }
 ```
+
+Um será usado para ser atualizdo pelos eventos, o segundo será uma cópia periodica do primeiro e será entregue via api, guarde os nome pois o serviço job-api e trigger-events precisarão em suas variaveis de ambientes
 
 ## Sobre os serviços
 
