@@ -81,8 +81,8 @@ As it is a microservices architecture, it is not possible to document each one h
 
 ### handler-events:
 
-- Portuguese
-- English
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/handler-eventos/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/handler-eventos/README-english.md
 
 ### trigger-events:
 
