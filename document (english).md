@@ -86,8 +86,8 @@ As it is a microservices architecture, it is not possible to document each one h
 
 ### trigger-events:
 
-- Portuguese
-- English
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/trigger-events/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/trigger-events/README-english.md
 
 ## Stacks
 
