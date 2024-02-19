@@ -1,7 +1,7 @@
 import { PgClient } from "./../../infrastructure/database/cliente/pg.cliente";
 import { EventHandlerBase, EventHandlerBaseDto } from "../base.event-handler";
 import { Logger } from "../../infrastructure/logger/logger";
-import { DeleteJobDto } from "../../functions/sqs/__dtos__/handlers.dto";
+import { DeleteJobDto } from "../../functions/sqs/events/__dtos__/handlers.dto";
 import * as pg from "pg";
 import * as AWS from "aws-sdk";
 import { FeedJobs } from "../__dtos__/events.dtos";

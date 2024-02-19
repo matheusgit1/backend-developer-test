@@ -1,6 +1,6 @@
 import { EventHandlerBase, EventHandlerBaseDto } from "../base.event-handler";
 import { Logger } from "../../infrastructure/logger/logger";
-import { EditJobDto } from "../../functions/sqs/__dtos__/handlers.dto";
+import { EditJobDto } from "../../functions/sqs/events/__dtos__/handlers.dto";
 import * as pg from "pg";
 import { PgClienteRepository } from "../../infrastructure/database/pg.reposiory";
 import { ServiceOpenAI } from "../../infrastructure/services/__dtos__/services.dtos";
