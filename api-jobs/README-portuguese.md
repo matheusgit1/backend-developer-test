@@ -137,7 +137,7 @@ para alterar esse parametro mude a variavel latencia em ./src/@autocannon/server
 
 ## Documentação da API
 
-Documentação da api disponibilizada no próprio serviço acessando a rora /api-docs em uma interface swagger interativa. Fique a vontada para aplicar os testes que desseja.
+Documentação da api disponibilizada no próprio serviço acessando a rota /api-docs em uma interface swagger interativa. Fique a vontada para aplicar os testes que desseja.
 
 ![docs](https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/assets/documentation.png)
 
