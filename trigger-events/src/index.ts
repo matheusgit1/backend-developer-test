@@ -7,7 +7,7 @@ import { JobModule } from "./modules/jobs/jobs.modules";
 import { OpenAiService } from "./infrastructure/services/open-ia.service";
 import { DeleteJobEventHandler } from "./events/delete_job";
 import { AWSPort } from "./ports/aws/aws.port";
-import { TriggerFeedJobsByEventbridge } from "@functions/eventbridge/update-feed-jobs/jobs-handler.eventbridge";
+import { TriggerFeedJobsByEventbridge } from "@functions/eventbridge/jobs/jobs-handler.eventbridge";
 import * as AWS from "aws-sdk";
 
 const pgCLiente = new PgClient();
