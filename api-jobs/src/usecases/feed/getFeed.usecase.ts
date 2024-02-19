@@ -20,7 +20,7 @@ export class GetFeedUseCase implements BaseUseCase {
         return {
           statusCode: StatusCodes.OK,
           body: {
-            ...JSON.parse(feedInCache),
+            data: JSON.parse(feedInCache),
           },
         };
       }
@@ -34,14 +34,16 @@ export class GetFeedUseCase implements BaseUseCase {
       return {
         statusCode: StatusCodes.OK,
         body: {
-          ...feed,
+          data: {
+            ...feed,
+          },
         },
       };
     } catch (err) {
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
-          error: err.message ?? ReasonPhrases.INTERNAL_SERVER_ERROR,
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
         },
       };
     }

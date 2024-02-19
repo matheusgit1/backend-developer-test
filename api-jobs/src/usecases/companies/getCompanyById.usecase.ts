@@ -26,12 +26,14 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
       }
       conn = await this.pgClient.getConnection();
       this.module.connection = conn;
-      const { rowCount, rows } = await this.module.getCompanyById(companyId);
+      const { rows } = await this.module.getCompanyById(companyId);
 
       return {
         statusCode: 200,
         body: {
-          ...rows[0],
+          data: {
+            ...rows[0],
+          },
         },
       };
     } catch (err) {
@@ -41,7 +43,7 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
-          error: err.message ?? ReasonPhrases.INTERNAL_SERVER_ERROR,
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
         },
       };
     } finally {

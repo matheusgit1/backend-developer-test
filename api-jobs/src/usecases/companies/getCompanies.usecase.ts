@@ -16,14 +16,16 @@ export class GetCompaniesUseCase implements BaseUseCase {
       conn = await this.pgClient.getConnection();
       this.module.connection = conn;
 
-      const companies = await this.module.getCompanies();
+      const { rows } = await this.module.getCompanies();
 
       return {
         statusCode: StatusCodes.OK,
-        body: companies.rows.map((company) => ({
-          id: company.id,
-          name: company.name,
-        })),
+        body: {
+          data: rows.map((company) => ({
+            id: company.id,
+            name: company.name,
+          })),
+        },
       };
     } catch (err) {
       if (conn) {
@@ -32,7 +34,7 @@ export class GetCompaniesUseCase implements BaseUseCase {
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
-          error: err.message ?? ReasonPhrases.INTERNAL_SERVER_ERROR,
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
         },
       };
     } finally {

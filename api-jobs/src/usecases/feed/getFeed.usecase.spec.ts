@@ -58,7 +58,7 @@ describe(`executando testes para ${GetFeedUseCase.name}`, () => {
       expect(spy_cacheMock_set).toHaveBeenCalledTimes(0);
       expect(spy_feedModuleMock_getFeed).toHaveBeenCalledTimes(0);
       expect(statusCode).toBe(StatusCodes.OK);
-      expect(body.feeds).toEqual(jobsInFeed);
+      expect(body.data.feeds).toEqual(jobsInFeed);
     });
   });
 

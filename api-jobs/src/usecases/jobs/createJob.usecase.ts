@@ -64,7 +64,7 @@ export class CreateJobUseCase implements BaseUseCase {
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
-          error: err.message ?? ReasonPhrases.INTERNAL_SERVER_ERROR,
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
         },
       };
     } finally {

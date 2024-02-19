@@ -19,7 +19,9 @@ describe(`executando testes para ${GetCompaniesUseCase.name}`, () => {
       const res = await usecase.handler();
       expect(res).toBeDefined();
       expect(res.statusCode).toBe(200);
-      expect(res.body).toBeInstanceOf(Array);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body).toHaveProperty("data");
+      expect(res.body.data).toBeInstanceOf(Array);
     });
 
     describe(`casos de erros`, () => {

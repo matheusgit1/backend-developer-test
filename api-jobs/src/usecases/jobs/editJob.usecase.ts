@@ -88,7 +88,9 @@ export class EditJobUseCase implements BaseUseCase {
 
       return {
         statusCode: StatusCodes.OK,
-        body: { ...rows[0] },
+        body: {
+          data: { ...rows[0] },
+        },
       };
     } catch (err) {
       if (conn) {
@@ -97,7 +99,7 @@ export class EditJobUseCase implements BaseUseCase {
       return {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
         body: {
-          error: err.message ?? ReasonPhrases.INTERNAL_SERVER_ERROR,
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
         },
       };
     } finally {
