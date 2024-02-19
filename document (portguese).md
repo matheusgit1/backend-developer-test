@@ -70,6 +70,16 @@ para cada item substitua o 'arn' pelo arn do tópico sns criado anteriormente
 configura uma vpc com suas respectivas sub-redes, ela deve conter uma sub-rede privada vinculada a um gateway e um gateway interno, e um grupo de segurança com o tipo de protocolo de entrada e saída e vinculado à vpc.
 Salve os valores da sub-rede pública e privada, eles serão usados para configurar aplicação serverless
 
+- step 5
+
+no s3,crie um bucket, no mesmo bucket crie um nova pasta com uma arquivo json inicial com o seguinte formato
+
+```JSON
+{
+  feeds: []
+}
+```
+
 ## Sobre os serviços
 
 Por se tratar de uma arquitetura de microsserviços, não é possível documentar cada um aqui, mas todos os serviços possuem documentação própria
