@@ -133,34 +133,14 @@ const pgClienteMock: PgClienteRepository = {
     return "PoolClient" as unknown as PoolClient;
   },
 
-  beginTransaction: async (): Promise<void> => {
-    return new Promise<void>((_resolve, _reject) => {
-      setTimeout(() => {}, latencia);
-    });
-  },
-  commitTransaction: async (): Promise<void> => {
-    return new Promise<void>((_resolve, _reject) => {
-      setTimeout(() => {}, latencia);
-    });
-  },
-  rolbackTransaction: async (): Promise<void> => {
-    return new Promise<void>((_resolve, _reject) => {
-      setTimeout(() => {}, latencia);
-    });
-  },
-  releaseTransaction: async (): Promise<void> => {
-    return new Promise<void>((_resolve, _reject) => {
-      setTimeout(() => {}, latencia);
-    });
-  },
+  beginTransaction: async (): Promise<void> => {},
+  commitTransaction: async (): Promise<void> => {},
+  rolbackTransaction: async (): Promise<void> => {},
+  releaseTransaction: async (): Promise<void> => {},
 };
 
 const mockCustomEventEmitter: CustomEventEmitterDto = {
-  publishJob(_topic: string, _version: number, _payload: any) {
-    new Promise<void>((_resolve, _reject) => {
-      setTimeout(() => {}, latencia);
-    });
-  },
+  publishJob(_topic: string, _version: number, _payload: any) {},
 };
 
 const companiesusecases: Usecases = [
