@@ -70,6 +70,16 @@ for each item replace the 'arn' with the arn of the previously created sns topic
 configures a vpc with its respective subnets, it must contain a private subnet linked to a gateway and an internal gateway, and a security group with the type of input and output protocol and linked to the vpc.
 Save the public and private subnet values, these will be used to configure serverless applications
 
+- step 5
+
+in s3, create a bucket, in the same bucket create a new folder with an initial json file with the following format
+
+```JSON
+{
+  feeds: []
+}
+```
+
 ## About services
 
 As it is a microservices architecture, it is not possible to document each one here, but all services have their own documentation
