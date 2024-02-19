@@ -1,11 +1,11 @@
 import { StatusCodes } from "http-status-codes";
 import { Usecases } from "../shareds";
-import express from "express";
 import request from "supertest";
 import { CompaniesRoutesAdapted } from "./companies.controller";
 import { GetCompaniesUseCase } from "../../usecases/companies/getCompanies.usecase";
 import { GetCompanyByIdUseCase } from "../../usecases/companies/getCompanyById.usecase";
 import { CompanyModuleMock, PgClienteMock } from "../../tests/mocks";
+import { app } from "../../configs/app/app.config";
 
 const pgClientMock = new PgClienteMock();
 const companyModuleMock = new CompanyModuleMock();
@@ -23,7 +23,6 @@ const usecases: Usecases = [
   },
 ];
 
-const app = express();
 const { routes } = new CompaniesRoutesAdapted(usecases);
 
 app.use("/", routes);

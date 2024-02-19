@@ -4,6 +4,7 @@ import { Usecases } from "../shareds";
 import { HealthRoutesAdapted } from "./health.controller";
 import express from "express";
 import request from "supertest";
+import { app } from "../../configs/app/app.config";
 
 const usecases: Usecases = [
   {
@@ -13,7 +14,6 @@ const usecases: Usecases = [
   },
 ];
 
-const app = express();
 const routes = new HealthRoutesAdapted(usecases);
 
 app.use("/", routes.routes);

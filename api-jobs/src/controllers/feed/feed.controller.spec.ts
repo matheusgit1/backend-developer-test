@@ -3,8 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
 import { Usecases } from "../shareds";
 import { FeedRoutesAdapted } from "./feed.controller";
-import express from "express";
 import request from "supertest";
+import { app } from "../../configs/app/app.config";
 
 const feedModuleMock = new FeedModuleMock();
 const cache = new CacheMock();
@@ -17,7 +17,6 @@ const usecases: Usecases = [
   },
 ];
 
-const app = express();
 const { routes } = new FeedRoutesAdapted(usecases);
 
 app.use("/", routes);

@@ -1,7 +1,6 @@
 import { JobModuleMock, queryresults } from "./../../tests/mocks";
 import { StatusCodes } from "http-status-codes";
 import { Usecases } from "../shareds";
-import express from "express";
 import request from "supertest";
 
 import { CustomEventEmitterMock, PgClienteMock } from "../../tests/mocks";
@@ -11,6 +10,7 @@ import { PublishJobUseCase } from "../../usecases/jobs/publishJob.usecase";
 import { EditJobUseCase } from "../../usecases/jobs/editJob.usecase";
 import { DeleteJobUseCase } from "../../usecases/jobs/deleteJob.usecase";
 import { ArchiveJobUseCase } from "../../usecases/jobs/archiveJob.usecase";
+import { app } from "../../configs/app/app.config";
 
 const pgClienteMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
@@ -57,9 +57,6 @@ const usecases: Usecases = [
 ];
 
 const { routes } = new JobsRoutesAdapted(usecases);
-
-const app = express();
-app.use(express.json());
 
 app.use("/", routes);
 

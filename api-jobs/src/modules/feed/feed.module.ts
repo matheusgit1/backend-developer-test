@@ -1,34 +1,19 @@
 import { configs } from "../../configs/envs/environments.config";
 import { FeedJobs, FeedModuleRepository } from "../__dtos__/modules.dtos";
 import { BaseModule } from "../base.module";
-import * as AWS from "aws-sdk";
+import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
 
 export class FeedModule extends BaseModule implements FeedModuleRepository {
-  s3: AWS.S3;
-  constructor() {
+  constructor(private readonly awsPort: AWSPortDto) {
     super(FeedModule.name);
-
-    this.s3 = new AWS.S3({
-      region: configs.AWS_DEFAULT_REGION,
-      credentials: {
-        secretAccessKey: configs.AWS_SECRET_ACCESS_KEY,
-        accessKeyId: configs.AWS_ACCESS_KEY_ID,
-      },
-    });
   }
   async getFeed(): Promise<FeedJobs> {
-    const bucket = "global-feeds";
-    const path = "jobs/feed.json";
-
-    const jsonInBucket = await this.s3
-      .getObject({
-        Bucket: bucket,
-        Key: path,
-      })
-      .promise();
+    const jsonInBucket = await this.awsPort.getObjectFroms3({
+      Bucket: configs.BUCKET_FEED_NAME,
+      Key: configs.BUCKET_FEED_FILE_KEY,
+    });
 
     const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
-
     return jsonContent;
   }
 }
