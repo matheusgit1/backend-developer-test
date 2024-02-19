@@ -37,11 +37,17 @@ export type JobInFeed = Job;
 export interface FeedJobs {
   feeds: JobInFeed[];
 }
+/**
+ * @description Modulo responsável pelas ações na base referente as companies
+ */
 export declare class CompanyModuleRepository extends BaseModuleRepository {
   getCompanies(): Promise<QueryResult<Company>>;
   getCompanyById(id: string): Promise<QueryResult<Company>>;
 }
 
+/**
+ * @description Modulo responsável pelas ações na base referente aos jobs
+ */
 export declare class JobModuleRepository extends BaseModuleRepository {
   createJob(input: CreateJobDto): Promise<void>;
   archiveJob(jobId: string): Promise<void>;
@@ -52,6 +58,9 @@ export declare class JobModuleRepository extends BaseModuleRepository {
   ): Promise<QueryResult<any>>;
 }
 
+/**
+ * @description Modulo responsável por buscar os feeds
+ */
 export declare class FeedModuleRepository extends BaseModuleRepository {
   getFeed(): Promise<FeedJobs>;
 }

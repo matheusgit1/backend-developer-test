@@ -27,17 +27,4 @@ export declare class PgClienteRepository {
    *  fecha conexão com banco de dados
    */
   releaseTransaction(Connection: pg.PoolClient): Promise<void>;
-
-  /**
-   * executa query sql dentro da mesma transação com banco de dados
-   * @param {Connection} Connection instancia de conexão
-   * @param {string} query query sql
-   * @param {any[]} params array de parametros
-   * @return {Promise<QueryResul>}
-   */
-  executeQuery(
-    Connection: pg.PoolClient,
-    query: string,
-    params?: any[]
-  ): Promise<pg.QueryResult<any>>;
 }
