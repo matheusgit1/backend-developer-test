@@ -5,17 +5,17 @@ dotenv.config({
   },
 });
 
-import { FakeLogger } from "./../../infrastructure/logger/fake-logger";
-import { AWSPortMock } from "../../testes/class.mock";
-import { OpenAiServiceMock } from "../../testes/class.mock";
-import { JobModuleMock } from "../../testes/class.mock";
-import { PgClienteMock } from "./../../testes/class.mock";
-import { PublishJobEventHandler } from "./../../events/publish_job/index";
+import { FakeLogger } from "../../../infrastructure/logger/fake-logger";
+import { AWSPortMock } from "../../../testes/class.mock";
+import { OpenAiServiceMock } from "../../../testes/class.mock";
+import { JobModuleMock } from "../../../testes/class.mock";
+import { PgClienteMock } from "../../../testes/class.mock";
+import { PublishJobEventHandler } from "../../../events/publish_job/index";
 import { EventHandlerDictionary } from "./__dtos__/handlers.dto";
-import { ListennerFromSQS } from "./handler.sqs";
-import { EditJobEventHandler } from "../../events/edit_job";
-import { DeleteJobEventHandler } from "../../events/delete_job";
-import { genEventPublishJob, genSqsEvents } from "../../testes/testes.util";
+import { ListennerFromSQS } from "./event-handler.sqs";
+import { EditJobEventHandler } from "../../../events/edit_job";
+import { DeleteJobEventHandler } from "../../../events/delete_job";
+import { genEventPublishJob, genSqsEvents } from "../../../testes/testes.util";
 
 const pgClienteMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();

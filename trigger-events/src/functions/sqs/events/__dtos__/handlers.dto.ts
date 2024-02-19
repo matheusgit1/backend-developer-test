@@ -1,5 +1,5 @@
 import { SQSEvent } from "aws-lambda";
-import { EventHandlerBase } from "../../../events/base.event-handler";
+import { EventHandlerBase } from "../../../../events/base.event-handler";
 
 export type AvailableEvents =
   | "event_publish_job"
@@ -31,7 +31,7 @@ export interface DeleteJobDto {
   origin: string;
 }
 
-export declare class ListennerFromSQSDeclarations {
+export declare class ListennerFromSQSDto {
   constructor(...args: any[]);
   handler(events: SQSEvent): Promise<void>;
 }

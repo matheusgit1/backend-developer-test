@@ -2,11 +2,11 @@ import { SQSEvent } from "aws-lambda/trigger/sqs";
 import {
   EventHandlerDictionary,
   EventReceived,
-  ListennerFromSQSDeclarations,
+  ListennerFromSQSDto,
 } from "./__dtos__/handlers.dto";
-import { Logger } from "../../infrastructure/logger/logger";
+import { Logger } from "../../../infrastructure/logger/logger";
 
-export class ListennerFromSQS implements ListennerFromSQSDeclarations {
+export class ListennerFromSQS implements ListennerFromSQSDto {
   constructor(
     private readonly eventHandlerDictionary: EventHandlerDictionary,
     private readonly logger = new Logger(ListennerFromSQS.name)
