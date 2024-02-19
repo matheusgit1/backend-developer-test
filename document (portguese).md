@@ -25,7 +25,7 @@ no DynamoDB crie uma tabela chamada 'handler_eventos'
 
 crie três tópicos no sns com os seguintes nomes: event_delete_job, event_edit_job e event_publish_job
 
-**save the 'arn' values of each topic**
+**salve o valor 'arn'de cada topico topic**
 
 - Passo 3
 
@@ -70,24 +70,34 @@ para cada item substitua o 'arn' pelo arn do tópico sns criado anteriormente
 configura uma vpc com suas respectivas sub-redes, ela deve conter uma sub-rede privada vinculada a um gateway e um gateway interno, e um grupo de segurança com o tipo de protocolo de entrada e saída e vinculado à vpc.
 Salve os valores da sub-rede pública e privada, eles serão usados para configurar aplicação serverless
 
+- step 5
+
+no s3,crie um bucket, no mesmo bucket crie um nova pasta com uma arquivo json inicial com o seguinte formato
+
+```JSON
+{
+  feeds: []
+}
+```
+
 ## Sobre os serviços
 
 Por se tratar de uma arquitetura de microsserviços, não é possível documentar cada um aqui, mas todos os serviços possuem documentação própria
 
 ### api-jobs:
 
-- Português:
-- Inglês
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/api-jobs/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/api-jobs/README-english.md
 
 ### handler-events:
 
-- Português:
-- Inglês
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/handler-eventos/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/handler-eventos/README-english.md
 
 ### trigger-events:
 
-- Português:
-- Inglês
+- Portuguese: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/trigger-events/README-portuguese.md
+- English: https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/trigger-events/README-english.md
 
 ## Stack utilizada
 
