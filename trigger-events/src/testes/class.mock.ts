@@ -19,7 +19,10 @@ import {
   JobAtributtes,
   JobModuleRepository,
 } from "../modules/__dtos__/modules.dtos";
-import { ServiceOpenAI } from "src/infrastructure/services/__dtos__/services.dtos";
+import {
+  ModerationResponse,
+  ServiceOpenAI,
+} from "src/infrastructure/services/__dtos__/services.dtos";
 import {
   GetObjectRequest,
   ManagedUpload,
@@ -94,6 +97,11 @@ export class JobModuleMock
   deleteJob = jest.fn(async (_jobId: string): Promise<void> => {
     return;
   });
+  updateJoNotes = jest.fn(
+    async (_jobId: string, _notes: string): Promise<void> => {
+      return;
+    }
+  );
 }
 
 export class PgClienteMock implements PgClienteRepository {
@@ -110,9 +118,14 @@ export class PgClienteMock implements PgClienteRepository {
 
 export class OpenAiServiceMock implements ServiceOpenAI {
   openAPiClient = jest.mocked(axios);
-  validateModeration = jest.fn(async (_text: string): Promise<boolean> => {
-    return true;
-  });
+  validateModeration = jest.fn(
+    async (_text: string): Promise<ModerationResponse> => {
+      return {
+        isModerated: true,
+        reason: "reason",
+      };
+    }
+  );
 }
 
 export class AWSPortMock implements AWSPortDto {

@@ -65,7 +65,10 @@ describe(`cenários de testes para ${PublishJobEventHandler.name}`, () => {
         "commitTransaction"
       );
 
-      openAiMock.validateModeration.mockResolvedValueOnce(true);
+      openAiMock.validateModeration.mockResolvedValueOnce({
+        reason: "moderation",
+        isModerated: true,
+      });
       jobModuleMock.getJob.mockResolvedValueOnce({
         ...queryresults,
         rowCount: 1,
@@ -106,7 +109,10 @@ describe(`cenários de testes para ${PublishJobEventHandler.name}`, () => {
     });
 
     it("deve inserir job de mesmo id no s3", async () => {
-      openAiMock.validateModeration.mockResolvedValueOnce(true);
+      openAiMock.validateModeration.mockResolvedValueOnce({
+        reason: "moderation",
+        isModerated: true,
+      });
       const jobId = crypto.randomUUID();
       const spy_awsPortMock_getObjectFroms3 = jest.spyOn(
         awsPortMock,
@@ -243,7 +249,10 @@ describe(`cenários de testes para ${PublishJobEventHandler.name}`, () => {
         "commitTransaction"
       );
       awsPortMock.uploadObjectToS3.mockRejectedValueOnce(new Error());
-      openAiMock.validateModeration.mockResolvedValueOnce(true);
+      openAiMock.validateModeration.mockResolvedValueOnce({
+        reason: "moderation",
+        isModerated: true,
+      });
       jobModuleMock.connection = connection;
       const jobId = crypto.randomUUID();
       const res = await handler.handler({

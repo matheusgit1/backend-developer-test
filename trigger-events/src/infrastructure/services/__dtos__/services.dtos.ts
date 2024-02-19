@@ -35,6 +35,11 @@ export interface OpenAiModerationResponse {
   ];
 }
 
+export interface ModerationResponse {
+  isModerated: boolean;
+  reason: string;
+}
+
 export declare class ServiceOpenAI {
   public openAPiClient: AxiosInstance;
   constructor(...args: any[]);
@@ -44,5 +49,5 @@ export declare class ServiceOpenAI {
    * @param {String} text
    * @returns {Promise<boolean>} retorna true se o job for moderado, e false se o job for potencialmente prejudicial
    */
-  validateModeration(text: string): Promise<boolean>;
+  validateModeration(text: string): Promise<ModerationResponse>;
 }

@@ -50,29 +50,19 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
         return;
       }
 
-      const [
-        isModeratedTitle,
-        isModeratedDescription,
-        isModeratedNotes,
-        isModeratedlocation,
-      ] = await Promise.all([
+      const moderations = await Promise.all([
         this.openAiService.validateModeration(rows[0].title),
         this.openAiService.validateModeration(rows[0].description),
-        this.openAiService.validateModeration(rows[0].notes),
-        this.openAiService.validateModeration(rows[0].location),
       ]);
 
-      if (
-        !isModeratedTitle ||
-        !isModeratedDescription ||
-        !isModeratedNotes ||
-        !isModeratedlocation
-      ) {
-        await this.jobModule.updateJobStatus(rows[0].id, "rejected");
-        await this.pgClient.commitTransaction(conn);
-        await this.pgClient.end(conn);
-        this.logger.info("[handler] status job atualizado (rejected)");
-        return;
+      for (const { isModerated, reason } of moderations) {
+        if (!isModerated) {
+          await this.jobModule.updateJobStatus(rows[0].id, "rejected");
+          await this.jobModule.updateJoNotes(rows[0].id, reason);
+          await this.pgClient.commitTransaction(conn);
+          await this.pgClient.end(conn);
+          return;
+        }
       }
 
       const jsonInBucket = await this.awsPort.getObjectFroms3(

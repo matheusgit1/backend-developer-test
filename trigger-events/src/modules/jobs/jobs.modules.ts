@@ -36,4 +36,12 @@ export class JobModule extends BaseModule implements JobModuleRepository {
 
     await this.executeQuery(sql, [jobId]);
   }
+
+  async updateJoNotes(jobId: string, notes: string): Promise<void> {
+    const sql = `
+      update jobs set notes = $1, updated_at = NOW() where id = $2
+    `;
+
+    await this.executeQuery(sql, [notes, jobId]);
+  }
 }
