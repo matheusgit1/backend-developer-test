@@ -10,7 +10,7 @@ export class FeedModule extends BaseModule implements FeedModuleRepository {
   async getFeed(): Promise<FeedJobs> {
     const jsonInBucket = await this.awsPort.getObjectFroms3({
       Bucket: configs.BUCKET_FEED_NAME,
-      Key: configs.BUCKET_FEED_FILE_KEY,
+      Key: configs.BUCKET_FEED_CLIENT_FILE_KEY,
     });
 
     const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
