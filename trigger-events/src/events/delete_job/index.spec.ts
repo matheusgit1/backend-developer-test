@@ -6,11 +6,19 @@ import {
 } from "../../testes/class.mock";
 import { DeleteJobEventHandler } from "./index";
 import { JobAtributtes } from "../../modules/__dtos__/modules.dtos";
+import { FakeLogger } from "../../infrastructure/logger/fake-logger";
 
-const pgClienteMock = PgClienteMock;
+const pgClienteMock = new PgClienteMock();
 const awsPortMock = new AWSPortMock();
 const jobModuleMock = new JobModuleMock();
-const handler = new DeleteJobEventHandler(jobModuleMock as any, awsPortMock);
+const fakeLogger = new FakeLogger(DeleteJobEventHandler.name);
+const handler = new DeleteJobEventHandler(
+  //@ts-ignore
+  pgClienteMock,
+  jobModuleMock as any,
+  awsPortMock,
+  fakeLogger
+);
 
 const bucketName = "global-feeds";
 const key = "jobs/feed.json";
@@ -34,7 +42,6 @@ describe(`cenários de testes para ${DeleteJobEventHandler.name}`, () => {
         "uploadObjectToS3"
       );
 
-      handler.pgClient = pgClienteMock;
       const jobId = crypto.randomUUID();
       const res = await handler.handler({
         topico: "topico",
@@ -104,8 +111,6 @@ describe(`cenários de testes para ${DeleteJobEventHandler.name}`, () => {
       },
     });
 
-    handler.pgClient = pgClienteMock;
-
     const res = await handler.handler({
       topico: "topico",
       versao: 1,
@@ -160,7 +165,6 @@ describe(`cenários de testes para ${DeleteJobEventHandler.name}`, () => {
       );
 
       awsPortMock.uploadObjectToS3.mockRejectedValueOnce(new Error());
-      handler.pgClient = pgClienteMock;
       jobModuleMock.connection = connection;
       const jobId = crypto.randomUUID();
       const res = await handler.handler({

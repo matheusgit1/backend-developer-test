@@ -5,21 +5,18 @@ import * as pg from "pg";
 import { PgClienteRepository } from "../../infrastructure/database/pg.reposiory";
 import { ServiceOpenAI } from "../../infrastructure/services/__dtos__/services.dtos";
 import * as AWS from "aws-sdk";
-import { PgClient } from "../../infrastructure/database/cliente/pg.cliente";
 import { FeedJobs } from "../__dtos__/events.dtos";
 import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
 import { JobModuleRepository } from "src/modules/__dtos__/modules.dtos";
 
 export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
-  pgClient: PgClienteRepository;
   constructor(
+    private readonly pgClient: PgClienteRepository,
     private readonly jobModule: JobModuleRepository,
     private readonly openAiService: ServiceOpenAI,
     private readonly awsPort: AWSPortDto,
     private readonly logger = new Logger(PublishJobEventHandler.name)
-  ) {
-    this.pgClient = new PgClient();
-  }
+  ) {}
 
   public async handler(
     event: EventHandlerBaseDto<PublishJobDto>

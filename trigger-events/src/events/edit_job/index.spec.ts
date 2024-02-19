@@ -8,15 +8,20 @@ import {
 } from "../../testes/class.mock";
 import { EditJobEventHandler } from "./index";
 import { JobAtributtes } from "../../modules/__dtos__/modules.dtos";
+import { FakeLogger } from "../../infrastructure/logger/fake-logger";
+const fakeLogger = new FakeLogger(EditJobEventHandler.name);
 
-const pgClienteMock = PgClienteMock;
+const pgClienteMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
 const openAiMock = new OpenAiServiceMock();
 const awsPortMock = new AWSPortMock();
 const handler = new EditJobEventHandler(
+  //@ts-ignore
+  pgClienteMock,
   jobModuleMock as any,
   openAiMock,
-  awsPortMock
+  awsPortMock,
+  fakeLogger
 );
 
 const bucketName = "global-feeds";
@@ -75,7 +80,7 @@ describe(`cenários de testes para ${EditJobEventHandler.name}`, () => {
           },
         ],
       });
-      handler.pgClient = pgClienteMock;
+
       jobModuleMock.connection = connection;
       const res = await handler.handler({
         topico: "topico",
@@ -170,7 +175,7 @@ describe(`cenários de testes para ${EditJobEventHandler.name}`, () => {
           },
         },
       });
-      handler.pgClient = pgClienteMock;
+
       jobModuleMock.connection = connection;
 
       const res = await handler.handler({
@@ -234,7 +239,7 @@ describe(`cenários de testes para ${EditJobEventHandler.name}`, () => {
       );
       awsPortMock.uploadObjectToS3.mockRejectedValueOnce(new Error());
       openAiMock.validateModeration.mockResolvedValueOnce(false);
-      handler.pgClient = pgClienteMock;
+
       jobModuleMock.connection = connection;
       const jobId = crypto.randomUUID();
       const res = await handler.handler({

@@ -1,8 +1,8 @@
-import { connection, queryresults } from "../../testes/testes.util";
-import { QueryResult } from "pg";
+import { connection } from "../../testes/testes.util";
 import { JobModule } from "./jobs.modules";
+import { FakeLogger } from "../../infrastructure/logger/fake-logger";
 // import { queryresults } from "../../tests/mocks";
-
+const fakeLogger = new FakeLogger(JobModule.name);
 const jobModule = new JobModule();
 
 describe(`cenários de testes para ${JobModule.name}`, () => {
@@ -16,7 +16,7 @@ describe(`cenários de testes para ${JobModule.name}`, () => {
   describe("casos de sucessos", () => {
     it("deve executar deleteJob corretamente", async () => {
       //@ts-ignore
-      jobModule.connection = connection
+      jobModule.connection = connection;
 
       const spy_jobModule_executeQuery = jest.spyOn(jobModule, "executeQuery");
 
@@ -28,7 +28,7 @@ describe(`cenários de testes para ${JobModule.name}`, () => {
 
     it("deve executar getJob corretamente", async () => {
       //@ts-ignore
-      jobModule.connection = connection
+      jobModule.connection = connection;
 
       const spy_jobModule_executeQuery = jest.spyOn(jobModule, "executeQuery");
 
@@ -40,7 +40,7 @@ describe(`cenários de testes para ${JobModule.name}`, () => {
 
     it("deve executar updateJobStatus corretamente", async () => {
       //@ts-ignore
-      jobModule.connection = connection
+      jobModule.connection = connection;
 
       const spy_jobModule_executeQuery = jest.spyOn(jobModule, "executeQuery");
 

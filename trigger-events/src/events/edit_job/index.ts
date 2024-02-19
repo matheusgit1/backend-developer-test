@@ -11,16 +11,13 @@ import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
-  pgClient: PgClienteRepository;
   constructor(
-    // private readonly pgClient: PgClienteRepository,
+    private readonly pgClient: PgClienteRepository,
     private readonly jobModule: JobModuleRepository,
     private readonly openAiService: ServiceOpenAI,
     private readonly awsPort: AWSPortDto,
     private readonly logger = new Logger(EditJobEventHandler.name)
-  ) {
-    this.pgClient = new PgClient();
-  }
+  ) {}
 
   public async handler(event: EventHandlerBaseDto<EditJobDto>): Promise<void> {
     let conn: pg.PoolClient | undefined = undefined;
@@ -78,7 +75,7 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
         await this.jobModule.updateJobStatus(rows[0].id, "rejected");
         const jsonInBucket = await this.awsPort.getObjectFroms3(downloadParams);
         const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
-        console.log("json content: ", jsonContent, typeof jsonContent);
+
         const feeds = jsonContent.feeds.filter(
           (_item) => _item.id !== rows[0].id
         );

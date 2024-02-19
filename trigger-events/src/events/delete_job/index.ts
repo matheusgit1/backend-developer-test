@@ -10,14 +10,12 @@ import { AWSPortDto } from "../../ports/__dtos__/ports.dtos";
 import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 
 export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
-  pgClient: PgClienteRepository;
   constructor(
+    private readonly pgClient: PgClienteRepository,
     private readonly jobModule: JobModuleRepository,
     private readonly awsPort: AWSPortDto,
     private readonly logger = new Logger(DeleteJobEventHandler.name)
-  ) {
-    this.pgClient = new PgClient();
-  }
+  ) {}
 
   public async handler(
     event: EventHandlerBaseDto<DeleteJobDto>
@@ -72,7 +70,6 @@ export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
       if (conn) {
         await this.pgClient.rolbackTransaction(conn);
       }
-      console.error(error);
       this.logger.error(`[handler] - método processado com error: `, error);
     } finally {
       if (conn) {

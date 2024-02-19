@@ -1,4 +1,3 @@
-
 import { Context, SQSEvent } from "aws-lambda";
 import { v4 } from "uuid";
 import {
@@ -30,7 +29,7 @@ export const connection = {
   query: async (_quer: string, _params: any[]): Promise<QueryResult> => {
     return { ...queryresults };
   },
-}
+};
 
 export const genSqsHandlerContext = (functionName: string): Context => {
   const currentmillis = new Date().getTime();

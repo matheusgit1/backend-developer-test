@@ -96,17 +96,17 @@ export class JobModuleMock
   });
 }
 
-export const PgClienteMock: PgClienteRepository = {
+export class PgClienteMock implements PgClienteRepository {
   //@ts-ignore
-  client: connection,
-  getConnection: jest.fn(async (): Promise<PoolClient> => {
+  client = connection;
+  getConnection = jest.fn(async (): Promise<PoolClient> => {
     return "PoolClient" as unknown as PoolClient;
-  }),
-  beginTransaction: jest.fn(async (): Promise<void> => {}),
-  commitTransaction: jest.fn(async (): Promise<void> => {}),
-  rolbackTransaction: jest.fn(async (): Promise<void> => {}),
-  end: jest.fn(async (connection: PoolClient): Promise<void> => {}),
-};
+  });
+  beginTransaction = jest.fn(async (): Promise<void> => {});
+  commitTransaction = jest.fn(async (): Promise<void> => {});
+  rolbackTransaction = jest.fn(async (): Promise<void> => {});
+  end = jest.fn(async (connection: PoolClient): Promise<void> => {});
+}
 
 export class OpenAiServiceMock implements ServiceOpenAI {
   openAPiClient = jest.mocked(axios);
@@ -114,13 +114,6 @@ export class OpenAiServiceMock implements ServiceOpenAI {
     return true;
   });
 }
-
-//deve ser o ultimo item exportado
-export const mockEvenstDictionary: EventHandlerDictionary = {
-  event_publish_job: new MockPublishJobEventHandler(),
-  event_edit_job: new MockEditJobEventHandler(),
-  event_delete_job: new MockDeleteJobEventHandler(),
-};
 
 export class AWSPortMock implements AWSPortDto {
   uploadObjectToS3 = jest.fn(
