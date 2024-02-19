@@ -132,7 +132,7 @@ to change this parameter change the variable latencia in ./src/@autocannon/serve
 
 ## API documentation
 
-API documentation made available in the service itself by accessing rora /api-docs in an interactive swagger interface. Feel free to apply any tests you wish.
+API documentation made available in the service itself by accessing route /api-docs in an interactive swagger interface. Feel free to apply any tests you wish.
 
 ![docs](https://github.com/matheusgit1/backend-developer-test/blob/Matheus_Alves_Pereira/assets/documentation.png)
 
