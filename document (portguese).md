@@ -25,7 +25,7 @@ no DynamoDB crie uma tabela chamada 'handler_eventos'
 
 crie três tópicos no sns com os seguintes nomes: event_delete_job, event_edit_job e event_publish_job
 
-**save the 'arn' values of each topic**
+**salve o valor 'arn'de cada topico topic**
 
 - Passo 3
 
