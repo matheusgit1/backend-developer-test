@@ -44,6 +44,12 @@ if (clusters.isPrimary) {
     console.log(
       `Adjacent cluster ${worker.process.pid} stoped.\nReason code: ${code}.\nsignal: ${signal}`
     );
+    if (code !== 0 && !worker.exitedAfterDisconnect) {
+      console.log(
+        `cluster ${worker.process.pid} stoped. Rescheduling another one`
+      );
+      clusters.fork();
+    }
   });
 } else {
   app.use("/health", healthRoutes);
@@ -53,7 +59,11 @@ if (clusters.isPrimary) {
 
   app.use(AWSXRay.express.closeSegment());
 
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Process ${process.pid} started - Listening on port ${PORT}`);
+  });
+
+  process.on("SIGTERM", () => {
+    server.close();
   });
 }
