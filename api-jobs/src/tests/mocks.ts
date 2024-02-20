@@ -220,3 +220,9 @@ export class AWSPortMock implements AWSPortDto {
     }
   );
 }
+
+export class HandlerEventMock implements HandlerEventService {
+  publishEvent = jest.fn(
+    async (topic: string, version: 1, payload: any): Promise<void> => {}
+  );
+}

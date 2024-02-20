@@ -1,4 +1,9 @@
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 export const configs = {
+  NODE_ENV: process.env.NODE_ENV,
   TZ: process.env.TZ,
   PORT: process.env.PORT,
   DB_HOST: process.env.DB_HOST,
