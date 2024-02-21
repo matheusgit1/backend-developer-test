@@ -224,18 +224,5 @@ describe(`executando testes para ${GetCompanyByIdUseCase.name}`, () => {
       expect(statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(body).toHaveProperty("error");
     });
-
-    it(`se company_id não for informado, deve retornar status code ${StatusCodes.BAD_REQUEST}`, async () => {
-      const { statusCode, body } = await usecase.handler({
-        req: {
-          params: {
-            // company_id: companyId,
-          },
-        },
-      } as any);
-
-      expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
-      expect(body).toHaveProperty("error");
-    });
   });
 });

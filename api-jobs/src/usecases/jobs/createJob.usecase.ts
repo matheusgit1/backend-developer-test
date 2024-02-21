@@ -15,8 +15,8 @@ export class CreateJobUseCase implements BaseUseCase {
     let conn: PoolClient | undefined = undefined;
     try {
       const companyId = req.headers["company_id"] as string;
-      const { title, description, location, notes } = req.body;
-      if (!title || !description! || !location || !notes) {
+      const { title, description, location } = req.body;
+      if (!title || !description! || !location) {
         return {
           statusCode: StatusCodes.BAD_REQUEST,
           body: {
@@ -24,14 +24,7 @@ export class CreateJobUseCase implements BaseUseCase {
           },
         };
       }
-      if (!companyId) {
-        return {
-          statusCode: StatusCodes.BAD_REQUEST,
-          body: {
-            error: '"company_id" is required',
-          },
-        };
-      }
+
       if (!validateUUID(companyId)) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -50,7 +43,6 @@ export class CreateJobUseCase implements BaseUseCase {
         title,
         description,
         location,
-        notes,
       });
 
       await this.pgClient.commitTransaction(conn);

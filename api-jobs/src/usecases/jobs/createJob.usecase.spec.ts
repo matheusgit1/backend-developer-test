@@ -39,7 +39,6 @@ describe(`executando testes para ${CreateJobUseCase.name}`, () => {
         title: "title",
         description: "description",
         location: "location",
-        notes: "notes",
       };
       const spy_pgClientMock_getConnection = jest.spyOn(
         pgClientMock,
@@ -212,7 +211,6 @@ describe(`executando testes para ${CreateJobUseCase.name}`, () => {
         title: "title",
         description: "description",
         location: "location",
-        notes: "notes",
       };
       const message = "erro mockado";
       jobModuleMock.createJob.mockRejectedValueOnce(new Error(message));
@@ -252,7 +250,6 @@ describe(`executando testes para ${CreateJobUseCase.name}`, () => {
             title: "title",
             description: "description",
             location: "location",
-            notes: "notes",
           },
         },
       } as any);
@@ -327,30 +324,6 @@ describe(`executando testes para ${CreateJobUseCase.name}`, () => {
       expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
       expect(spy_jobModuleMock_createJob).toHaveBeenCalledTimes(0);
-      expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it(`se company_id "não for informado nos headers, deve retornar ${StatusCodes.BAD_REQUEST}`, async () => {
-      const message = "erro mockado";
-      const bodyJob = {
-        title: "title",
-        description: "description",
-        location: "location",
-        notes: "notes",
-      };
-
-      const res = await usecase.handler({
-        req: {
-          headers: {
-            // company_id: companyId,
-          },
-          body: {
-            ...bodyJob,
-          },
-        },
-      } as any);
-
       expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(res.body).toHaveProperty("error");
     });

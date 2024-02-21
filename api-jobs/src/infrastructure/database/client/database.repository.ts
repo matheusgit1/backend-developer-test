@@ -11,6 +11,10 @@ export class PgCliente implements PgClienteRepository {
       max: 50,
       connectionString: `postgres://${configs.DB_USER}:${configs.DB_PASSWORD}@${configs.DB_HOST}:${configs.DB_PORT}/${configs.DB_NAME}`,
     });
+
+    this.pool.on("release", (err, client) => {
+      console.log("pool released");
+    });
   }
 
   public async getConnection(): Promise<pg.PoolClient> {

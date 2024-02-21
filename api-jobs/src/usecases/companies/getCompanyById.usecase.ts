@@ -16,14 +16,6 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
     let conn: PoolClient | undefined = undefined;
     try {
       const companyId = req.params["company_id"];
-      if (!companyId) {
-        return {
-          statusCode: StatusCodes.BAD_REQUEST,
-          body: {
-            error: '"company_id" is required',
-          },
-        };
-      }
       conn = await this.pgClient.getConnection();
       this.module.connection = conn;
       const { rows } = await this.module.getCompanyById(companyId);

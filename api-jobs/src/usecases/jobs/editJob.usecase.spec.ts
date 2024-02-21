@@ -47,7 +47,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
             title: "title",
             description: "description",
             location: "location",
-            notes: "notes",
           },
         },
       } as any);
@@ -75,7 +74,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
             title: "title",
             description: "description",
             location: "location",
-            notes: "notes",
           },
         },
       } as any);
@@ -98,7 +96,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         title: "title",
         description: "description",
         location: "location",
-        notes: "notes",
       };
 
       const spy_pgClientMock_getConnection = jest.spyOn(
@@ -178,7 +175,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         title: "title",
         description: "description",
         location: "location",
-        notes: "notes",
       };
       const spy_customEventEmmiter_publishJob = jest.spyOn(
         customEventEmmiter,
@@ -263,7 +259,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         title: "title",
         description: "description",
         location: "location",
-        notes: "notes",
       };
 
       const spy_pgClientMock_getConnection = jest.spyOn(
@@ -326,7 +321,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         title: "title",
         description: "description",
         location: "location",
-        notes: "notes",
       };
 
       const spy_pgClientMock_getConnection = jest.spyOn(
@@ -388,7 +382,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
         title: "title",
         description: "description",
         location: "location",
-        notes: "notes",
       };
       jobModuleMock.updateJob.mockRejectedValueOnce(new Error(message));
       const spy_pgClientMock_getConnection = jest.spyOn(
@@ -462,31 +455,11 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
             title: "title",
             description: "description",
             location: "location",
-            notes: "notes",
           },
         },
       } as any);
 
       expect(res.statusCode).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it(`se job_id não for inválido método deve retornar statusCode ${StatusCodes.BAD_REQUEST}`, async () => {
-      const res = await usecase.handler({
-        req: {
-          params: {
-            // job_id: "jobId",
-          },
-          body: {
-            title: "title",
-            description: "description",
-            location: "location",
-            notes: "notes",
-          },
-        },
-      } as any);
-
-      expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(res.body).toHaveProperty("error");
     });
 
@@ -500,7 +473,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
             // title: "title",
             // description: "description",
             // location: "location",
-            // notes: "notes",
           },
         },
       } as any);
@@ -523,7 +495,6 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
             title: "title",
             description: "description",
             location: "location",
-            notes: "notes",
           },
         },
       } as any);

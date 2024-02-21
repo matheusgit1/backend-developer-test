@@ -18,14 +18,7 @@ export class EditJobUseCase implements BaseUseCase {
     try {
       const param = [];
       const jobId = req.params["job_id"];
-      if (!jobId) {
-        return {
-          statusCode: StatusCodes.BAD_REQUEST,
-          body: {
-            error: '"job_id" is required',
-          },
-        };
-      }
+
       if (!validateUUID(jobId)) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -35,7 +28,7 @@ export class EditJobUseCase implements BaseUseCase {
         };
       }
 
-      const { title, description, location, notes } = req.body;
+      const { title, description, location } = req.body;
       if (title) {
         param.push(title);
       }
@@ -44,9 +37,6 @@ export class EditJobUseCase implements BaseUseCase {
       }
       if (location) {
         param.push(location);
-      }
-      if (notes) {
-        param.push(notes);
       }
 
       if (param.length === 0) {
@@ -64,7 +54,7 @@ export class EditJobUseCase implements BaseUseCase {
       this.module.connection = conn;
 
       const [_, { rows, rowCount }] = await Promise.all([
-        this.module.updateJob({ description, title, notes, location }, jobId),
+        this.module.updateJob({ description, title, location }, jobId),
         this.module.getJobById(jobId),
       ]);
 

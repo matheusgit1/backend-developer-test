@@ -11,32 +11,23 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
     title,
     description,
     location,
-    notes,
   }: CreateJobDto): Promise<void> {
     const sql = `
       insert into jobs (
         company_id,
         title,
         description,
-        location,
-        notes
+        location
       ) VALUES (
         $1,
         $2,
         $3,
-        $4,
-        $5
+        $4
       );
     `;
-    await this.executeQuery(sql, [
-      companyId,
-      title,
-      description,
-      location,
-      notes,
-    ]);
+    await this.executeQuery(sql, [companyId, title, description, location]);
   }
- 
+
   async archiveJob(jobId: string): Promise<void> {
     const sql = `
       update jobs set status = 'archived'::job_status, updated_at = NOW() where id = $1;
@@ -51,7 +42,12 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
   }
 
   async updateJob(
-    { title, description, location, notes }: Partial<CreateJobDto>,
+    {
+      title,
+      description,
+      location,
+      notes,
+    }: Partial<CreateJobDto & { notes: string }>,
     jobId: string
   ): Promise<QueryResult<any>> {
     let sqlBase = "update jobs set ";

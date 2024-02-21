@@ -28,7 +28,6 @@ describe(`cenários de testes para ${JobsModule.name}`, () => {
         description: "description",
         location: "location",
         companyId: "companyId",
-        notes: "notes",
       });
 
       expect(res).toBeUndefined();
@@ -102,7 +101,6 @@ describe(`cenários de testes para ${JobsModule.name}`, () => {
           description: "description",
           location: "location",
           companyId: "companyId",
-          notes: "notes",
         })
       ).rejects.toThrow(
         `conexão com base de dados não foi instaciada. Considere usar moduleName.connection = PoolClient`

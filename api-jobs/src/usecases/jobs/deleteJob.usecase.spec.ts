@@ -177,20 +177,6 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
       expect(res.body).toHaveProperty("error");
     });
 
-    it(`se job_id "não for informado nos params, deve retornar ${StatusCodes.BAD_REQUEST}`, async () => {
-      const res = await usecase.handler({
-        req: {
-          params: {},
-          headers: {
-            // company_id: companyId,
-          },
-        },
-      } as any);
-
-      expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-      expect(res.body).toHaveProperty("error");
-    });
-
     it(`se job_id informado nos params for inválido, deve retornar ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
       const res = await usecase.handler({
         req: {
@@ -204,20 +190,6 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
       } as any);
 
       expect(res.statusCode).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it(`se job_id "não for informado nos params, deve retornar ${StatusCodes.BAD_REQUEST}`, async () => {
-      const res = await usecase.handler({
-        req: {
-          params: {},
-          headers: {
-            // company_id: companyId,
-          },
-        },
-      } as any);
-
-      expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(res.body).toHaveProperty("error");
     });
 

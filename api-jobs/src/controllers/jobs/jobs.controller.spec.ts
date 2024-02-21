@@ -79,7 +79,6 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
           title: "title",
           description: "description",
           location: "location",
-          notes: "notes",
         })
         .set("Content-Type", "application/json")
         .set("Accept", "application/json")
@@ -121,7 +120,6 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
           title: "title",
           description: "description",
           location: "location",
-          notes: "notes",
         })
         .set("Content-Type", "application/json")
         .set("Accept", "application/json");
@@ -182,7 +180,6 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
             title: "title",
             description: "description",
             location: "location",
-            notes: "notes",
           })
           .set("Content-Type", "application/json")
           .set("Accept", "application/json")
@@ -196,26 +193,10 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
           .send({
             title: "title",
             description: "description",
-            location: "location",
-            // notes: "notes",
           })
           .set("Content-Type", "application/json")
           .set("Accept", "application/json")
           .set("company_id", crypto.randomUUID().toString());
-        expect(status).toEqual(StatusCodes.BAD_REQUEST);
-      });
-      it(`deve executar '/' com ${StatusCodes.BAD_REQUEST} se company_id não for informado`, async () => {
-        const { body, status } = await request(app)
-          .post("/")
-          .send({
-            title: "title",
-            description: "description",
-            location: "location",
-            notes: "notes",
-          })
-          .set("Content-Type", "application/json")
-          .set("Accept", "application/json");
-        // .set("company_id", crypto.randomUUID().toString());
         expect(status).toEqual(StatusCodes.BAD_REQUEST);
       });
     });
@@ -248,7 +229,6 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
             title: "title",
             description: "description",
             location: "location",
-            notes: "notes",
           })
           .set("Content-Type", "application/json")
           .set("Accept", "application/json");

@@ -42,7 +42,7 @@ describe(`cenários de testes para ${CustomEventEmitter.name}`, () => {
   });
 
   describe("casos de erros", () => {
-    it("se o evento não for configurado pelo emissor, aç~~ao nenhuma deve ser disparada", () => {
+    it("se o evento não for configurado pelo emissor, ação nenhuma deve ser disparada", () => {
       const spy_handlerEventos_publishEvent = jest.spyOn(
         handlerEventos,
         "publishEvent"
@@ -54,12 +54,6 @@ describe(`cenários de testes para ${CustomEventEmitter.name}`, () => {
         payload: {},
       };
 
-      const res = eventEmmiter.publishJob(
-        dadosEvento.topic,
-        dadosEvento.version,
-        dadosEvento.payload
-      );
-
       emmiter.emit(
         "evento_invalido",
         dadosEvento.topic,
@@ -67,12 +61,12 @@ describe(`cenários de testes para ${CustomEventEmitter.name}`, () => {
         dadosEvento.payload
       );
 
-      expect(spy_handlerEventos_publishEvent).toHaveBeenCalledTimes(1);
-      expect(spy_handlerEventos_publishEvent).toHaveBeenCalledWith(
-        dadosEvento.topic,
-        dadosEvento.version,
-        dadosEvento.payload
-      );
+      expect(spy_handlerEventos_publishEvent).toHaveBeenCalledTimes(0);
+      // expect(spy_handlerEventos_publishEvent).toHaveBeenCalledWith(
+      //   dadosEvento.topic,
+      //   dadosEvento.version,
+      //   dadosEvento.payload
+      // );
     });
   });
 });

@@ -17,14 +17,7 @@ export class PublishJobUseCase implements BaseUseCase {
     let conn: PoolClient | undefined = undefined;
     try {
       const jobId = req.params["job_id"];
-      if (!jobId) {
-        return {
-          statusCode: StatusCodes.BAD_REQUEST,
-          body: {
-            error: '"job_id" is required',
-          },
-        };
-      }
+
       if (!validateUUID(jobId)) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,

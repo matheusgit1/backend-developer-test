@@ -73,51 +73,6 @@ describe(`executando testes para ${ArchiveJobUseCase.name}`, () => {
       expect(spy_jobModuleMock_archiveJob).toHaveBeenCalledWith(jobId);
     });
 
-    it(`se job_Id não for informado, ação deve retornar statusCode ${StatusCodes.BAD_REQUEST}`, async () => {
-      const spy_pgClientMock_getConnection = jest.spyOn(
-        pgClientMock,
-        "getConnection"
-      );
-      const spy_pgClientMock_beginTransaction = jest.spyOn(
-        pgClientMock,
-        "beginTransaction"
-      );
-      const spy_pgClientMock_commitTransaction = jest.spyOn(
-        pgClientMock,
-        "commitTransaction"
-      );
-
-      const spy_pgClientMock_releaseTransaction = jest.spyOn(
-        pgClientMock,
-        "releaseTransaction"
-      );
-      const spy_pgClientMock_rolbackTransaction = jest.spyOn(
-        pgClientMock,
-        "rolbackTransaction"
-      );
-
-      const spy_jobModuleMock_archiveJob = jest.spyOn(
-        jobModuleMock,
-        "archiveJob"
-      );
-
-      const { statusCode } = await usecase.handler({
-        req: {
-          params: {
-            // job_id: jobId,
-          },
-        },
-      } as any);
-      expect(statusCode).toBe(StatusCodes.BAD_REQUEST);
-      expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(0);
-      expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
-
-      expect(spy_jobModuleMock_archiveJob).toHaveBeenCalledTimes(0);
-    });
-
     it(`se job_Id for inválido, ação deve retornar statusCode ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
       const spy_pgClientMock_getConnection = jest.spyOn(
         pgClientMock,

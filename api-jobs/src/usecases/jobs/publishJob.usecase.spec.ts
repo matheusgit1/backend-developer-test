@@ -111,22 +111,6 @@ describe(`executando testes para ${PublishJobUseCase.name}`, () => {
       expect(res.statusCode).toBe(StatusCodes.UNPROCESSABLE_ENTITY);
     });
 
-    it(`deve retornar status code ${StatusCodes.BAD_REQUEST} se job_id não for informado`, async () => {
-      jobModuleMock.getJobById.mockResolvedValue({
-        ...queryresults,
-        rowCount: 0,
-      });
-      const res = await usecase.handler({
-        req: {
-          params: {
-            // job_id: crypto.randomUUID().toString(), //uuid inválido
-          },
-        },
-      } as any);
-      expect(res).toBeDefined();
-      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
-    });
-
     it(`se alguma ação na base falhar, deve retornar statuCode ${StatusCodes.INTERNAL_SERVER_ERROR} e executar roolback e release`, async () => {
       jobModuleMock.getJobById.mockRejectedValueOnce(new Error());
       const spy_pgClientMock_getConnection = jest.spyOn(

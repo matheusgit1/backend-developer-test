@@ -6,7 +6,6 @@ export interface CreateJobDto {
   title: string;
   description: string;
   location: string;
-  notes: string;
 }
 
 export type AvailableStatusJobs =
