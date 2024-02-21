@@ -4,7 +4,7 @@ import {
   JobModuleMock,
   PgClienteMock,
 } from "../../testes/class.mock";
-import { DeleteJobEventHandler } from "./index";
+import { DeleteJobEventHandler } from "./delete_job.event";
 import { JobAtributtes } from "../../modules/__dtos__/modules.dtos";
 import { FakeLogger } from "../../infrastructure/logger/fake-logger";
 

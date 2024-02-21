@@ -31,26 +31,6 @@ export const connection = {
   },
 };
 
-export const genSqsHandlerContext = (functionName: string): Context => {
-  const currentmillis = new Date().getTime();
-  return {
-    callbackWaitsForEmptyEventLoop: false,
-    functionName: functionName,
-    functionVersion: "v1",
-    invokedFunctionArn: "SQS::ARN",
-    memoryLimitInMB: "1024MB",
-    awsRequestId: v4(),
-    logGroupName: "log-group-mock",
-    logStreamName: "log-stream-mock",
-    getRemainingTimeInMillis() {
-      return new Date().getTime() - currentmillis;
-    },
-    done(_error?: Error, _result?: any) {},
-    fail(_error: Error | string) {},
-    succeed(_messageOrObject: any) {},
-  };
-};
-
 export const genRecordBodyEvent = (event: any) => {
   return JSON.stringify({
     Type: "Notification",

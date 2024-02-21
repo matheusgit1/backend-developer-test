@@ -49,6 +49,18 @@ describe(`cenários de testes para ${JobModule.name}`, () => {
       expect(res).toBeUndefined();
       expect(spy_jobModule_executeQuery).toHaveBeenCalledTimes(1);
     });
+
+    it("deve executar updateJoNotes corretamente", async () => {
+      //@ts-ignore
+      jobModule.connection = connection;
+
+      const spy_jobModule_executeQuery = jest.spyOn(jobModule, "executeQuery");
+
+      const res = await jobModule.updateJoNotes("jobId", "published");
+
+      expect(res).toBeUndefined();
+      expect(spy_jobModule_executeQuery).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("casos de erros", () => {
@@ -66,6 +78,10 @@ describe(`cenários de testes para ${JobModule.name}`, () => {
       );
 
       await expect(jobModule.deleteJob("jobid")).rejects.toThrow(
+        `conexão com base de dados não foi instanciada. Considere usar moduleName.connection = PoolClient`
+      );
+
+      await expect(jobModule.updateJoNotes("jobid", "notes")).rejects.toThrow(
         `conexão com base de dados não foi instanciada. Considere usar moduleName.connection = PoolClient`
       );
     });

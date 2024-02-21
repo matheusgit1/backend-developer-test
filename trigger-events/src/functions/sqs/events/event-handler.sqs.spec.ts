@@ -10,11 +10,11 @@ import { AWSPortMock } from "../../../testes/class.mock";
 import { OpenAiServiceMock } from "../../../testes/class.mock";
 import { JobModuleMock } from "../../../testes/class.mock";
 import { PgClienteMock } from "../../../testes/class.mock";
-import { PublishJobEventHandler } from "../../../events/publish_job/index";
+import { PublishJobEventHandler } from "../../../events/publish_job/publish_job.event";
 import { EventHandlerDictionary } from "./__dtos__/handlers.dto";
 import { ListennerFromSQS } from "./event-handler.sqs";
-import { EditJobEventHandler } from "../../../events/edit_job";
-import { DeleteJobEventHandler } from "../../../events/delete_job";
+import { EditJobEventHandler } from "../../../events/edit_job/edit_job.event";
+import { DeleteJobEventHandler } from "../../../events/delete_job/delete_job.event";
 import { genEventPublishJob, genSqsEvents } from "../../../testes/testes.util";
 
 const pgClienteMock = new PgClienteMock();

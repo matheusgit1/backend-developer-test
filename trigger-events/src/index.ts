@@ -1,11 +1,11 @@
 import { PgClient } from "./infrastructure/database/cliente/pg.cliente";
 import { EventHandlerDictionary } from "@functions/sqs/events/__dtos__/handlers.dto";
 import { ListennerFromSQS } from "./functions/sqs/events/event-handler.sqs";
-import { PublishJobEventHandler } from "./events/publish_job";
-import { EditJobEventHandler } from "./events/edit_job";
+import { PublishJobEventHandler } from "./events/publish_job/publish_job.event";
+import { EditJobEventHandler } from "./events/edit_job/edit_job.event";
 import { JobModule } from "./modules/jobs/jobs.modules";
 import { OpenAiService } from "./infrastructure/services/open-ia.service";
-import { DeleteJobEventHandler } from "./events/delete_job";
+import { DeleteJobEventHandler } from "./events/delete_job/delete_job.event";
 import { AWSPort } from "./ports/aws/aws.port";
 import { TriggerFeedJobsByEventbridge } from "@functions/eventbridge/jobs/jobs-handler.eventbridge";
 import * as AWS from "aws-sdk";

@@ -30,7 +30,7 @@ package:
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs20.x
   region: ${opt:region, file(./values.yml):${self:provider.stage}.REGIAO}
   lambdaHashingVersion: 20201221
   stage: ${opt:stage,'develop'}

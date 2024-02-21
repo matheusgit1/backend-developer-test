@@ -1,4 +1,4 @@
-import { PgClient } from "./../../infrastructure/database/cliente/pg.cliente";
+import { PgClient } from "../../infrastructure/database/cliente/pg.cliente";
 import { EventHandlerBase, EventHandlerBaseDto } from "../base.event-handler";
 import { Logger } from "../../infrastructure/logger/logger";
 import { DeleteJobDto } from "../../functions/sqs/events/__dtos__/handlers.dto";
@@ -71,7 +71,10 @@ export class DeleteJobEventHandler implements EventHandlerBase<DeleteJobDto> {
       if (conn) {
         await this.pgClient.rolbackTransaction(conn);
       }
-      this.logger.error(`[handler] - método processado com error: `, error);
+      this.logger.error(
+        `[handler] - método processado com error: `,
+        JSON.stringify(error)
+      );
     } finally {
       if (conn) {
         await this.pgClient.end(conn);
