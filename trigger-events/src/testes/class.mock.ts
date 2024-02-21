@@ -22,45 +22,45 @@ import {
 import {
   ModerationResponse,
   ServiceOpenAI,
-} from "src/infrastructure/services/__dtos__/services.dtos";
+} from "../infrastructure/services/__dtos__/services.dtos";
 import {
   GetObjectRequest,
   ManagedUpload,
   PutObjectRequest,
 } from "aws-sdk/clients/s3";
+import { JobEntity } from "../entities/job/job.entity";
 
 export class BaseModulMock implements BaseModuleRepository {
   name = "modulename";
   //@ts-ignore
   connection = connection;
-  executeQuery = jest.fn(
-    async (_query: string, _params?: any[]): Promise<QueryResult<any>> => {
-      return { ...queryresults };
-    }
-  );
+  // executeQuery = jest.fn(
+  //   async (_query: string, _params?: any[]): Promise<QueryResult<any>> => {
+  //     return { ...queryresults };
+  //   }
+  // );
 }
 
-export class MockPublishJobEventHandler
-  implements EventHandlerBase<PublishJobDto>
-{
-  handler = jest.fn(
-    async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
-  );
-}
+// export class MockPublishJobEventHandler
+//   implements EventHandlerBase<PublishJobDto> {
+//   // handler = jest.fn(
+//   //   async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
+//   // );
+// }
 
-export class MockEditJobEventHandler implements EventHandlerBase<EditJobDto> {
-  handler = jest.fn(
-    async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
-  );
-}
+// export class MockEditJobEventHandler implements EventHandlerBase<EditJobDto> {
+//   handler = jest.fn(
+//     async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
+//   );
+// }
 
-export class MockDeleteJobEventHandler
-  implements EventHandlerBase<DeleteJobDto>
-{
-  handler = jest.fn(
-    async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
-  );
-}
+// export class MockDeleteJobEventHandler
+//   implements EventHandlerBase<DeleteJobDto>
+// {
+//   handler = jest.fn(
+//     async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
+//   );
+// }
 
 export class JobModuleMock
   extends BaseModulMock
@@ -68,26 +68,19 @@ export class JobModuleMock
 {
   //@ts-ignore
   connection = connection;
-  getJob = jest.fn(
-    async (_jobid: string): Promise<QueryResult<JobAtributtes>> => {
-      return {
-        ...queryresults,
-        rows: [
-          {
-            id: crypto.randomUUID(),
-            company_id: crypto.randomUUID(),
-            notes: "notes",
-            description: "description",
-            title: "title",
-            location: "location",
-            created_at: new Date().toString(),
-            updated_at: new Date().toString(),
-            status: "draft",
-          },
-        ],
-      };
-    }
-  );
+  getJob = jest.fn(async (_jobid: string): Promise<JobEntity> => {
+    return new JobEntity({
+      id: crypto.randomUUID(),
+      company_id: crypto.randomUUID(),
+      notes: "notes",
+      description: "description",
+      title: "title",
+      location: "location",
+      created_at: new Date().toString(),
+      updated_at: new Date().toString(),
+      status: "draft",
+    });
+  });
 
   updateJobStatus = jest.fn(
     async (_jobId: string, _status: AvailableStatusJobs): Promise<void> => {

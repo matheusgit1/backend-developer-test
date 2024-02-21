@@ -8,7 +8,10 @@ export class BaseModule implements BaseModuleRepository {
     this.name = name;
   }
 
-  async executeQuery(query: string, params?: any[]): Promise<QueryResult<any>> {
+  async executeQuery<T>(
+    query: string,
+    params?: any[]
+  ): Promise<QueryResult<T>> {
     if (!this.connection) {
       throw new Error(
         `conexão com base de dados não foi instanciada. Considere usar ${this.name}.connection = PoolClient`

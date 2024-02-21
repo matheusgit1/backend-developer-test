@@ -1,22 +1,25 @@
 import { Logger } from "../../infrastructure/logger/logger";
-import * as pg from "pg";
 import { BaseModule } from "../base.module";
 import {
   AvailableStatusJobs,
   JobModuleRepository,
 } from "../__dtos__/modules.dtos";
+import { JobEntity } from "../../entities/job/job.entity";
+import { Job } from "../../entities/__dtos__/entities.dtos";
 
 export class JobModule extends BaseModule implements JobModuleRepository {
   constructor(private readonly logger: Logger = new Logger(JobModule.name)) {
     super(JobModule.name);
   }
 
-  async getJob(jobId: string): Promise<pg.QueryResult<any>> {
+  async getJob(jobId: string): Promise<JobEntity> {
     const sql = `
         select * from jobs where id = $1;
       `;
 
-    return await this.executeQuery(sql, [jobId]);
+    const { rows } = await this.executeQuery<Job>(sql, [jobId]);
+
+    return new JobEntity({ ...rows[0] });
   }
 
   async updateJobStatus(

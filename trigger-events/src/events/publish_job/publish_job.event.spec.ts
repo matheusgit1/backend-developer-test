@@ -1,4 +1,3 @@
-import { queryresults } from "../../testes/testes.util";
 import { connection } from "../../testes/testes.util";
 import {
   AWSPortMock,
@@ -9,6 +8,7 @@ import {
 import { PublishJobEventHandler } from "./publish_job.event";
 import { JobAtributtes } from "../../modules/__dtos__/modules.dtos";
 import { FakeLogger } from "../../infrastructure/logger/fake-logger";
+import { JobEntity } from "../../entities/job/job.entity";
 
 const fakeLogger = new FakeLogger(PublishJobEventHandler.name);
 
@@ -69,23 +69,19 @@ describe(`cenários de testes para ${PublishJobEventHandler.name}`, () => {
         reason: "moderation",
         isModerated: true,
       });
-      jobModuleMock.getJob.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: jobId,
-            company_id: "company",
-            created_at: new Date().toString(),
-            updated_at: new Date().toString(),
-            description: "description",
-            title: "title",
-            notes: "notes",
-            location: "location",
-            status: "published",
-          },
-        ],
-      });
+      jobModuleMock.getJob.mockResolvedValueOnce(
+        new JobEntity({
+          id: jobId,
+          company_id: "company",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          description: "description",
+          title: "title",
+          notes: "notes",
+          location: "location",
+          status: "published",
+        })
+      );
 
       jobModuleMock.connection = connection;
       const res = await handler.handler({
@@ -159,11 +155,7 @@ describe(`cenários de testes para ${PublishJobEventHandler.name}`, () => {
         status: "published",
       };
 
-      jobModuleMock.getJob.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [newJob],
-      });
+      jobModuleMock.getJob.mockResolvedValueOnce(new JobEntity({ ...newJob }));
 
       const jobs: JobAtributtes = {
         id: jobId,
@@ -221,10 +213,7 @@ describe(`cenários de testes para ${PublishJobEventHandler.name}`, () => {
     });
 
     it("deve finalizar execução se nenhum dado for encontrado na base", async () => {
-      jobModuleMock.getJob.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 0,
-      });
+      jobModuleMock.getJob.mockResolvedValueOnce(new JobEntity());
       const jobId = crypto.randomUUID();
       const spy_awsPortMock_getObjectFroms3 = jest.spyOn(
         awsPortMock,
@@ -297,11 +286,7 @@ describe(`cenários de testes para ${PublishJobEventHandler.name}`, () => {
         reason: "reaseon",
       };
       openAiMock.validateModeration.mockResolvedValueOnce(openAiResponde);
-      jobModuleMock.getJob.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [newJob],
-      });
+      jobModuleMock.getJob.mockResolvedValueOnce(new JobEntity({ ...newJob }));
 
       const spy_jobModuleMock_getJob = jest.spyOn(jobModuleMock, "getJob");
 

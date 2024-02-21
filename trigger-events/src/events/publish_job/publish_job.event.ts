@@ -41,24 +41,25 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
       await this.pgClient.beginTransaction(conn);
       this.jobModule.connection = conn;
 
-      const { rowCount, rows } = await this.jobModule.getJob(
-        event.payload.job_id
+      const entitie = await this.jobModule.getJob(event.payload.job_id);
+      this.logger.info(
+        `[handler] jobs encontrado: `,
+        JSON.stringify(entitie.getProps())
       );
-      this.logger.info(`[handler] jobs encontrado: `, JSON.stringify(rows));
 
-      if (rowCount === 0) {
+      if (!entitie.isValidEntity()) {
         return;
       }
 
       const moderations = await Promise.all([
-        this.openAiService.validateModeration(rows[0].title),
-        this.openAiService.validateModeration(rows[0].description),
+        this.openAiService.validateModeration(entitie.title),
+        this.openAiService.validateModeration(entitie.description),
       ]);
 
       for (const { isModerated, reason } of moderations) {
         if (!isModerated) {
-          await this.jobModule.updateJobStatus(rows[0].id, "rejected");
-          await this.jobModule.updateJoNotes(rows[0].id, reason);
+          await this.jobModule.updateJobStatus(entitie.id, "rejected");
+          await this.jobModule.updateJoNotes(entitie.id, reason);
           await this.pgClient.commitTransaction(conn);
           return;
         }
@@ -70,11 +71,11 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
 
       const jsonContent: FeedJobs = JSON.parse(jsonInBucket.Body.toString());
 
-      rows[0].status = "published";
-      rows[0].updated_at = new Date().toString();
+      entitie.status = "published";
+      entitie.updated_at = new Date().toString();
 
       const newJobPublished = {
-        ...rows[0],
+        ...entitie.getProps(),
       };
       jsonContent.feeds.unshift(newJobPublished);
 
@@ -87,7 +88,7 @@ export class PublishJobEventHandler implements EventHandlerBase<PublishJobDto> {
       };
 
       await this.awsPort.uploadObjectToS3(uploadParams);
-      await this.jobModule.updateJobStatus(rows[0].id, "published");
+      await this.jobModule.updateJobStatus(entitie.id, "published");
       await this.pgClient.commitTransaction(conn);
 
       this.logger.log(`[handler] Método processado com exito`);

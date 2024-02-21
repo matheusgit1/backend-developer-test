@@ -110,4 +110,10 @@ describe(`testes para ${ListennerFromSQS.name}`, () => {
       );
     });
   });
+
+  describe("casos de erros", () => {
+    it('deve retornar nada em caso de falha', () => {
+      
+    })
+  })
 });

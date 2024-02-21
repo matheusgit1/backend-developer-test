@@ -40,12 +40,15 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
       await this.pgClient.beginTransaction(conn);
       this.jobModule.connection = conn;
 
-      const { rows } = await this.jobModule.getJob(event.payload.job_id);
-      this.logger.info(`[handler] jobs encontrado: `, JSON.stringify(rows));
+      const entity = await this.jobModule.getJob(event.payload.job_id);
+      this.logger.info(
+        `[handler] jobs encontrado: `,
+        JSON.stringify(entity.getProps())
+      );
 
       const moderations = await Promise.all([
-        this.openAiService.validateModeration(rows[0].title),
-        this.openAiService.validateModeration(rows[0].description),
+        this.openAiService.validateModeration(entity.title),
+        this.openAiService.validateModeration(entity.description),
       ]);
 
       this.logger.info(
@@ -57,8 +60,8 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
 
       for (const { isModerated, reason } of moderations) {
         if (!isModerated) {
-          await this.jobModule.updateJobStatus(rows[0].id, "rejected");
-          await this.jobModule.updateJoNotes(rows[0].id, reason);
+          await this.jobModule.updateJobStatus(entity.id, "rejected");
+          await this.jobModule.updateJoNotes(entity.id, reason);
           const jsonInBucket = await this.awsPort.getObjectFroms3(
             downloadParams
           );
@@ -67,7 +70,7 @@ export class EditJobEventHandler implements EventHandlerBase<EditJobDto> {
           );
 
           const feeds = jsonContent.feeds.filter(
-            (_item) => _item.id !== rows[0].id
+            (_item) => _item.id !== entity.id
           );
           const newJsonContent = {
             feeds: feeds,

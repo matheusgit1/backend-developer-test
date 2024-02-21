@@ -55,4 +55,11 @@ describe(`cenários para ${TriggerFeedJobsByEventbridge.name}`, () => {
       });
     });
   });
+
+  describe("casos de sucesso", () => {
+    it("deve falhar se algumas ação para a aws falhar", async () => {
+      awsPortMock.getObjectFroms3.mockRejectedValueOnce(new Error());
+      await expect(service.handler()).resolves.toBe(undefined);
+    });
+  });
 });

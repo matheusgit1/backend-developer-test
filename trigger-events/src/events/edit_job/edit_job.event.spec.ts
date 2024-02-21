@@ -1,4 +1,3 @@
-import { queryresults } from "../../../../api-jobs/src/tests/mocks";
 import { connection } from "../../testes/testes.util";
 import {
   AWSPortMock,
@@ -9,6 +8,7 @@ import {
 import { EditJobEventHandler } from "./edit_job.event";
 import { JobAtributtes } from "../../modules/__dtos__/modules.dtos";
 import { FakeLogger } from "../../infrastructure/logger/fake-logger";
+import { JobEntity } from "../../entities/job/job.entity";
 const fakeLogger = new FakeLogger(EditJobEventHandler.name);
 
 const pgClienteMock = new PgClienteMock();
@@ -63,23 +63,20 @@ describe(`cenários de testes para ${EditJobEventHandler.name}`, () => {
         pgClienteMock,
         "commitTransaction"
       );
-      jobModuleMock.getJob.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: jobId,
-            company_id: "company",
-            created_at: new Date().toString(),
-            updated_at: new Date().toString(),
-            description: "description",
-            title: "title",
-            notes: "notes",
-            location: "location",
-            status: "published",
-          },
-        ],
-      });
+
+      jobModuleMock.getJob.mockResolvedValueOnce(
+        new JobEntity({
+          id: jobId,
+          company_id: "company",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          description: "description",
+          title: "title",
+          notes: "notes",
+          location: "location",
+          status: "published",
+        })
+      );
 
       jobModuleMock.connection = connection;
       const res = await handler.handler({
@@ -138,23 +135,21 @@ describe(`cenários de testes para ${EditJobEventHandler.name}`, () => {
         jobModuleMock,
         "updateJobStatus"
       );
-      jobModuleMock.getJob.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: jobId,
-            company_id: "company",
-            created_at: new Date().toString(),
-            updated_at: new Date().toString(),
-            description: "description",
-            title: "title",
-            notes: "notes",
-            location: "location",
-            status: "published",
-          },
-        ],
-      });
+
+      jobModuleMock.getJob.mockResolvedValueOnce(
+        new JobEntity({
+          id: jobId,
+          company_id: "company",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          description: "description",
+          title: "title",
+          notes: "notes",
+          location: "location",
+          status: "published",
+        })
+      );
+
       const jobs: JobAtributtes[] = [
         {
           id: jobId,
