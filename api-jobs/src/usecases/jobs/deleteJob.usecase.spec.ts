@@ -6,6 +6,7 @@ import {
 } from "./../../tests/mocks";
 import { StatusCodes } from "http-status-codes";
 import { DeleteJobUseCase } from "./deleteJob.usecase";
+import { JobEntity } from "../../entities/job/job.entity";
 
 const pgClientMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
@@ -28,7 +29,7 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
   });
   jest.useRealTimers();
   describe(`casos de sucesso`, () => {
-    it(`deve retornar status code ${StatusCodes.ACCEPTED}`, async () => {
+    it(`deve retornar status code ${StatusCodes.ACCEPTED} se executado com sucesso`, async () => {
       const res = await usecase.handler({
         req: {
           params: {
@@ -193,11 +194,8 @@ describe(`executando testes para ${DeleteJobUseCase.name}`, () => {
       expect(res.body).toHaveProperty("error");
     });
 
-    it(`se job_id informado não for encontrado, deve retornar statusCode ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 0,
-      });
+    it(`se entidade não dor retornada pelo modulo job, usecase deve reotornar ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
+      jobModuleMock.getJobById.mockResolvedValueOnce(new JobEntity());
       const res = await usecase.handler({
         req: {
           params: {

@@ -31,9 +31,9 @@ export class DeleteJobUseCase implements BaseUseCase {
       await this.pgClient.beginTransaction(conn);
       this.module.connection = conn;
 
-      const { rowCount } = await this.module.getJobById(jobId);
+      const entity = await this.module.getJobById(jobId);
 
-      if (rowCount <= 0) {
+      if (!entity.isValidEntity()) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
           body: {

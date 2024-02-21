@@ -19,7 +19,8 @@ import {
   UploadPartCommandOutput,
 } from "@aws-sdk/client-s3";
 import { CompanyEntity } from "../entities/company/company.entity";
-import { Company } from "src/entities/__dtos__/entities.dtos";
+import { Company } from "../entities/__dtos__/entities.dtos";
+import { JobEntity } from "../entities/job/job.entity";
 
 export const queryresults = {
   rowCount: 1,
@@ -47,15 +48,6 @@ export class PgClienteMock implements PgClienteRepository {
   commitTransaction = jest.fn(async (): Promise<void> => {});
   rolbackTransaction = jest.fn(async (): Promise<void> => {});
   releaseTransaction = jest.fn(async (): Promise<void> => {});
-  executeQuery = jest.fn(
-    async (
-      _Connection: pg.PoolClient,
-      _query: string,
-      _params?: any[]
-    ): Promise<pg.QueryResult<any>> => {
-      return { ...queryresults };
-    }
-  );
 }
 
 export class CustomEventEmitterMock implements CustomEventEmitterDto {
@@ -104,16 +96,21 @@ export class JobModuleMock
   // id: crypto.randomUUID().toString(),
   createJob = jest.fn(async (_input: CreateJobDto): Promise<void> => {});
   archiveJob = jest.fn(async (_jobId: string): Promise<void> => {});
-  getJobById = jest.fn(async (_jobId: string): Promise<pg.QueryResult<any>> => {
-    return { ...queryresults, rowCount: 1 };
+  getJobById = jest.fn(async (_jobId: string): Promise<JobEntity> => {
+    return new JobEntity({
+      id: crypto.randomUUID(),
+      company_id: crypto.randomUUID(),
+      location: "remote",
+      description: "description",
+      title: "title",
+      created_at: new Date().toString(),
+      updated_at: new Date().toString(),
+      notes: "notes",
+      status: "draft",
+    });
   });
   updateJob = jest.fn(
-    async (
-      _input: Partial<CreateJobDto>,
-      _jobId: string
-    ): Promise<pg.QueryResult<any>> => {
-      return { ...queryresults, rowCount: 1 };
-    }
+    async (_input: Partial<CreateJobDto>, _jobId: string): Promise<void> => {}
   );
 }
 

@@ -70,7 +70,7 @@ describe(`cenários de testes para ${JobsModule.name}`, () => {
         "jobid"
       );
 
-      expect(res).toBeDefined();
+      expect(res).toBeUndefined();
       expect(spy_jobModule_executeQuery).toHaveBeenCalledTimes(1);
     });
 

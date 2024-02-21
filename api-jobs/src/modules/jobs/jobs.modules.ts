@@ -1,6 +1,7 @@
-import { QueryResult } from "pg";
 import { CreateJobDto, JobModuleRepository } from "../__dtos__/modules.dtos";
 import { BaseModule } from "../base.module";
+import { JobEntity } from "../../entities/job/job.entity";
+import { Job } from "src/entities/__dtos__/entities.dtos";
 
 export class JobsModule extends BaseModule implements JobModuleRepository {
   constructor() {
@@ -36,9 +37,10 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
     await this.executeQuery(sql, [jobId]);
   }
 
-  async getJobById(jobId: string): Promise<QueryResult<any>> {
+  async getJobById(jobId: string): Promise<JobEntity> {
     const sql = `SELECT * FROM jobs WHERE id = $1;`;
-    return await this.executeQuery(sql, [jobId]);
+    const { rows } = await this.executeQuery<Job>(sql, [jobId]);
+    return new JobEntity({ ...rows[0] });
   }
 
   async updateJob(
@@ -49,7 +51,7 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
       notes,
     }: Partial<CreateJobDto & { notes: string }>,
     jobId: string
-  ): Promise<QueryResult<any>> {
+  ): Promise<void> {
     let sqlBase = "update jobs set ";
     let params = [];
 
@@ -80,6 +82,6 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
     params.push(jobId);
     sqlBase += ` where id = $${params.length}`;
 
-    return await this.executeQuery(sqlBase, params);
+    await this.executeQuery<Job>(sqlBase, params);
   }
 }

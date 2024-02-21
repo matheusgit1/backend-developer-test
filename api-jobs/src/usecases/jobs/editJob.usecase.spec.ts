@@ -6,6 +6,7 @@ import {
 } from "./../../tests/mocks";
 import { StatusCodes } from "http-status-codes";
 import { EditJobUseCase } from "./editJob.usecase";
+import { JobEntity } from "../../entities/job/job.entity";
 
 const pgClientMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
@@ -28,16 +29,19 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
   jest.useRealTimers();
   describe(`casos de sucesso`, () => {
     it(`deve retornar status code ${StatusCodes.OK}`, async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: "id",
-            status: "draft",
-          },
-        ],
-      });
+      jobModuleMock.getJobById.mockResolvedValueOnce(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "draft",
+        })
+      );
       const res = await usecase.handler({
         req: {
           params: {
@@ -55,16 +59,19 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
     });
 
     it(`deve retornar status code ${StatusCodes.OK} mesmo se apenas um parametro for informado`, async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: "id",
-            status: "draft",
-          },
-        ],
-      });
+      jobModuleMock.getJobById.mockResolvedValueOnce(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "draft",
+        })
+      );
       const res = await usecase.handler({
         req: {
           params: {
@@ -82,16 +89,19 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
     });
 
     it(`deve executar ações na base corretamente`, async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: "id",
-            status: "draft",
-          },
-        ],
-      });
+      jobModuleMock.getJobById.mockResolvedValueOnce(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "draft",
+        })
+      );
       const bodyRequest = {
         title: "title",
         description: "description",
@@ -160,17 +170,21 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
       expect(body).toBeDefined();
     });
 
-    it(`deve job tiver status 'published', evento de edição deve ser disparado`, async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: jobId,
-            status: "published",
-          },
-        ],
-      });
+    it(`se job tiver status 'published', evento de edição deve ser disparado`, async () => {
+      const joibId = crypto.randomUUID();
+      jobModuleMock.getJobById.mockResolvedValueOnce(
+        new JobEntity({
+          id: joibId,
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "published",
+        })
+      );
       const bodyRequest = {
         title: "title",
         description: "description",
@@ -482,10 +496,7 @@ describe(`executando testes para ${EditJobUseCase.name}`, () => {
     });
 
     it(`se jobId não for localizado na base, deve retornar ${StatusCodes.UNPROCESSABLE_ENTITY}`, async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 0,
-      });
+      jobModuleMock.getJobById.mockResolvedValueOnce(new JobEntity());
       const res = await usecase.handler({
         req: {
           params: {

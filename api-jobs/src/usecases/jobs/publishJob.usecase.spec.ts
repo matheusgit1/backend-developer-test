@@ -6,6 +6,7 @@ import {
   PgClienteMock,
 } from "../../tests/mocks";
 import { PublishJobUseCase } from "./publishJob.usecase";
+import { JobEntity } from "../../entities/job/job.entity";
 
 const pgClientMock = new PgClienteMock();
 const customEventEmmiter = new CustomEventEmitterMock();
@@ -26,17 +27,20 @@ describe(`executando testes para ${PublishJobUseCase.name}`, () => {
   });
   jest.useRealTimers();
   describe(`casos de sucesso`, () => {
-    it(`deve retornar status code ${StatusCodes.ACCEPTED}`, async () => {
-      jobModuleMock.getJobById.mockResolvedValue({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            status: "draft",
-            id: "id",
-          },
-        ],
-      });
+    it(`deve retornar status code ${StatusCodes.ACCEPTED} se job não possuir status "published"`, async () => {
+      jobModuleMock.getJobById.mockResolvedValue(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "draft",
+        })
+      );
       const res = await usecase.handler({
         req: {
           params: {
@@ -48,17 +52,20 @@ describe(`executando testes para ${PublishJobUseCase.name}`, () => {
       expect(res.statusCode).toBe(StatusCodes.ACCEPTED);
     });
 
-    it(`deve retornar status code ${StatusCodes.ACCEPTED}`, async () => {
-      jobModuleMock.getJobById.mockResolvedValue({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            status: "draft",
-            id: "id",
-          },
-        ],
-      });
+    it(`deve retornar status code ${StatusCodes.OK} se job possuir status "published"`, async () => {
+      jobModuleMock.getJobById.mockResolvedValue(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "published",
+        })
+      );
       const res = await usecase.handler({
         req: {
           params: {
@@ -67,22 +74,25 @@ describe(`executando testes para ${PublishJobUseCase.name}`, () => {
         },
       } as any);
       expect(res).toBeDefined();
-      expect(res.statusCode).toBe(StatusCodes.ACCEPTED);
+      expect(res.statusCode).toBe(StatusCodes.OK);
     });
   });
 
   describe(`casos de erros`, () => {
     it(`deve retornar status code ${StatusCodes.OK} se job_ já possuir status 'published'`, async () => {
-      jobModuleMock.getJobById.mockResolvedValue({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            status: "published",
-            id: "id",
-          },
-        ],
-      });
+      jobModuleMock.getJobById.mockResolvedValue(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "published",
+        })
+      );
 
       const res = await usecase.handler({
         req: {
@@ -96,10 +106,7 @@ describe(`executando testes para ${PublishJobUseCase.name}`, () => {
     });
 
     it(`deve retornar status code ${StatusCodes.UNPROCESSABLE_ENTITY} se job_id não for encontrado na base`, async () => {
-      jobModuleMock.getJobById.mockResolvedValue({
-        ...queryresults,
-        rowCount: 0,
-      });
+      jobModuleMock.getJobById.mockResolvedValue(new JobEntity());
       const res = await usecase.handler({
         req: {
           params: {

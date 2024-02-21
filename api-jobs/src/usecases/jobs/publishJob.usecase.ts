@@ -29,8 +29,8 @@ export class PublishJobUseCase implements BaseUseCase {
       conn = await this.pgClient.getConnection();
       this.module.connection = conn;
 
-      const { rows, rowCount } = await this.module.getJobById(jobId);
-      if (rowCount === 0) {
+      const entity = await this.module.getJobById(jobId);
+      if (!entity.isValidEntity()) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
           body: {
@@ -38,14 +38,14 @@ export class PublishJobUseCase implements BaseUseCase {
           },
         };
       }
-      if (rows[0].status === "published") {
+      if (entity.status === "published") {
         return {
           statusCode: StatusCodes.OK,
         };
       }
 
       this.eventEmitter.publishJob("event_publish_job", 1, {
-        job_id: rows[0].id,
+        job_id: entity.id,
         origin: "api-jobs",
       });
       return {

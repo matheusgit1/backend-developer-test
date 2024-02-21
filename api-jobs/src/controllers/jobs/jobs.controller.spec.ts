@@ -11,6 +11,7 @@ import { EditJobUseCase } from "../../usecases/jobs/editJob.usecase";
 import { DeleteJobUseCase } from "../../usecases/jobs/deleteJob.usecase";
 import { ArchiveJobUseCase } from "../../usecases/jobs/archiveJob.usecase";
 import { app } from "../../configs/app/app.config";
+import { JobEntity } from "../../entities/job/job.entity";
 
 const pgClienteMock = new PgClienteMock();
 const jobModuleMock = new JobModuleMock();
@@ -88,32 +89,38 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
 
     it("deve executar '/:job_id/publish' com sucesso", async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: "job_id",
-            status: "draft",
-          },
-        ],
-      });
+      jobModuleMock.getJobById.mockResolvedValueOnce(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "draft",
+        })
+      );
       const { body, status } = await request(app).put(`/${jobId}/publish`);
       expect(body).toBeDefined();
       expect(status).toBe(StatusCodes.ACCEPTED);
     });
 
     it("deve executar '/:job_id' com sucesso", async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: "job_id",
-            status: "draft",
-          },
-        ],
-      });
+      jobModuleMock.getJobById.mockResolvedValueOnce(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "draft",
+        })
+      );
       const { body, status } = await request(app)
         .put(`/${jobId}`)
         .send({
@@ -128,16 +135,19 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
 
     it("deve executar '/:job_id' com sucesso mesmo com apenas um parametro", async () => {
-      jobModuleMock.getJobById.mockResolvedValueOnce({
-        ...queryresults,
-        rowCount: 1,
-        rows: [
-          {
-            id: "job_id",
-            status: "draft",
-          },
-        ],
-      });
+      jobModuleMock.getJobById.mockResolvedValueOnce(
+        new JobEntity({
+          id: crypto.randomUUID(),
+          company_id: crypto.randomUUID(),
+          location: "remote",
+          description: "description",
+          title: "title",
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
+          notes: "notes",
+          status: "draft",
+        })
+      );
       const { body, status } = await request(app)
         .put(`/${jobId}`)
         .send({
@@ -202,16 +212,19 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
     });
     describe('cenários para "/:job_id/publish"', () => {
       it(`deve executar '/' com status code ${StatusCodes.ACCEPTED}`, async () => {
-        jobModuleMock.getJobById.mockResolvedValueOnce({
-          ...queryresults,
-          rowCount: 1,
-          rows: [
-            {
-              id: "job_id",
-              status: "draft",
-            },
-          ],
-        });
+        jobModuleMock.getJobById.mockResolvedValueOnce(
+          new JobEntity({
+            id: crypto.randomUUID(),
+            company_id: crypto.randomUUID(),
+            location: "remote",
+            description: "description",
+            title: "title",
+            created_at: new Date().toString(),
+            updated_at: new Date().toString(),
+            notes: "notes",
+            status: "draft",
+          })
+        );
         const { body, status } = await request(app)
           .put(`/${jobId}/publish`)
           .set("Content-Type", "application/json")
@@ -244,10 +257,7 @@ describe(`testes para ${JobsRoutesAdapted.name}`, () => {
         expect(status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY);
       });
       it(`deve executar '/' com status code ${StatusCodes.UNPROCESSABLE_ENTITY} se o jobId não for localizado na base`, async () => {
-        pgClienteMock.executeQuery.mockResolvedValueOnce({
-          ...queryresults,
-          rowCount: 0,
-        });
+        jobModuleMock.getJobById.mockResolvedValueOnce(new JobEntity());
         const { body, status } = await request(app)
           .put(`/${jobId}`)
           .set("Content-Type", "application/json")

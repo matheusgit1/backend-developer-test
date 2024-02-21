@@ -1,6 +1,8 @@
 import { QueryResult } from "pg";
 import { BaseModuleRepository } from "../base.repository";
-import { CompanyEntity } from "src/entities/company/company.entity";
+import { CompanyEntity } from "../../entities/company/company.entity";
+import { JobEntity } from "../../entities/job/job.entity";
+import { Job } from "../../entities/__dtos__/entities.dtos";
 
 export interface CreateJobDto {
   companyId: string;
@@ -9,23 +11,6 @@ export interface CreateJobDto {
   location: string;
 }
 
-export type AvailableStatusJobs =
-  | "draft"
-  | "published"
-  | "archived"
-  | "rejected";
-
-export interface Job {
-  id: string;
-  company_id: string;
-  title: string;
-  description: string;
-  location: string;
-  notes: string;
-  status: AvailableStatusJobs;
-  created_at: Date | string;
-  updated_at: Date | string;
-}
 export type JobInFeed = Job;
 
 export interface FeedJobs {
@@ -45,11 +30,8 @@ export declare class CompanyModuleRepository extends BaseModuleRepository {
 export declare class JobModuleRepository extends BaseModuleRepository {
   createJob(input: CreateJobDto): Promise<void>;
   archiveJob(jobId: string): Promise<void>;
-  getJobById(jobId: string): Promise<QueryResult<Job>>;
-  updateJob(
-    input: Partial<CreateJobDto>,
-    jobId: string
-  ): Promise<QueryResult<any>>;
+  getJobById(jobId: string): Promise<JobEntity>;
+  updateJob(input: Partial<CreateJobDto>, jobId: string): Promise<void>;
 }
 
 /**

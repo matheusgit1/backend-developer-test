@@ -40,10 +40,6 @@ describe(`executando testes para ${GetCompaniesUseCase.name}`, () => {
           pgClientMock,
           "commitTransaction"
         );
-        const spy_pgClientMock_executeQuery = jest.spyOn(
-          pgClientMock,
-          "executeQuery"
-        );
         const spy_pgClientMock_releaseTransaction = jest.spyOn(
           pgClientMock,
           "releaseTransaction"
@@ -63,7 +59,6 @@ describe(`executando testes para ${GetCompaniesUseCase.name}`, () => {
         expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
         expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(0);
         expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
-        expect(spy_pgClientMock_executeQuery).toHaveBeenCalledTimes(0);
         expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(0);
         expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
         expect(spy_companyModuleMock_getCompanies).toHaveBeenCalledTimes(0);
@@ -89,10 +84,6 @@ describe(`executando testes para ${GetCompaniesUseCase.name}`, () => {
           pgClientMock,
           "commitTransaction"
         );
-        const spy_pgClientMock_executeQuery = jest.spyOn(
-          pgClientMock,
-          "executeQuery"
-        );
         const spy_pgClientMock_releaseTransaction = jest.spyOn(
           pgClientMock,
           "releaseTransaction"
@@ -112,7 +103,6 @@ describe(`executando testes para ${GetCompaniesUseCase.name}`, () => {
         expect(spy_pgClientMock_getConnection).toHaveBeenCalledTimes(1);
         expect(spy_pgClientMock_beginTransaction).toHaveBeenCalledTimes(0);
         expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
-        expect(spy_pgClientMock_executeQuery).toHaveBeenCalledTimes(0);
         expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
         expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(1);
         expect(spy_companyModuleMock_getCompanies).toHaveBeenCalledTimes(1);

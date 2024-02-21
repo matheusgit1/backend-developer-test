@@ -25,6 +25,7 @@ import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
 import Cache from "node-cache";
 import { CompanyEntity } from "../../entities/company/company.entity";
 import { Company } from "../../entities/__dtos__/entities.dtos";
+import { JobEntity } from "../../entities/job/job.entity";
 
 export const queryresults: QueryResult<any> = {
   rowCount: 1,
@@ -71,15 +72,22 @@ const jobModuleMock: JobModuleRepository = {
   },
   createJob: async (_input: CreateJobDto): Promise<void> => {},
   archiveJob: async (_jobId: string): Promise<void> => {},
-  getJobById: async (_jobId: string): Promise<QueryResult<any>> => {
-    return { ...queryresults, rowCount: 1 };
+  getJobById: async (_jobId: string): Promise<JobEntity> => {
+    return new JobEntity({
+      id: crypto.randomUUID(),
+      company_id: crypto.randomUUID(),
+      created_at: new Date().toString(),
+      updated_at: new Date().toString(),
+      status: "published",
+      title: "title",
+      description: "description",
+      location: "remote",
+    });
   },
   updateJob: async (
     _input: Partial<CreateJobDto>,
     _jobId: string
-  ): Promise<QueryResult<any>> => {
-    return { ...queryresults, rowCount: 1 };
-  },
+  ): Promise<void> => {},
 };
 
 const companyModuleMock: CompanyModuleRepository = {

@@ -43,10 +43,7 @@ describe(`executando testes para ${GetCompanyByIdUseCase.name}`, () => {
         pgClientMock,
         "commitTransaction"
       );
-      const spy_pgClientMock_executeQuery = jest.spyOn(
-        pgClientMock,
-        "executeQuery"
-      );
+
       const spy_pgClientMock_releaseTransaction = jest.spyOn(
         pgClientMock,
         "releaseTransaction"
@@ -81,7 +78,6 @@ describe(`executando testes para ${GetCompanyByIdUseCase.name}`, () => {
 
       expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClientMock_executeQuery).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
 
       expect(spy_companyModuleMock_getCompanyById).toHaveBeenCalledTimes(1);
@@ -108,10 +104,7 @@ describe(`executando testes para ${GetCompanyByIdUseCase.name}`, () => {
         pgClientMock,
         "commitTransaction"
       );
-      const spy_pgClientMock_executeQuery = jest.spyOn(
-        pgClientMock,
-        "executeQuery"
-      );
+
       const spy_pgClientMock_releaseTransaction = jest.spyOn(
         pgClientMock,
         "releaseTransaction"
@@ -146,7 +139,6 @@ describe(`executando testes para ${GetCompanyByIdUseCase.name}`, () => {
 
       expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(0);
-      expect(spy_pgClientMock_executeQuery).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(0);
 
       expect(spy_companyModuleMock_getCompanyById).toHaveBeenCalledTimes(0);
@@ -175,10 +167,7 @@ describe(`executando testes para ${GetCompanyByIdUseCase.name}`, () => {
         pgClientMock,
         "commitTransaction"
       );
-      const spy_pgClientMock_executeQuery = jest.spyOn(
-        pgClientMock,
-        "executeQuery"
-      );
+
       const spy_pgClientMock_releaseTransaction = jest.spyOn(
         pgClientMock,
         "releaseTransaction"
@@ -213,7 +202,6 @@ describe(`executando testes para ${GetCompanyByIdUseCase.name}`, () => {
 
       expect(spy_pgClientMock_commitTransaction).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_releaseTransaction).toHaveBeenCalledTimes(1);
-      expect(spy_pgClientMock_executeQuery).toHaveBeenCalledTimes(0);
       expect(spy_pgClientMock_rolbackTransaction).toHaveBeenCalledTimes(1);
 
       expect(spy_companyModuleMock_getCompanyById).toHaveBeenCalledTimes(1);

@@ -5,7 +5,7 @@ import { JobModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { validateUUID } from "../../utils/utilities";
 import { PgClienteRepository } from "../../infrastructure/database/pg.repository";
 import { PoolClient } from "pg";
-import { CustomEventEmitterDto } from "src/infrastructure/events/__dtos__/emiter-events.dtos";
+import { CustomEventEmitterDto } from "../../infrastructure/events/__dtos__/emiter-events.dtos";
 
 export class EditJobUseCase implements BaseUseCase {
   constructor(
@@ -53,23 +53,23 @@ export class EditJobUseCase implements BaseUseCase {
       await this.pgClient.beginTransaction(conn);
       this.module.connection = conn;
 
-      const [_, { rows, rowCount }] = await Promise.all([
+      const [_, entity] = await Promise.all([
         this.module.updateJob({ description, title, location }, jobId),
         this.module.getJobById(jobId),
       ]);
 
-      if (rowCount == 0) {
+      if (!entity.isValidEntity()) {
         return {
           statusCode: StatusCodes.UNPROCESSABLE_ENTITY,
           body: {
-            error: `${jobId} - job_id dos not exist`,
+            error: `${jobId} - job_id does not exist`,
           },
         };
       }
 
-      if (rows[0].status === "published") {
+      if (entity.status === "published") {
         this.eventEmitter.publishJob("event_edit_job", 1, {
-          job_id: rows[0].id,
+          job_id: jobId,
           origin: "api-jobs",
         });
       }
@@ -79,7 +79,7 @@ export class EditJobUseCase implements BaseUseCase {
       return {
         statusCode: StatusCodes.OK,
         body: {
-          data: { ...rows[0] },
+          data: { ...entity.getProps() },
         },
       };
     } catch (err) {
