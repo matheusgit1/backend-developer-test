@@ -23,6 +23,8 @@ import { CompanyModuleRepository } from "../../modules/__dtos__/modules.dtos";
 import { FeedRoutesAdapted } from "../../controllers/feed/feed.controller";
 import { GetFeedUseCase } from "../../usecases/feed/getFeed.usecase";
 import Cache from "node-cache";
+import { CompanyEntity } from "../../entities/company/company.entity";
+import { Company } from "../../entities/__dtos__/entities.dtos";
 
 export const queryresults: QueryResult<any> = {
   rowCount: 1,
@@ -88,31 +90,26 @@ const companyModuleMock: CompanyModuleRepository = {
   ): Promise<QueryResult<any>> => {
     return { ...queryresults, rowCount: 1 };
   },
-  getCompanies: async (): Promise<QueryResult<any>> => {
-    return {
-      ...queryresults,
-      rowCount: 1,
-      rows: [
-        {
-          id: crypto.randomUUID().toString(),
-          name: "Company",
-          status: "draft",
-        },
-      ],
-    };
+  getCompanies: async (): Promise<CompanyEntity[]> => {
+    const rows: Company[] = [
+      {
+        id: crypto.randomUUID().toString(),
+        name: "name",
+        created_at: new Date().toString(),
+        updated_at: new Date().toString(),
+      },
+    ];
+    return rows.map((row) => new CompanyEntity(row));
   },
-  getCompanyById: async (): Promise<QueryResult<any>> => {
-    return {
-      ...queryresults,
-      rowCount: 1,
-      rows: [
-        {
-          id: crypto.randomUUID().toString(),
-          name: "Company",
-          status: "draft",
-        },
-      ],
+  getCompanyById: async (): Promise<CompanyEntity> => {
+    const row: Company = {
+      id: crypto.randomUUID().toString(),
+      name: "name",
+      created_at: new Date().toString(),
+      updated_at: new Date().toString(),
     };
+
+    return new CompanyEntity({ ...row });
   },
 };
 

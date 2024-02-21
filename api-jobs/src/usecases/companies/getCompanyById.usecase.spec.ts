@@ -2,7 +2,6 @@ import { StatusCodes } from "http-status-codes";
 import { CompanyModuleMock, PgClienteMock } from "../../tests/mocks";
 import { GetCompanyByIdUseCase } from "./getCompanyById.usecase";
 import * as crypto from "crypto";
-import { PoolClient } from "pg";
 
 const pgClientMock = new PgClienteMock();
 const companyModuleMock = new CompanyModuleMock();

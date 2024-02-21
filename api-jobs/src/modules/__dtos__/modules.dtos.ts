@@ -1,5 +1,6 @@
 import { QueryResult } from "pg";
 import { BaseModuleRepository } from "../base.repository";
+import { CompanyEntity } from "src/entities/company/company.entity";
 
 export interface CreateJobDto {
   companyId: string;
@@ -14,12 +15,6 @@ export type AvailableStatusJobs =
   | "archived"
   | "rejected";
 
-export interface Company {
-  id: string;
-  name: string;
-  created_at: Date | string;
-  updated_at: Date | string;
-}
 export interface Job {
   id: string;
   company_id: string;
@@ -40,8 +35,8 @@ export interface FeedJobs {
  * @description Modulo responsável pelas ações na base referente as companies
  */
 export declare class CompanyModuleRepository extends BaseModuleRepository {
-  getCompanies(): Promise<QueryResult<Company>>;
-  getCompanyById(id: string): Promise<QueryResult<Company>>;
+  getCompanies(): Promise<CompanyEntity[]>;
+  getCompanyById(id: string): Promise<CompanyEntity>;
 }
 
 /**

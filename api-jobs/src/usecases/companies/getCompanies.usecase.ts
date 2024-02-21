@@ -16,12 +16,12 @@ export class GetCompaniesUseCase implements BaseUseCase {
       conn = await this.pgClient.getConnection();
       this.module.connection = conn;
 
-      const { rows } = await this.module.getCompanies();
+      const companiesEntities = await this.module.getCompanies();
 
       return {
         statusCode: StatusCodes.OK,
         body: {
-          data: rows.map((company) => ({
+          data: companiesEntities.map((company) => ({
             id: company.id,
             name: company.name,
           })),

@@ -15,7 +15,7 @@ export declare class BaseUseCase {
    * @description
    * todos os usecases implementa a função handler, e por padrão,
    * todos terão acesso aos dados de requisição e função next (para middlewares)
-   * @param {any} args argumentos da função handler
+   * @param  {{req: Request; next: NextFunction;}} args argumentos da função handler
    * @returns {Promise<HttpResponse>}
    */
   handler: (...args: any[]) => any;

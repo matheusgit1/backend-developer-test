@@ -1,3 +1,4 @@
+import { CompanyEntity } from "../../entities/company/company.entity";
 import { queryresults } from "../../tests/mocks";
 import { CompanyModule } from "./companies.module";
 
@@ -12,7 +13,7 @@ describe(`cenários de testes para ${CompanyModule.name}`, () => {
   });
   jest.useRealTimers();
   describe("casos de sucessos", () => {
-    it("deve excutar getFeed getCompanies", async () => {
+    it("deve excutar getCompanies com sucesso", async () => {
       companyModule.connection = {
         //@ts-ignore
         query: async (_quer: string, _params: any[]): Promise<QueryResult> => {
@@ -25,6 +26,7 @@ describe(`cenários de testes para ${CompanyModule.name}`, () => {
       );
       const res = await companyModule.getCompanies();
       expect(res).toBeDefined();
+      expect(res).toBeInstanceOf(Array<CompanyEntity>);
       expect(spy_companyModule_executeQuery).toHaveBeenCalledTimes(1);
     });
 
@@ -41,6 +43,7 @@ describe(`cenários de testes para ${CompanyModule.name}`, () => {
       );
       const res = await companyModule.getCompanyById("id");
       expect(res).toBeDefined();
+      expect(res).toBeInstanceOf(CompanyEntity);
       expect(spy_companyModule_executeQuery).toHaveBeenCalledTimes(1);
     });
   });

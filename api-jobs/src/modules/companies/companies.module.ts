@@ -1,6 +1,7 @@
-import { PoolClient, QueryResult } from "pg";
-import { Company, CompanyModuleRepository } from "../__dtos__/modules.dtos";
+import { CompanyModuleRepository } from "../__dtos__/modules.dtos";
 import { BaseModule } from "../base.module";
+import { CompanyEntity } from "../../entities/company/company.entity";
+import { Company } from "../../entities/__dtos__/entities.dtos";
 
 export class CompanyModule
   extends BaseModule
@@ -9,18 +10,23 @@ export class CompanyModule
   constructor() {
     super(CompanyModule.name);
   }
-  async getCompanies(): Promise<QueryResult<Company>> {
+  async getCompanies(): Promise<CompanyEntity[]> {
     const sql = `
       select * from companies
     `;
-    return await this.executeQuery(sql);
+
+    const { rows } = await this.executeQuery<Company>(sql);
+
+    return rows.map((row) => new CompanyEntity({ ...row }));
   }
 
-  async getCompanyById(id: string): Promise<QueryResult<Company>> {
+  async getCompanyById(id: string): Promise<CompanyEntity> {
     const sql = `
       select * from companies where id = $1
     `;
 
-    return await this.executeQuery(sql, [id]);
+    const { rows } = await this.executeQuery<Company>(sql, [id]);
+
+    return new CompanyEntity({ ...rows[0] });
   }
 }

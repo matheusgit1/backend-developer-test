@@ -18,13 +18,14 @@ export class GetCompanyByIdUseCase implements BaseUseCase {
       const companyId = req.params["company_id"];
       conn = await this.pgClient.getConnection();
       this.module.connection = conn;
-      const { rows } = await this.module.getCompanyById(companyId);
+
+      const entity = await this.module.getCompanyById(companyId);
 
       return {
         statusCode: 200,
         body: {
           data: {
-            ...rows[0],
+            ...entity.getProps(),
           },
         },
       };

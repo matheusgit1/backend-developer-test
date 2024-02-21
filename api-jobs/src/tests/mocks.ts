@@ -1,8 +1,7 @@
-import { Company, FeedJobs } from "../modules/__dtos__/modules.dtos";
+import { FeedJobs } from "../modules/__dtos__/modules.dtos";
 import * as pg from "pg";
 import { PgClienteRepository } from "../infrastructure/database/pg.repository";
 import { HandlerEventService } from "../infrastructure/services/__dtos__/handler-event.dtos";
-import axios, { AxiosInstance } from "axios";
 import { CustomEventEmitterDto } from "../infrastructure/events/__dtos__/emiter-events.dtos";
 import {
   CompanyModuleRepository,
@@ -19,6 +18,8 @@ import {
   UploadPartCommandInput,
   UploadPartCommandOutput,
 } from "@aws-sdk/client-s3";
+import { CompanyEntity } from "../entities/company/company.entity";
+import { Company } from "src/entities/__dtos__/entities.dtos";
 
 export const queryresults = {
   rowCount: 1,
@@ -73,33 +74,26 @@ export class CompanyModuleMock
   extends BaseModuleMock
   implements CompanyModuleRepository
 {
-  getCompanies = jest.fn(async (): Promise<pg.QueryResult<Company>> => {
-    return {
-      ...queryresults,
-      rowCount: 1,
-      rows: [
-        {
-          id: crypto.randomUUID().toString(),
-          name: "Company",
-          created_at: new Date().toString(),
-          updated_at: new Date().toString(),
-        },
-      ],
-    };
+  getCompanies = jest.fn(async (): Promise<CompanyEntity[]> => {
+    const companies: Company[] = [
+      {
+        id: crypto.randomUUID().toString(),
+        name: "Company",
+        created_at: new Date().toString(),
+        updated_at: new Date().toString(),
+      },
+    ];
+    return companies.map((company) => new CompanyEntity({ ...company }));
   });
-  getCompanyById = jest.fn(async (): Promise<pg.QueryResult<Company>> => {
-    return {
-      ...queryresults,
-      rowCount: 1,
-      rows: [
-        {
-          id: crypto.randomUUID().toString(),
-          name: "Company",
-          created_at: new Date().toString(),
-          updated_at: new Date().toString(),
-        },
-      ],
+  getCompanyById = jest.fn(async (): Promise<CompanyEntity> => {
+    const row = {
+      id: crypto.randomUUID().toString(),
+      name: "Company",
+      created_at: new Date().toString(),
+      updated_at: new Date().toString(),
     };
+
+    return new CompanyEntity({ ...row });
   });
 }
 
