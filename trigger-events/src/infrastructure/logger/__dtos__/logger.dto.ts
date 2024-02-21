@@ -3,6 +3,5 @@ export declare class LoggingService {
   constructor(context: string);
   info(...message: any[]): void;
   log(...message: any[]): void;
-  warn(...message: any[]): void;
   error(...message: any[]): void;
 }

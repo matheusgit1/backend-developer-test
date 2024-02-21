@@ -41,7 +41,6 @@ export interface ModerationResponse {
 }
 
 export declare class ServiceOpenAI {
-  public openAPiClient: AxiosInstance;
   constructor(...args: any[]);
 
   /**

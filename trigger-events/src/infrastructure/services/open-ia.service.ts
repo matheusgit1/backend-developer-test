@@ -9,7 +9,7 @@ import {
 } from "./__dtos__/services.dtos";
 
 export class OpenAiService implements ServiceOpenAI {
-  public openAPiClient: AxiosInstance;
+  private openAPiClient: AxiosInstance;
   constructor(
     private readonly logger: Logger = new Logger(OpenAiService.name)
   ) {
