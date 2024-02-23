@@ -40,7 +40,7 @@ export class JobsModule extends BaseModule implements JobModuleRepository {
   async getJobById(jobId: string): Promise<JobEntity> {
     const sql = `SELECT * FROM jobs WHERE id = $1;`;
     const { rows } = await this.executeQuery<Job>(sql, [jobId]);
-    return new JobEntity({ ...rows[0] });
+    return new JobEntity(rows[0]);
   }
 
   async updateJob(

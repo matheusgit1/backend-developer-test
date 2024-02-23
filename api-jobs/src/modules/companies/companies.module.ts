@@ -17,7 +17,7 @@ export class CompanyModule
 
     const { rows } = await this.executeQuery<Company>(sql);
 
-    return rows.map((row) => new CompanyEntity({ ...row }));
+    return rows.map((row) => new CompanyEntity(row));
   }
 
   async getCompanyById(id: string): Promise<CompanyEntity> {
@@ -27,6 +27,6 @@ export class CompanyModule
 
     const { rows } = await this.executeQuery<Company>(sql, [id]);
 
-    return new CompanyEntity({ ...rows[0] });
+    return new CompanyEntity(rows[0]);
   }
 }

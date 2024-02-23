@@ -1,18 +1,8 @@
 import { AWSPortDto } from "src/ports/__dtos__/ports.dtos";
 import axios from "axios";
 import { PgClienteRepository } from "../infrastructure/database/pg.reposiory";
-import {
-  EventHandlerBase,
-  EventHandlerBaseDto,
-} from "../events/base.event-handler";
-import {
-  DeleteJobDto,
-  EditJobDto,
-  EventHandlerDictionary,
-  PublishJobDto,
-} from "../functions/sqs/events/__dtos__/handlers.dto";
-import { connection, queryresults } from "./testes.util";
-import { PoolClient, QueryResult } from "pg";
+import { connection } from "./testes.util";
+import { PoolClient } from "pg";
 import {
   AvailableStatusJobs,
   BaseModuleRepository,
@@ -34,33 +24,7 @@ export class BaseModulMock implements BaseModuleRepository {
   name = "modulename";
   //@ts-ignore
   connection = connection;
-  // executeQuery = jest.fn(
-  //   async (_query: string, _params?: any[]): Promise<QueryResult<any>> => {
-  //     return { ...queryresults };
-  //   }
-  // );
 }
-
-// export class MockPublishJobEventHandler
-//   implements EventHandlerBase<PublishJobDto> {
-//   // handler = jest.fn(
-//   //   async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
-//   // );
-// }
-
-// export class MockEditJobEventHandler implements EventHandlerBase<EditJobDto> {
-//   handler = jest.fn(
-//     async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
-//   );
-// }
-
-// export class MockDeleteJobEventHandler
-//   implements EventHandlerBase<DeleteJobDto>
-// {
-//   handler = jest.fn(
-//     async (_event: EventHandlerBaseDto<PublishJobDto>): Promise<void> => {}
-//   );
-// }
 
 export class JobModuleMock
   extends BaseModulMock

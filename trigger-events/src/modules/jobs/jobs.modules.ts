@@ -19,7 +19,7 @@ export class JobModule extends BaseModule implements JobModuleRepository {
 
     const { rows } = await this.executeQuery<Job>(sql, [jobId]);
 
-    return new JobEntity({ ...rows[0] });
+    return new JobEntity(rows[0]);
   }
 
   async updateJobStatus(
